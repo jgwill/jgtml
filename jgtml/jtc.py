@@ -1,8 +1,14 @@
 #%% Imports
 import pandas as pd
 import os
+import sys
+sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
 from jgtpy import JGTPDSP as pds
 import tlid
+
+
+from jgtutils.jgtos import get_data_path
+
 
 #%% Functions
 
@@ -78,7 +84,7 @@ def calculate_target_variable_min_max(dfsrc, crop_last_dt=None, crop_start_dt=No
 
 def pto_target_calculation(i, t, crop_start_dt=None, crop_end_dt=None, tlid_tag=None, output_report_dir=None):
     """
-    Calculate the PTO target based on the given parameters.
+    Calculate the PTO target based on the given POV parameters and output to file with report.
 
     Args:
         i (int): The value of i.
@@ -169,4 +175,35 @@ def _reporting(df_selection2, ifn, t, pipsize,tlid_tag,output_report_dir=None):
         #f.write(f" (rounded): {(df_selection2['target'].sum()).round(2)}\n\n")
     
 
+
+
+
+def readMXFile(
+    instrument, timeframe, columns_to_remove=None, quiet=True, use_full=True
+):
+    """
+    Read a MX Target file and return a pandas DataFrame.
+
+    Parameters:
+    instrument (str): The instrument name.
+    timeframe (str): The timeframe of the data.
+    columns_to_remove (list, optional): List of column names to remove from the DataFrame. Default is None.
+    quiet (bool, optional): If True, suppresses the output messages. Default is True.
+    use_full (bool, optional): If True, reads the full MX file. Default is True (there wont be MX in current data I think)).
+
+    Returns:
+    pandas.DataFrame: The DataFrame containing the MX Target data.
+    """
+    # Define the file path based on the environment variable or local path
+    data_path_cds = get_data_path("targets/mx", use_full=use_full)
+    fpath = pds.mk_fullpath(instrument, timeframe, "csv", data_path_cds)
+    mdf = pd.read_csv(fpath)
+
+    # Set 'Date' as the index and convert it to datetime
+    mdf["Date"] = pd.to_datetime(mdf["Date"])
+    mdf.set_index("Date", inplace=True)
+    # Remove the specified columns
+    if columns_to_remove is not None:
+        mdf = mdf.drop(columns=columns_to_remove, errors="ignore")
+    return mdf
 
