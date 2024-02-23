@@ -76,16 +76,30 @@ def calculate_target_variable_min_max(dfsrc, crop_last_dt=None, crop_start_dt=No
     return df
 
 
-def pto_target_calculation(i,t, crop_start_dt, crop_end_dt,tlid_tag=None,output_report_dir=None):
+def pto_target_calculation(i, t, crop_start_dt=None, crop_end_dt=None, tlid_tag=None, output_report_dir=None):
+    """
+    Calculate the PTO target based on the given parameters.
+
+    Args:
+        i (int): The value of i.
+        t (int): The value of t.
+        crop_start_dt (datetime, optional): The start date for cropping. Defaults to None.
+        crop_end_dt (datetime, optional): The end date for cropping. Defaults to None.
+        tlid_tag (str, optional): The TLID tag. Defaults to None.
+        output_report_dir (str, optional): The output report directory. Defaults to None.
+
+    Returns:
+        None
+    """
     if tlid_tag is None:
         tlid_tag = tlid.get_minutes()
     
-    default_jgtpy_data_full= 'full/data'
-    default_jgtpy_data_full= '/var/lib/jgt/full/data'
+    default_jgtpy_data_full = 'full/data'
+    default_jgtpy_data_full = '/var/lib/jgt/full/data'
     data_dir_full = os.getenv('JGTPY_DATA_FULL', default_jgtpy_data_full)
     indir_cds = os.path.join(data_dir_full, 'cds')
     outdir_tmx = os.path.join(data_dir_full, 'targets', 'mx') #@STCIssue Hardcoded path future JGTPY_DATA_FULL/.../mx
-    _pov_target_calculation_n_output240223(indir_cds, outdir_tmx, crop_start_dt, crop_end_dt, i, t,tlid_tag,output_report_dir=output_report_dir)
+    _pov_target_calculation_n_output240223(indir_cds, outdir_tmx, crop_start_dt, crop_end_dt, i, t, tlid_tag, output_report_dir=output_report_dir)
 
 
 def _pov_target_calculation_n_output240223(indir_cds, outdir_tmx, crop_start_dt, crop_end_dt, i, t,tlid_tag,output_report_dir=None):
