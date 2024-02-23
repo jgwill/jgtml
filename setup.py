@@ -49,7 +49,7 @@ setup(
     # packages=find_packages(include=['jgtml', 'jgtml.forexconnect', 'jgtml.forexconnect.lib', 'jgtml.forexconnect.lib.windows', 'jgtml.forexconnect.lib.linux'], exclude=['*test*']),
     install_requires=INSTALL_REQUIRES,
     entry_points={
-        "console_scripts": ["jgtcli=jgtml.jgtcli:main"],
+        "console_scripts": ["jgtmlcli=jgtml.jgtmlcli:main"],
     },
     extras_require={
         "dev": (EXTRAS_DEV_LINT + EXTRAS_DEV_TEST + EXTRAS_DEV_DOCS),
