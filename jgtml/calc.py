@@ -2,11 +2,11 @@
 import pandas as pd
 import os
 from jgtpy import JGTPDSP as pds
-
+import tlid
 
 #%% Functions
 
-def crop_dataframe(df,crop_last_dt:str=None, crop_start_dt:str=None):
+def _crop_dataframe(df,crop_last_dt:str=None, crop_start_dt:str=None):
     if crop_last_dt is not None:
         df = df[df.index <= crop_last_dt]
     if crop_start_dt is not None:
@@ -16,7 +16,7 @@ def crop_dataframe(df,crop_last_dt:str=None, crop_start_dt:str=None):
 def calculate_target_variable_min_max(dfsrc, crop_last_dt=None, crop_start_dt=None, WINDOW_MIN=1, WINDOW_MAX=150, set_index=True, rounder=2,pipsize=-1):
     df = dfsrc.copy()
     
-    df = crop_dataframe(df, crop_last_dt, crop_start_dt)
+    df = _crop_dataframe(df, crop_last_dt, crop_start_dt)
     
     
     #reset index before we iterate
@@ -76,9 +76,22 @@ def calculate_target_variable_min_max(dfsrc, crop_last_dt=None, crop_start_dt=No
     return df
 
 
+def pto_target_calculation(i,t, crop_start_dt, crop_end_dt,tlid_tag=None,output_report_dir=None):
+    if tlid_tag is None:
+        tlid_tag = tlid.get_minutes()
+    
+    default_jgtpy_data_full= 'full/data'
+    default_jgtpy_data_full= '/var/lib/jgt/full/data'
+    data_dir_full = os.getenv('JGTPY_DATA_FULL', default_jgtpy_data_full)
+    indir_cds = os.path.join(data_dir_full, 'cds')
+    outdir_tmx = os.path.join(data_dir_full, 'targets', 'mx') #@STCIssue Hardcoded path future JGTPY_DATA_FULL/.../mx
+    _pov_target_calculation_n_output240223(indir_cds, outdir_tmx, crop_start_dt, crop_end_dt, i, t,tlid_tag,output_report_dir=output_report_dir)
 
 
-def pov_target_calculation_n_output240223(indir_cds, outdir_tmx, crop_start_dt, crop_end_dt, i, t):
+def _pov_target_calculation_n_output240223(indir_cds, outdir_tmx, crop_start_dt, crop_end_dt, i, t,tlid_tag,output_report_dir=None):
+    if tlid_tag is None:
+        tlid_tag = tlid.get_minutes()
+        
     ifn = i.replace('/','-')
         #read instrument prop
     iprop=pds.get_instrument_properties(i)
@@ -124,17 +137,20 @@ def pov_target_calculation_n_output240223(indir_cds, outdir_tmx, crop_start_dt, 
     except Exception as e:
         print(f"Error occurred while saving to {output_tnd_targetNdata_fn}: {str(e)}")
     
-    reporting(df_selection2, ifn, t, pipsize,tlid_tag)
+    _reporting(df_selection2, ifn, t, pipsize,tlid_tag,output_report_dir=output_report_dir)
 
 
-def reporting(df_selection2, ifn, t, pipsize,tlid_tag):
+def _reporting(df_selection2, ifn, t, pipsize,tlid_tag,output_report_dir=None):
 
-    report_file = f"{default_jgtpy_data_full}/report-calc-{tlid_tag}.txt"
+    if output_report_dir is None:
+        output_report_dir = os.getenv("JGTPY_DATA_FULL")
+        
+    report_file = f"{output_report_dir}/report-calc-{tlid_tag}.txt"
     print("Reporting to:", report_file)
     print(" tail -f ", report_file)
     
     with open(report_file, "a") as f:
-        f.write(f"--- {ifn}_{t} ---\n")
+        f.write(f"--- {ifn}_{t} --pipsize:{pipsize}---\n")
         f.write(f"Sum of target: {df_selection2['target'].sum()}\n\n")
         #f.write(f" (rounded): {(df_selection2['target'].sum()).round(2)}\n\n")
     
