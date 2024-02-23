@@ -1,0 +1,30 @@
+{
+  "name": "jgtml",
+  "version": "0.0.1",
+  "description": "JGTML",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs",
+    "test": "test"
+  },
+  "scripts": {
+    "test": "bash pypi-conda-gaia-env.sh",
+    "build": "make dist",
+    "release": "make dist && twine upload dist/*",
+    "publish": "twine upload dist/*"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jgwill/jgtml.git"
+  },
+  "keywords": [
+    "jgt",
+    "jgtml"
+  ],
+  "author": "Guillaume Isabelle",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jgwill/jgtml/issues"
+  },
+  "homepage": "https://github.com/jgwill/jgtml#readme"
+}
