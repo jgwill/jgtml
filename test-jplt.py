@@ -101,6 +101,11 @@ jplt.pairgrid(selected, title="Pairgrid - " + dt_crop_last)
 
 jplt.pairgrid(selected2, title="Pairgrid - " + dt_crop_last_DS2)
 
+# %% Pairgrid SAVE
+# pp2  Pairgrid SAVE
+
+pg=jplt.pairgrid(selected2, title="Pairgrid - " + dt_crop_last_DS2)
+pg.figure.savefig("pairgrid_" + dt_crop_last_DS2 + ".png")
 # %% Bivariate plot
 
 an_bivariate_plot00(

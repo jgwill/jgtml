@@ -154,4 +154,4 @@ def pairgrid(data, title="Pairgrid - ",show=False):
   g.map_diag(sns.histplot, kde=False)
   plt.suptitle(title)
   if show:  plt.show()
-  return plt.figure()
+  return g
