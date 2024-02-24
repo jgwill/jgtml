@@ -5,3 +5,4 @@ scikit-learn
 tlid
 jgtutils
 jgtpy
+seaborn

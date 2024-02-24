@@ -17,6 +17,7 @@ INSTALL_REQUIRES = [
     "mplfinance>=0.12.10b0",
     "scipy>=1.7.3",
     "panel>=1.3.8",
+    "seaborn>=0.13.2",
 ]
 
 EXTRAS_DEV_LINT = [
