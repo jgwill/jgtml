@@ -30,7 +30,8 @@ def an_bivariate_plot00(data,
                         target_variable='target',
                         title = 'Bivariate Scatter Plot - ',
                         xlabel = '',
-                        ylabel_prefix = ''                        
+                        ylabel_prefix = '',
+                        show=True          
                         ):
   # Scatter plot between target variable and a feature
   plt.scatter(data[feature1], data[target_variable])
@@ -40,7 +41,8 @@ def an_bivariate_plot00(data,
   plt.xlabel(xlabel + feature1)
   
   plt.ylabel(ylabel_prefix + target_variable)
-  plt.show()
+  if show:plt.show()
+  return plt.figure()
   
 def an_biv_plt2ds(data1, 
                   data2, 
@@ -123,12 +125,13 @@ def an_bivariate_plot00_four_features_v2(data1, data2,data1_name,data2_name, fea
 
 
 # %% PLot distribution
-def an_distplot(df, feature='ao', title="Distribution of AO -"):
+def an_distplot(df, feature='ao', title="Distribution of AO -",show=False):
   sns.histplot(df[feature], kde=False)
   
   plt.title(title + " " +  feature)
   
-  plt.show()
+  if show:plt.show()
+  return plt.figure()
   
   
 def an_describe_summary_stat(data,target_var_name = 'target'):
@@ -151,4 +154,4 @@ def pairgrid(data, title="Pairgrid - ",show=False):
   g.map_diag(sns.histplot, kde=False)
   plt.suptitle(title)
   if show:  plt.show()
-  return g
+  return g.figure()
