@@ -31,7 +31,7 @@ def an_bivariate_plot00(data,
                         title = 'Bivariate Scatter Plot - ',
                         xlabel = '',
                         ylabel_prefix = '',
-                        show=True          
+                        show=False          
                         ):
   # Scatter plot between target variable and a feature
   plt.scatter(data[feature1], data[target_variable])
@@ -55,7 +55,7 @@ def an_biv_plt2ds(data1,
                   s1_title = 'Scatter Plot: ',
                   x1_prefix = '',
                   y1_prefix = '',
-                  show=True
+                  show=False
                   ):
   # Create a figure and two subplots with 1 row and 2 columns
   fig, axs = plt.subplots(1, 2, figsize=(10, 5))
@@ -88,7 +88,7 @@ def an_biv_plt2ds(data1,
 
 def an_bivariate_plot00_four_features_v2(data1, data2,data1_name,data2_name, feature1='ao', feature2='ao', feature3='ac', feature4='ac', target_variable='target', 
                                          title = 'Bivariate Analysis Scatter:',
-                                         show=True):
+                                         show=False):
   # Create a figure and four subplots with 2 rows and 2 columns
   fig, axs = plt.subplots(2, 2, figsize=(10, 10))
 
