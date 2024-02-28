@@ -100,7 +100,21 @@ def calculate_target_variable_min_max(
 
 
 def pto_target_calculation(
-    i, t, crop_start_dt=None, crop_end_dt=None, tlid_tag=None, output_report_dir=None,process_fdb_ao_vector_window=False
+    i, t, crop_start_dt=None, crop_end_dt=None, tlid_tag=None, output_report_dir=None,
+    pto_vec_fdb_ao_vector_window_flag=False,   
+    drop_calc_col=False,
+    calc_col_to_drop_names = ["tmax", "tmin", "p", "l"],
+    sel_1_suffix = "_sel",
+    sel_1_keeping_columns = ["Low", "fdbs", "fdbb", "tmax", "tmin", "p", "l", "target"],
+    sel_2_suffix = "_tnd",
+    sel_2_keeping_columns = ["Open", "High", "Low", "Close", "fdbs", "fdbb", "target"],
+    pto_vec_fdb_ao_out_s_name = 'vector_ao_fdbs',
+    pto_vec_fdb_ao_out_b_name = 'vector_ao_fdbb',
+    pto_vec_fdb_ao_in_s_sig_name = 'fdbs',
+    pto_vec_fdb_ao_in_s_win_end_sig_name = 'zlcb',            
+    pto_vec_fdb_ao_in_b_sig_name = 'fdbb',
+    pto_vec_fdb_ao_in_b_win_end_sig_name = 'zlcs',
+    pto_vec_fdb_ao_in_t_val_name = 'ao'
 ):
     """
     Calculate the PTO target based on the given POV parameters and output to file with report.
@@ -113,11 +127,17 @@ def pto_target_calculation(
         tlid_tag (str, optional): The TLID tag. Defaults to None.
         output_report_dir (str, optional): The output report directory. Defaults to None.
         process_fdb_ao_vector_window (bool, optional): If True, process the fdb_ao_vector_window. Defaults to False.
+        drop_calc_col (bool, optional): If True, drop the calculated columns. Defaults to False.
+        calc_col_to_drop_names (list, optional): The list of column names to drop. Defaults to ["tmax", "tmin", "p", "l"].
+        sel_1_suffix (str, optional): The suffix for the first selection. Defaults to "_sel".
+        sel_1_keeping_columns (list, optional): The list of columns to keep for the first selection. Defaults to ["Low", "fdbs", "fdbb", "tmax", "tmin", "p", "l", "target"].
+        sel_2_suffix (str, optional): The suffix for the second selection. Defaults to "_tnd".
+        sel_2_keeping_columns (list, optional): The list of columns to keep for the second selection. Defaults to ["Open", "High", "Low", "Close", "fdbs", "fdbb", "target"].
 
     Returns:
         df_result_tmx (pandas.DataFrame): The DataFrame containing the calculated PTO target.
-        sel (pandas.DataFrame): The DataFrame containing the selected columns.
-        df_selection2 (pandas.DataFrame): The DataFrame containing the selected columns.
+        sel1 (pandas.DataFrame): The DataFrame containing the selected columns.
+        sel2 (pandas.DataFrame): The DataFrame containing the selected columns.
     """
     if tlid_tag is None:
         tlid_tag = tlid.get_minutes()
@@ -138,7 +158,21 @@ def pto_target_calculation(
         t,
         tlid_tag,
         output_report_dir=output_report_dir,
-        process_fdb_ao_vector_window=process_fdb_ao_vector_window,
+        pto_vec_fdb_ao_vector_window_flag=pto_vec_fdb_ao_vector_window_flag,
+        drop_calc_col=drop_calc_col,
+        calc_col_to_drop_names =calc_col_to_drop_names,
+        sel_1_suffix = sel_1_suffix,
+        sel_1_keeping_columns = sel_1_keeping_columns,
+        sel_2_suffix = sel_2_suffix,
+        sel_2_keeping_columns = sel_2_keeping_columns,
+        pto_vec_fdb_ao_out_s_name = pto_vec_fdb_ao_out_s_name, 
+        pto_vec_fdb_ao_out_b_name = pto_vec_fdb_ao_out_b_name,
+        pto_vec_fdb_ao_in_s_sig_name = pto_vec_fdb_ao_in_s_sig_name,
+        pto_vec_fdb_ao_in_s_win_end_sig_name = pto_vec_fdb_ao_in_s_win_end_sig_name,            
+        pto_vec_fdb_ao_in_b_sig_name = pto_vec_fdb_ao_in_b_sig_name,
+        pto_vec_fdb_ao_in_b_win_end_sig_name =pto_vec_fdb_ao_in_b_win_end_sig_name ,
+        pto_vec_fdb_ao_in_t_val_name = pto_vec_fdb_ao_in_t_val_name
+        
     )
     return df_result_tmx,sel,df_selection2
 
@@ -152,7 +186,21 @@ def _pov_target_calculation_n_output240223(
     t,
     tlid_tag,
     output_report_dir=None,
-    process_fdb_ao_vector_window=False,
+    pto_vec_fdb_ao_vector_window_flag=False,
+    drop_calc_col=False,
+    write_reporting=True,
+    calc_col_to_drop_names = ["tmax", "tmin", "p", "l"],
+    sel_1_suffix = "_sel",
+    sel_1_keeping_columns = ["Low", "fdbs", "fdbb", "tmax", "tmin", "p", "l", "target"],
+    sel_2_suffix = "_tnd",
+    sel_2_keeping_columns = ["Open", "High", "Low", "Close", "fdbs", "fdbb", "target"],
+    pto_vec_fdb_ao_out_s_name = 'vector_ao_fdbs',
+    pto_vec_fdb_ao_out_b_name = 'vector_ao_fdbb',
+    pto_vec_fdb_ao_in_s_sig_name = 'fdbs',
+    pto_vec_fdb_ao_in_s_win_end_sig_name = 'zlcb',            
+    pto_vec_fdb_ao_in_b_sig_name = 'fdbb',
+    pto_vec_fdb_ao_in_b_win_end_sig_name = 'zlcs',
+    pto_vec_fdb_ao_in_t_val_name = 'ao'
 ):
     if tlid_tag is None:
         tlid_tag = tlid.get_minutes()
@@ -176,44 +224,81 @@ def _pov_target_calculation_n_output240223(
     df_result_tmx = calculate_target_variable_min_max(
         df_cds_source, crop_end_dt, crop_start_dt, rounder=rounder, pipsize=pipsize
     )
-    
-    if process_fdb_ao_vector_window:
-        df_result_tmx = get_fdb_ao_vector_window(df_result_tmx)
+        
+    if pto_vec_fdb_ao_vector_window_flag:
+        df_result_tmx = get_fdb_ao_vector_window(
+            df_result_tmx,                                             
+            out_s_name = pto_vec_fdb_ao_out_s_name, 
+            out_b_name = pto_vec_fdb_ao_out_b_name,
+            in_s_sig_name = pto_vec_fdb_ao_in_s_sig_name,
+            in_s_win_end_sig_name = pto_vec_fdb_ao_in_s_win_end_sig_name,            
+            in_b_sig_name = pto_vec_fdb_ao_in_b_sig_name,
+            in_b_win_end_sig_name =pto_vec_fdb_ao_in_b_win_end_sig_name ,
+            in_t_val_name = pto_vec_fdb_ao_in_t_val_name    
+            )
+        sel_1_keeping_columns.append(pto_vec_fdb_ao_out_s_name, pto_vec_fdb_ao_out_b_name)
 
+        sel_1_keeping_columns.extend([pto_vec_fdb_ao_in_s_sig_name, pto_vec_fdb_ao_in_s_win_end_sig_name, pto_vec_fdb_ao_in_b_sig_name, pto_vec_fdb_ao_in_b_win_end_sig_name, pto_vec_fdb_ao_in_t_val_name])
+        sel_1_keeping_columns = list(set(sel_1_keeping_columns))
+        
+        
+        sel_2_keeping_columns.append(pto_vec_fdb_ao_out_s_name, pto_vec_fdb_ao_out_b_name)
+
+        sel_2_keeping_columns.extend([pto_vec_fdb_ao_in_s_sig_name, pto_vec_fdb_ao_in_s_win_end_sig_name, pto_vec_fdb_ao_in_b_sig_name, pto_vec_fdb_ao_in_b_win_end_sig_name, pto_vec_fdb_ao_in_t_val_name])
+        sel_2_keeping_columns = list(set(sel_2_keeping_columns))
+
+    
+    """  #@STCIssue We will Want those columns in the output selections
+        out_s_name = 'vector_ao_fdbs',
+        out_b_name = 'vector_ao_fdbb',
+        in_s_sig_name = 'fdbs',
+        in_s_win_end_sig_name = 'zlcb',            
+        in_b_sig_name = 'fdbb',
+        in_b_win_end_sig_name = 'zlcs',
+        in_t_val_name = 'ao'
+    """
+    
+    sel1 = df_result_tmx[sel_1_keeping_columns].copy()
+    sel1 = sel1[(sel1["p"] != 0) | (sel1["l"] != 0)]
+    
+    output_sel_cols_fn = f"{outdir_tmx}/{ifn}_{t}{sel_1_suffix}.csv"
+    try:
+        sel1.to_csv(output_sel_cols_fn, index=True)
+        print(f"Saved to {output_sel_cols_fn}")
+    except Exception as e:
+        print(f"Error occurred while saving to {output_sel_cols_fn}: {str(e)}")
+
+    
+    sel2 = df_result_tmx[sel_2_keeping_columns].copy()
+    sel2["target"] = sel2["target"].round(rounder)
+    sel2 = sel2[(sel2["target"] != 0)]
+    
+    output_tnd_targetNdata_fn = f"{outdir_tmx}/{ifn}_{t}{sel_2_suffix}.csv"
+    try:
+        sel2.to_csv(output_tnd_targetNdata_fn, index=True)
+        print(f"Saved to {output_tnd_targetNdata_fn}")
+    except Exception as e:
+        print(f"Error occurred while saving to {output_tnd_targetNdata_fn}: {str(e)}")
+
+    
+    
+    if drop_calc_col:
+        df_result_tmx = df_result_tmx.drop(columns=calc_col_to_drop_names)
     # Save the result to a csv file
     output_all_cols_fn = f"{outdir_tmx}/{ifn}_{t}.csv"
+    
     try:
         df_result_tmx.to_csv(output_all_cols_fn, index=True)
         print(f"Saved to {output_all_cols_fn}")
     except Exception as e:
         print(f"Error occurred while saving to {output_all_cols_fn}: {str(e)}")
-    keeping_columns = ["Low", "fdbs", "fdbb", "tmax", "tmin", "p", "l", "target"]
-    sel = df_result_tmx[keeping_columns].copy()
-    sel = sel[(sel["p"] != 0) | (sel["l"] != 0)]
-
-    output_sel_cols_fn = f"{outdir_tmx}/{ifn}_{t}_sel.csv"
-    try:
-        sel.to_csv(output_sel_cols_fn, index=True)
-        print(f"Saved to {output_sel_cols_fn}")
-    except Exception as e:
-        print(f"Error occurred while saving to {output_sel_cols_fn}: {str(e)}")
-
-    keeping_columns_sel2 = ["Open", "High", "Low", "Close", "fdbs", "fdbb", "target"]
-    df_selection2 = df_result_tmx[keeping_columns_sel2].copy()
-    df_selection2["target"] = df_selection2["target"].round(rounder)
-    df_selection2 = df_selection2[(df_selection2["target"] != 0)]
-
-    output_tnd_targetNdata_fn = f"{outdir_tmx}/{ifn}_{t}_tnd.csv"
-    try:
-        df_selection2.to_csv(output_tnd_targetNdata_fn, index=True)
-        print(f"Saved to {output_tnd_targetNdata_fn}")
-    except Exception as e:
-        print(f"Error occurred while saving to {output_tnd_targetNdata_fn}: {str(e)}")
-
-    _reporting(
-        df_selection2, ifn, t, pipsize, tlid_tag, output_report_dir=output_report_dir
+    
+    if write_reporting:
+        _reporting(
+        sel2, ifn, t, pipsize, tlid_tag, output_report_dir=output_report_dir
     )
-    return df_result_tmx,sel,df_selection2
+        
+    return df_result_tmx,sel1,sel2
 
 
 def _reporting(df_selection2, ifn, t, pipsize, tlid_tag, output_report_dir=None):
@@ -239,6 +324,9 @@ def readMXFile(
     use_full=True,
     dt_crop_last=None,
     quote_count=None,
+    sel_1_suffix = "_sel",
+    sel_2_suffix = "_tnd",
+    also_read_selections = False,
 ):
     """
     Read a MX Target file and return a pandas DataFrame.
@@ -251,9 +339,14 @@ def readMXFile(
     use_full (bool, optional): If True, reads the full MX file. Default is True (there wont be MX in current data I think)).
     dt_crop_last (str, optional): The last date to crop the data. Default is None.
     quote_count (int, optional): The number of quotes to keep. Default is None.
+    sel_1_suffix (str, optional): The suffix for the first selection. Defaults to "_sel".
+    sel_2_suffix (str, optional): The suffix for the second selection. Defaults to "_tnd".
+    also_read_selections (bool, optional): If True, also read the selections. Defaults to False.
 
     Returns:
     pandas.DataFrame: The DataFrame containing the MX Target data.
+    OR
+    tuple: A tuple containing the DataFrame and the selections DataFrames.
     """
     # Define the file path based on the environment variable or local path
     data_path_cds = get_data_path("targets/mx", use_full=use_full)
@@ -271,6 +364,11 @@ def readMXFile(
         mdf = mdf[mdf.index < dt_crop_last]
     if quote_count is not None:
         mdf = mdf[-quote_count:]
+    
+    if also_read_selections:
+        sel1 = pd.read_csv(fpath.replace(".csv", f"{sel_1_suffix}.csv"), index_col=0, parse_dates=True)
+        sel2 = pd.read_csv(fpath.replace(".csv", f"{sel_2_suffix}.csv"), index_col=0, parse_dates=True)
+        return mdf, sel1, sel2
     return mdf
 
 
