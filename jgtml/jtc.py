@@ -113,7 +113,9 @@ def pto_target_calculation(
         output_report_dir (str, optional): The output report directory. Defaults to None.
 
     Returns:
-        None
+        df_result_tmx (pandas.DataFrame): The DataFrame containing the calculated PTO target.
+        sel (pandas.DataFrame): The DataFrame containing the selected columns.
+        df_selection2 (pandas.DataFrame): The DataFrame containing the selected columns.
     """
     if tlid_tag is None:
         tlid_tag = tlid.get_minutes()
@@ -125,7 +127,7 @@ def pto_target_calculation(
     outdir_tmx = os.path.join(
         data_dir_full, "targets", "mx"
     )  # @STCIssue Hardcoded path future JGTPY_DATA_FULL/.../mx
-    _pov_target_calculation_n_output240223(
+    df_result_tmx,sel,df_selection2 =_pov_target_calculation_n_output240223(
         indir_cds,
         outdir_tmx,
         crop_start_dt,
@@ -135,6 +137,7 @@ def pto_target_calculation(
         tlid_tag,
         output_report_dir=output_report_dir,
     )
+    return df_result_tmx,sel,df_selection2
 
 
 def _pov_target_calculation_n_output240223(
@@ -177,7 +180,6 @@ def _pov_target_calculation_n_output240223(
         print(f"Saved to {output_all_cols_fn}")
     except Exception as e:
         print(f"Error occurred while saving to {output_all_cols_fn}: {str(e)}")
-
     keeping_columns = ["Low", "fdbs", "fdbb", "tmax", "tmin", "p", "l", "target"]
     sel = df_result_tmx[keeping_columns].copy()
     sel = sel[(sel["p"] != 0) | (sel["l"] != 0)]
@@ -204,6 +206,7 @@ def _pov_target_calculation_n_output240223(
     _reporting(
         df_selection2, ifn, t, pipsize, tlid_tag, output_report_dir=output_report_dir
     )
+    return df_result_tmx,sel,df_selection2
 
 
 def _reporting(df_selection2, ifn, t, pipsize, tlid_tag, output_report_dir=None):
