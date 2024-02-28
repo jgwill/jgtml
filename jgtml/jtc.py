@@ -149,7 +149,7 @@ def pto_target_calculation(
     outdir_tmx = os.path.join(
         data_dir_full, "targets", "mx"
     )  # @STCIssue Hardcoded path future JGTPY_DATA_FULL/.../mx
-    df_result_tmx,sel,df_selection2 =_pov_target_calculation_n_output240223(
+    df_result_tmx,sel1,sel2 =_pov_target_calculation_n_output240223(
         indir_cds,
         outdir_tmx,
         crop_start_dt,
@@ -174,7 +174,7 @@ def pto_target_calculation(
         pto_vec_fdb_ao_in_t_val_name = pto_vec_fdb_ao_in_t_val_name
         
     )
-    return df_result_tmx,sel,df_selection2
+    return df_result_tmx,sel1,sel2
 
 
 def _pov_target_calculation_n_output240223(
@@ -236,13 +236,13 @@ def _pov_target_calculation_n_output240223(
             in_b_win_end_sig_name =pto_vec_fdb_ao_in_b_win_end_sig_name ,
             in_t_val_name = pto_vec_fdb_ao_in_t_val_name    
             )
-        sel_1_keeping_columns.append(pto_vec_fdb_ao_out_s_name, pto_vec_fdb_ao_out_b_name)
+        sel_1_keeping_columns.append([pto_vec_fdb_ao_out_s_name, pto_vec_fdb_ao_out_b_name])
 
         sel_1_keeping_columns.extend([pto_vec_fdb_ao_in_s_sig_name, pto_vec_fdb_ao_in_s_win_end_sig_name, pto_vec_fdb_ao_in_b_sig_name, pto_vec_fdb_ao_in_b_win_end_sig_name, pto_vec_fdb_ao_in_t_val_name])
         sel_1_keeping_columns = list(set(sel_1_keeping_columns))
         
         
-        sel_2_keeping_columns.append(pto_vec_fdb_ao_out_s_name, pto_vec_fdb_ao_out_b_name)
+        sel_2_keeping_columns.append([pto_vec_fdb_ao_out_s_name, pto_vec_fdb_ao_out_b_name])
 
         sel_2_keeping_columns.extend([pto_vec_fdb_ao_in_s_sig_name, pto_vec_fdb_ao_in_s_win_end_sig_name, pto_vec_fdb_ao_in_b_sig_name, pto_vec_fdb_ao_in_b_win_end_sig_name, pto_vec_fdb_ao_in_t_val_name])
         sel_2_keeping_columns = list(set(sel_2_keeping_columns))
