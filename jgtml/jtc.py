@@ -1,5 +1,6 @@
 # %% Imports
 import pandas as pd
+import numpy as np
 import os
 import sys
 
@@ -99,7 +100,7 @@ def calculate_target_variable_min_max(
 
 
 def pto_target_calculation(
-    i, t, crop_start_dt=None, crop_end_dt=None, tlid_tag=None, output_report_dir=None
+    i, t, crop_start_dt=None, crop_end_dt=None, tlid_tag=None, output_report_dir=None,process_fdb_ao_vector_window=False
 ):
     """
     Calculate the PTO target based on the given POV parameters and output to file with report.
@@ -111,6 +112,7 @@ def pto_target_calculation(
         crop_end_dt (datetime, optional): The end date for cropping. Defaults to None.
         tlid_tag (str, optional): The TLID tag. Defaults to None.
         output_report_dir (str, optional): The output report directory. Defaults to None.
+        process_fdb_ao_vector_window (bool, optional): If True, process the fdb_ao_vector_window. Defaults to False.
 
     Returns:
         df_result_tmx (pandas.DataFrame): The DataFrame containing the calculated PTO target.
@@ -136,6 +138,7 @@ def pto_target_calculation(
         t,
         tlid_tag,
         output_report_dir=output_report_dir,
+        process_fdb_ao_vector_window=process_fdb_ao_vector_window,
     )
     return df_result_tmx,sel,df_selection2
 
@@ -149,6 +152,7 @@ def _pov_target_calculation_n_output240223(
     t,
     tlid_tag,
     output_report_dir=None,
+    process_fdb_ao_vector_window=False,
 ):
     if tlid_tag is None:
         tlid_tag = tlid.get_minutes()
@@ -172,6 +176,9 @@ def _pov_target_calculation_n_output240223(
     df_result_tmx = calculate_target_variable_min_max(
         df_cds_source, crop_end_dt, crop_start_dt, rounder=rounder, pipsize=pipsize
     )
+    
+    if process_fdb_ao_vector_window:
+        df_result_tmx = get_fdb_ao_vector_window(df_result_tmx)
 
     # Save the result to a csv file
     output_all_cols_fn = f"{outdir_tmx}/{ifn}_{t}.csv"
@@ -265,3 +272,37 @@ def readMXFile(
     if quote_count is not None:
         mdf = mdf[-quote_count:]
     return mdf
+
+
+
+
+
+# Upgrade to return a dataframe with the windows added as new columns to the original dataframe
+def get_fdb_ao_vector_window(df):
+    df['vector_ao_fdbs'] = np.nan
+    df['vector_ao_fdbb'] = np.nan
+    for index, row in df.iterrows():
+        if row['fdbs'] == 1:
+            window_start = index
+            window_end = None
+            for i in range(index, -1, -1):
+                if df.at[i, 'zlcb'] == 1:
+                    window_end = i
+                    break
+            window = df.loc[window_end:window_start, 'ao'] if window_end is not None else df.loc[:window_start, 'ao']
+            #df.at[index, 'vector_ao_fdbs'] = window.values
+            df.at[index, 'vector_ao_fdbs'] = str(window.astype(float).tolist())  # Convert window to string
+            #df.at[index, 'window_fdbs'] = window.astype(float).tolist()
+        if row['fdbb'] == 1:
+            window_start = index
+            window_end = None
+            for i in range(index, -1, -1):
+                if df.at[i, 'zlcs'] == 1:
+                    window_end = i
+                    break
+            window = df.loc[window_end:window_start, 'ao'] if window_end is not None else df.loc[:window_start, 'ao']
+            #df.at[index, 'vector_ao_fdbb'] = window.values
+            df.at[index, 'vector_ao_fdbb'] = str(window.astype(float).tolist())
+            #df.at[index, 'window_fdbb'] = window.astype(float).tolist()
+    return df
+
