@@ -187,11 +187,11 @@ def _pov_target_calculation_n_output240223(
     tlid_tag,
     output_report_dir=None,
     pto_vec_fdb_ao_vector_window_flag=False,
-    drop_calc_col=False,
+    drop_calc_col=True,
     write_reporting=True,
     calc_col_to_drop_names = ["tmax", "tmin", "p", "l"],
     sel_1_suffix = "_sel",
-    sel_1_keeping_columns = ["Low", "fdbs", "fdbb", "tmax", "tmin", "p", "l", "target"],
+    sel_1_keeping_columns = ["High","Low", "fdbs", "fdbb", "tmax", "tmin", "p", "l", "target"],
     sel_2_suffix = "_tnd",
     sel_2_keeping_columns = ["Open", "High", "Low", "Close", "fdbs", "fdbb", "target"],
     pto_vec_fdb_ao_out_s_name = 'vector_ao_fdbs',
@@ -236,17 +236,21 @@ def _pov_target_calculation_n_output240223(
             in_b_win_end_sig_name =pto_vec_fdb_ao_in_b_win_end_sig_name ,
             in_t_val_name = pto_vec_fdb_ao_in_t_val_name    
             )
-        sel_1_keeping_columns.append([pto_vec_fdb_ao_out_s_name, pto_vec_fdb_ao_out_b_name])
-
-        sel_1_keeping_columns.extend([pto_vec_fdb_ao_in_s_sig_name, pto_vec_fdb_ao_in_s_win_end_sig_name, pto_vec_fdb_ao_in_b_sig_name, pto_vec_fdb_ao_in_b_win_end_sig_name, pto_vec_fdb_ao_in_t_val_name])
-        sel_1_keeping_columns = list(set(sel_1_keeping_columns))
+        
+        sel_1_keeping_columns.append(pto_vec_fdb_ao_out_s_name)
+        sel_1_keeping_columns.append(pto_vec_fdb_ao_out_b_name)        
+        # sel_1_keeping_columns.append([pto_vec_fdb_ao_out_s_name, pto_vec_fdb_ao_out_b_name,pto_vec_fdb_ao_in_s_sig_name, pto_vec_fdb_ao_in_s_win_end_sig_name, pto_vec_fdb_ao_in_b_sig_name, pto_vec_fdb_ao_in_b_win_end_sig_name, pto_vec_fdb_ao_in_t_val_name])        
         
         
-        sel_2_keeping_columns.append([pto_vec_fdb_ao_out_s_name, pto_vec_fdb_ao_out_b_name])
-
-        sel_2_keeping_columns.extend([pto_vec_fdb_ao_in_s_sig_name, pto_vec_fdb_ao_in_s_win_end_sig_name, pto_vec_fdb_ao_in_b_sig_name, pto_vec_fdb_ao_in_b_win_end_sig_name, pto_vec_fdb_ao_in_t_val_name])
-        sel_2_keeping_columns = list(set(sel_2_keeping_columns))
-
+        sel_2_keeping_columns.append(pto_vec_fdb_ao_out_s_name)
+        sel_2_keeping_columns.append(pto_vec_fdb_ao_out_b_name)
+        # sel_2_keeping_columns.append([pto_vec_fdb_ao_out_s_name, pto_vec_fdb_ao_out_b_name,pto_vec_fdb_ao_in_s_sig_name, pto_vec_fdb_ao_in_s_win_end_sig_name, pto_vec_fdb_ao_in_b_sig_name, pto_vec_fdb_ao_in_b_win_end_sig_name, pto_vec_fdb_ao_in_t_val_name])
+        
+        
+        print(sel_1_keeping_columns)
+        
+        print(sel_2_keeping_columns)
+        
     
     """  #@STCIssue We will Want those columns in the output selections
         out_s_name = 'vector_ao_fdbs',
@@ -283,7 +287,7 @@ def _pov_target_calculation_n_output240223(
     
     
     if drop_calc_col:
-        df_result_tmx = df_result_tmx.drop(columns=calc_col_to_drop_names)
+        df_result_tmx.drop(columns=calc_col_to_drop_names,inplace=True)
     # Save the result to a csv file
     output_all_cols_fn = f"{outdir_tmx}/{ifn}_{t}.csv"
     

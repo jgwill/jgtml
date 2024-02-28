@@ -27,7 +27,8 @@ print("Processing", I_raw, T_raw)
 for i in instruments:
     for t in timeframes:
         print("Processing POV:" , i, t)
-        r,s1,s2= jtc.pto_target_calculation(i,t,pto_vec_fdb_ao_vector_window_flag=True)
+        r,s1,s2= jtc.pto_target_calculation(i,t,pto_vec_fdb_ao_vector_window_flag=True,
+                drop_calc_col=True)
 
 
 
