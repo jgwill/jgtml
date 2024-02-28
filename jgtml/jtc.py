@@ -106,7 +106,7 @@ def pto_target_calculation(
     Calculate the PTO target based on the given POV parameters and output to file with report.
 
     Args:
-        i (int): The value of i.
+        i (int): The value of i.get_fdb_ao_vector_window
         t (int): The value of t.
         crop_start_dt (datetime, optional): The start date for cropping. Defaults to None.
         crop_end_dt (datetime, optional): The end date for cropping. Defaults to None.
@@ -278,31 +278,36 @@ def readMXFile(
 
 
 # Upgrade to return a dataframe with the windows added as new columns to the original dataframe
-def get_fdb_ao_vector_window(df):
-    df['vector_ao_fdbs'] = np.nan
-    df['vector_ao_fdbb'] = np.nan
+def get_fdb_ao_vector_window(df,
+                             out_s_name = 'vector_ao_fdbs',
+                             out_b_name = 'vector_ao_fdbb',
+                             in_s_sig_name = 'fdbs',
+                             in_s_win_end_sig_name = 'zlcb',            
+                             in_b_sig_name = 'fdbb',
+                             in_b_win_end_sig_name = 'zlcs',
+                             in_t_val_name = 'ao'
+                             ):
+    
+    df[out_s_name] = np.nan
+    df[out_b_name] = np.nan
     for index, row in df.iterrows():
-        if row['fdbs'] == 1:
+        if row[in_s_sig_name] == 1:
             window_start = index
             window_end = None
             for i in range(index, -1, -1):
-                if df.at[i, 'zlcb'] == 1:
+                if df.at[i, in_s_win_end_sig_name] == 1:
                     window_end = i
                     break
-            window = df.loc[window_end:window_start, 'ao'] if window_end is not None else df.loc[:window_start, 'ao']
-            #df.at[index, 'vector_ao_fdbs'] = window.values
-            df.at[index, 'vector_ao_fdbs'] = str(window.astype(float).tolist())  # Convert window to string
-            #df.at[index, 'window_fdbs'] = window.astype(float).tolist()
-        if row['fdbb'] == 1:
+            window = df.loc[window_end:window_start, in_t_val_name] if window_end is not None else df.loc[:window_start, in_t_val_name]
+            df.at[index, out_s_name] = str(window.astype(float).tolist()) 
+        if row[in_b_sig_name] == 1:
             window_start = index
             window_end = None
             for i in range(index, -1, -1):
-                if df.at[i, 'zlcs'] == 1:
+                if df.at[i, in_b_win_end_sig_name] == 1:
                     window_end = i
                     break
-            window = df.loc[window_end:window_start, 'ao'] if window_end is not None else df.loc[:window_start, 'ao']
-            #df.at[index, 'vector_ao_fdbb'] = window.values
-            df.at[index, 'vector_ao_fdbb'] = str(window.astype(float).tolist())
-            #df.at[index, 'window_fdbb'] = window.astype(float).tolist()
+            window = df.loc[window_end:window_start, in_t_val_name] if window_end is not None else df.loc[:window_start, in_t_val_name]
+            df.at[index,out_b_name] = str(window.astype(float).tolist())
     return df
 
