@@ -386,6 +386,13 @@ def get_fdb_ao_vector_window(df,
                              in_t_val_name = 'ao'
                              ):
     
+    # reset index before we iterate
+    try:
+        df.reset_index(drop=False, inplace=True)
+    except:
+        pass
+    
+    
     df[out_s_name] = np.nan
     df[out_b_name] = np.nan
     for index, row in df.iterrows():
@@ -407,5 +414,10 @@ def get_fdb_ao_vector_window(df,
                     break
             window = df.loc[window_end:window_start, in_t_val_name] if window_end is not None else df.loc[:window_start, in_t_val_name]
             df.at[index,out_b_name] = str(window.astype(float).tolist())
+    #restore index
+    try:
+        df.set_index("Date", inplace=True)
+    except:
+        pass
     return df
 
