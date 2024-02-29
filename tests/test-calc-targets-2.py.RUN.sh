@@ -6,10 +6,10 @@ if [ "$CURR_CONDA_ENV" != "$TCONDA_ENV" ];then conda activate $TCONDA_ENV;echo "
 
 
 export I="XAU/USD"
-export I="GBP/USD"
 export I="SPX500,GBP/USD,EUR/USD,USD/CAD,AUD/USD"
 export I="SPX500,XAU/USD,EUR/USD,USD/CAD,AUD/USD,GBP/USD"
 export I="SPX500"
+export I="GBP/USD"
 
 export T="D1"
 export T="D1,H4,H1"
@@ -18,11 +18,14 @@ export T="D1,H4,W1,H1"
 export T="W1,D1,H4"
 export T="H2,H1"
 export T="D1,H4"
-export T="D1"
 
-#export T="D1,H4,W1,H1"
+if [ "$1" != "" ];then 
+  export I="$1"
+fi
+if [ "$2" != "" ];then 
+  export T="$2"
+fi
 
-#export T="H1"
 
 # Path: calculate_target_variable_mx_as_cli-transforming.py
 
