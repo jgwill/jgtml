@@ -131,6 +131,7 @@ def pto_target_calculation(
     additional_columns_to_drop=None,
     selected_columns_to_keep=None,
     save_outputs=True,
+    only_if_target_exist_n_not_zero=True,
 ):
     """
     Calculate the PTO target based on the given POV parameters and output to file with report.
@@ -206,6 +207,8 @@ def pto_target_calculation(
         selected_columns_to_keep=selected_columns_to_keep,
         save_outputs=save_outputs,
         write_reporting=write_reporting,
+        only_if_target_exist_n_not_zero=only_if_target_exist_n_not_zero,
+        
     )
     return df_result_tmx, sel1, sel2
 
@@ -249,6 +252,7 @@ def _pov_target_calculation_n_output240223(
     additional_columns_to_drop=None,
     selected_columns_to_keep=None,
     save_outputs=True,
+    only_if_target_exist_n_not_zero=True,
 ):
     if tlid_tag is None:
         tlid_tag = tlid.get_minutes()
@@ -289,6 +293,8 @@ def _pov_target_calculation_n_output240223(
             in_b_sig_name=pto_vec_fdb_ao_in_b_sig_name,
             in_b_win_end_sig_name=pto_vec_fdb_ao_in_b_win_end_sig_name,
             in_t_val_name=pto_vec_fdb_ao_in_t_val_name,
+            only_if_target_exist_n_not_zero=only_if_target_exist_n_not_zero,
+            
         )
 
         if pto_vec_fdb_ao_out_s_name  not in sel_1_keeping_columns:
@@ -461,6 +467,7 @@ def get_fdb_ao_vector_window(
     in_b_sig_name="fdbb",
     in_b_win_end_sig_name="zlcs",
     in_t_val_name="ao",
+    only_if_target_exist_n_not_zero=True,
 ):
 
     # reset index before we iterate
@@ -472,8 +479,15 @@ def get_fdb_ao_vector_window(
     df[out_s_name] = np.nan
     df[out_b_name] = np.nan
 
+    col_target_exist_in_dataset = "target" in df.columns
+    
+    
     for index, row in df.iterrows():
-        if row[in_s_sig_name] == 1 and row[in_t_val_name] > 0:
+        process_row = True
+        if only_if_target_exist_n_not_zero:
+            col_target_exist_in_dataset and row["target"] != 0
+            
+        if row[in_s_sig_name] == 1 and row[in_t_val_name] > 0 and process_row:
             window_start = index
             window_end = None
             for i in range(index, -1, -1):
@@ -486,7 +500,8 @@ def get_fdb_ao_vector_window(
                 else df.loc[:window_start, in_t_val_name]
             )
             df.at[index, out_s_name] = str(window.astype(float).tolist())
-        if row[in_b_sig_name] == 1 and row[in_t_val_name] < 0:
+            
+        if row[in_b_sig_name] == 1 and row[in_t_val_name] < 0 and process_row:
             window_start = index
             window_end = None
             for i in range(index, -1, -1):

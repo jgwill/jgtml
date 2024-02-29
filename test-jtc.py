@@ -25,6 +25,7 @@ mxdf,sel1,sel2 = jtc.pto_target_calculation(i,
                                             save_outputs=False,
                                             write_reporting=False,
                                             sel_2_keeping_columns=sel_2_keeping_columns,
+                                            drop_calc_col=True
                                             )
 
 # %%
@@ -41,6 +42,7 @@ mxdfb,sel1b,sel2b = jtc.pto_target_calculation(i,
                                                save_outputs=True,write_reporting=False,sel_2_keeping_columns=sel_2_keeping_columns,
                                                WINDOW_MIN=1,
                                                WINDOW_MAX=75,
+                                               drop_calc_col=True
                                             )
 
 # %%
