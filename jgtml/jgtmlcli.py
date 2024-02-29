@@ -12,6 +12,14 @@ from jgtutils import (
 )
 import argparse
 
+import pandas as pd
+
+#import jgtml as jml
+from jgtml import  jtc
+
+from jgtml import jplt
+
+import tlid
 
 
 
@@ -79,7 +87,21 @@ def main():
 
         for instrument in instruments:
             for timeframe in timeframes:
-                print("-------TO IMPLEMENT Creating Target MX for: " + instrument + "_" + timeframe)
+                print("-------JTC Processing : " + instrument + "_" + timeframe)
+                selected_columns_to_keep  =['High','Low','ao','ac','jaw','teeth','lips','fh','fl','fdbb','fdbs','zlcb','zlcs','target','vector_ao_fdbs','vector_ao_fdbb']
+                #selected_columns_to_keep=['Volume','High','Low','ao','ac','jaw','teeth','lips','fh','fl','fdbb','fdbs','aocolor','accolor','zcol','sz','bz','acs','acb','ss','sb','price_peak_above','price_peak_bellow','ao_peak_above','ao_peak_bellow']
+                if full:
+                    #Full column
+                    selected_columns_to_keep = None
+        
+                r,s1,s2= jtc.pto_target_calculation(
+                    instrument,
+                    timeframe,
+                    pto_vec_fdb_ao_vector_window_flag=True,
+                    drop_calc_col=False,
+                    selected_columns_to_keep=selected_columns_to_keep,
+                    save_outputs=True
+                    )
 
     except Exception as e:
         jgtcommon.print_exception(e)

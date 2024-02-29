@@ -105,13 +105,13 @@ def calculate_target_variable_min_max(
 
 
 def pto_target_calculation(
-    i,
-    t,
+    i:str,
+    t:str,
     crop_start_dt=None,
     crop_end_dt=None,
     tlid_tag=None,
-    WINDOW_MIN=1,
-    WINDOW_MAX=150,
+    WINDOW_MIN:int=1,
+    WINDOW_MAX:int=150,
     output_report_dir=None,
     pto_vec_fdb_ao_vector_window_flag=False,
     drop_calc_col=False,
