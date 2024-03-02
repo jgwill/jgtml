@@ -385,7 +385,9 @@ def _pov_target_calculation_n_output240223(
 def _reporting(df_selection2, ifn, t, pipsize, tlid_tag, output_report_dir=None):
 
     if output_report_dir is None:
-        output_report_dir = os.getenv("JGTPY_DATA_FULL")
+        output_report_dir = os.path.join(os.getenv("JGTPY_DATA_FULL"),"reports")
+    if not os.path.exists(output_report_dir):
+        os.makedirs(output_report_dir, exist_ok=True)
 
     report_file = f"{output_report_dir}/report-calc-{tlid_tag}.txt"
     print("Reporting to:", report_file)
