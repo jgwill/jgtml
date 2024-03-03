@@ -15,7 +15,7 @@ requires-python = ">=3.7"
 dependencies = [
   'pandas>=0.25.1',
   'python-dotenv>=0.19.2',
-  'jgtpy>=0.3.31',
+  'jgtpy>=0.3.32',
   'matplotlib>=3.3.1',
   'plotly>=5.18.0',
   'mplfinance>=0.12.10b0',
