@@ -444,7 +444,7 @@ def readMXFile(
         mdf = mdf.drop(columns=columns_to_remove, errors="ignore")
 
     if crop_last_dt is not None:
-        mdf = mdf[mdf.index < crop_last_dt]
+        mdf = mdf[mdf.index <= crop_last_dt]
     if quote_count is not None:
         mdf = mdf[-quote_count:]
 
