@@ -405,7 +405,7 @@ def readMXFile(
     columns_to_remove=None,
     quiet=True,
     use_full=True,
-    dt_crop_last=None,
+    crop_last_dt=None,
     quote_count=None,
     sel_1_suffix="_sel",
     sel_2_suffix="_tnd",
@@ -420,7 +420,7 @@ def readMXFile(
     columns_to_remove (list, optional): List of column names to remove from the DataFrame. Default is None.
     quiet (bool, optional): If True, suppresses the output messages. Default is True.
     use_full (bool, optional): If True, reads the full MX file. Default is True (there wont be MX in current data I think)).
-    dt_crop_last (str, optional): The last date to crop the data. Default is None.
+    crop_last_dt  (str, optional): The last date to crop the data. Default is None.
     quote_count (int, optional): The number of quotes to keep. Default is None.
     sel_1_suffix (str, optional): The suffix for the first selection. Defaults to "_sel".
     sel_2_suffix (str, optional): The suffix for the second selection. Defaults to "_tnd".
@@ -443,8 +443,8 @@ def readMXFile(
     if columns_to_remove is not None:
         mdf = mdf.drop(columns=columns_to_remove, errors="ignore")
 
-    if dt_crop_last is not None:
-        mdf = mdf[mdf.index < dt_crop_last]
+    if crop_last_dt is not None:
+        mdf = mdf[mdf.index < crop_last_dt]
     if quote_count is not None:
         mdf = mdf[-quote_count:]
 
