@@ -13,6 +13,7 @@ from jgtpy import JGTCDS as cds
 from jgtml import jtc
 from jgtpy import JGTPDSP as pds
 import tlid
+from matplotlib.backends.backend_agg import FigureCanvasAgg
 
 def _crop_dataframe(df, crop_last_dt: str = None, crop_start_dt: str = None,keep_amount=-1):
     if crop_last_dt is not None:
@@ -31,16 +32,29 @@ def an_bivariate_plot00(data,
                         title = 'Bivariate Scatter Plot - ',
                         xlabel = '',
                         ylabel_prefix = '',
-                        show=False          
+                        show=False,
+                        title_as_is=False,
+                        xlabel_as_is=False,
+                        ylabel_as_is=False  
                         ):
   # Scatter plot between target variable and a feature
   plt.scatter(data[feature1], data[target_variable])
   
-  plt.title(title + feature1 + ' / ' + target_variable)
+  _title = title + feature1 + ' / ' + target_variable
+  if title_as_is:
+    _title = title
   
-  plt.xlabel(xlabel + feature1)
+  plt.title(_title)
   
-  plt.ylabel(ylabel_prefix + target_variable)
+  _xlabel = xlabel + feature1
+  if xlabel_as_is:
+    _xlabel = xlabel
+  plt.xlabel(_xlabel)
+  
+  _ylabel = ylabel_prefix + target_variable
+  if ylabel_as_is:
+    _ylabel = ylabel_prefix
+  plt.ylabel(_ylabel)
   if show:plt.show()
   return plt.figure()
   
@@ -55,7 +69,10 @@ def an_biv_plt2ds(data1,
                   s1_title = 'Scatter Plot: ',
                   x1_prefix = '',
                   y1_prefix = '',
-                  show=False
+                  show=False,
+                  title_as_is=False,  # TO DO
+                  xlabel_as_is=False,
+                  ylabel_as_is=False  
                   ):
   # Create a figure and two subplots with 1 row and 2 columns
   fig, axs = plt.subplots(1, 2, figsize=(10, 5))
@@ -155,3 +172,71 @@ def pairgrid(data, title="Pairgrid - ",show=False):
   plt.suptitle(title)
   if show:  plt.show()
   return g
+
+
+
+
+#function that gets 4 already created plots and arranges them in a 2x2 grid
+#@STCIssue NOT WORKING 240303 - Dropping it for today
+def an_4plot_grid(plot1, plot2, plot3, plot4, title="4 Plot Grid - ",show=False):
+  print("------__NOT WORKING YET")
+  raise Exception("Not implemented yet")
+
+  #Convert the plots into images
+  plot1 = plot1.figure.get_figure()
+  plot2 = plot2.figure.get_figure()
+  plot3 = plot3.figure.get_figure()
+  plot4 = plot4.figure.get_figure()
+  
+  # Create a figure and four subplots with 2 rows and 2 columns
+  fig, axs = plt.subplots(2, 2, figsize=(10, 10))
+
+  # Add the first plot
+  axs[0, 0].set_title(title + " 1")
+  axs[0, 0].imshow(plot1)
+
+  # Add the second plot
+  axs[0, 1].set_title(title + " 2")
+  axs[0, 1].imshow(plot2)
+
+  # Add the third plot
+  axs[1, 0].set_title(title + " 3")
+  axs[1, 0].imshow(plot3)
+
+  # Add the fourth plot
+  axs[1, 1].set_title(title + " 4")
+  axs[1, 1].imshow(plot4)
+
+  # Display the plots
+  plt.tight_layout()
+  if show:
+    plt.show()
+  return fig
+
+#display 4 images in a 2x2 grid
+#@STCIssue NOT WORKING 240303 - Dropping it for today
+def an_4img_grid(img1, img2, img3, img4, title="4 Image Grid - ",show=False): 
+  # Create a figure and four subplots with 2 rows and 2 columns
+  fig, axs = plt.subplots(2, 2, figsize=(10, 10))
+
+  # Add the first image
+  axs[0, 0].set_title(title + " 1")
+  axs[0, 0].imshow(img1)
+
+  # Add the second image
+  axs[0, 1].set_title(title + " 2")
+  axs[0, 1].imshow(img2)
+
+  # Add the third image
+  axs[1, 0].set_title(title + " 3")
+  axs[1, 0].imshow(img3)
+
+  # Add the fourth image
+  axs[1, 1].set_title(title + " 4")
+  axs[1, 1].imshow(img4)
+
+  # Display the images
+  plt.tight_layout()
+  if show:
+    plt.show()
+  return fig
