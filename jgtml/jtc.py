@@ -532,4 +532,79 @@ def get_fdb_ao_vector_window(
 
 
 
+#@STCGoal Features the Fractals in Relationship to the AO
+
+
+
+def get_fdb_ao_vector_window_v2(
+    df,
+    out_s_name="vector_ao_fdbs",
+    out_b_name="vector_ao_fdbb",
+    in_s_sig_name="fdbs",
+    in_s_win_end_sig_name="zlcb",
+    in_b_sig_name="fdbb",
+    in_b_win_end_sig_name="zlcs",
+    in_t_val_name="ao",
+    only_if_target_exist_n_not_zero=True,
+    fractal_count_pto=True,
+    fractal_count_col_name="f_aow_cnt", #@STCIssue What do we want to know ?
+):
+
+    # reset index before we iterate
+    try:
+        df.reset_index(drop=False, inplace=True)
+    except:
+        pass
+
+    df[out_s_name] = np.nan
+    df[out_b_name] = np.nan
+
+    col_target_exist_in_dataset = "target" in df.columns
+    
+    
+    for index, row in df.iterrows():
+        process_row = True
+        if only_if_target_exist_n_not_zero:
+            col_target_exist_in_dataset and row["target"] != 0
+            
+        if row[in_s_sig_name] == 1 and row[in_t_val_name] > 0 and process_row:
+            window_start = index
+            window_end = None
+            for i in range(index, -1, -1):
+                if df.at[i, in_s_win_end_sig_name] == 1:
+                    window_end = i
+                    break
+            window = (
+                df.loc[window_end:window_start, in_t_val_name]
+                if window_end is not None
+                else df.loc[:window_start, in_t_val_name]
+            )
+            df.at[index, out_s_name] = str(window.astype(float).tolist())
+            
+        if row[in_b_sig_name] == 1 and row[in_t_val_name] < 0 and process_row:
+            window_start = index
+            window_end = None
+            for i in range(index, -1, -1):
+                if df.at[i, in_b_win_end_sig_name] == 1:
+                    window_end = i
+                    break
+            window = (
+                df.loc[window_end:window_start, in_t_val_name]
+                if window_end is not None
+                else df.loc[:window_start, in_t_val_name]
+            )
+            df.at[index, out_b_name] = str(window.astype(float).tolist())
+    # restore index
+    try:
+        df.set_index("Date", inplace=True)
+    except:
+        pass
+
+    # for nan values, fill with empty string corresponding to an empty array
+    df[out_s_name].fillna("[]", inplace=True)
+    df[out_b_name].fillna("[]",inplace=True)
+
+    return df
+
+
 
