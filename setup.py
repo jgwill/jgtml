@@ -13,11 +13,12 @@ INSTALL_REQUIRES = [
     #'kaleido>=0.2.1',
     "matplotlib>=3.3.1",
     "plotly>=5.18.0",
-    "jgtpy>=0.4.4",
+    "jgtpy>=0.4.5",
     "mplfinance>=0.12.10b0",
     "scipy>=1.7.3",
     "panel>=1.3.8",
     "seaborn>=0.13.2",
+    "dash"
 ]
 
 EXTRAS_DEV_LINT = [

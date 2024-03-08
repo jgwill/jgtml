@@ -11,6 +11,10 @@ from jtc import (
     readMXFile as read
 )
 
+from jplt import (an_biv_plt2ds as plot_an_biv_plt2ds, an_bivariate_plot00 as plot_an_bivariate_plot00)
+
+import jdash as jdb
+
 # from jgtpy import JGTPDS as pds,JGTADS as ads,JGTPDSP as pds
 
 def __init__():
