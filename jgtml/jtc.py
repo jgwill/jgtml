@@ -134,7 +134,7 @@ def pto_target_calculation(
     only_if_target_exist_n_not_zero=True,
 ):
     """
-    Calculate the PTO target based on the given POV parameters and output to file with report.
+    Prototype Calculation of target based on the given POV parameters and output to file with report.
 
     Args:
         i (int): The value of i.get_fdb_ao_vector_window
@@ -161,6 +161,7 @@ def pto_target_calculation(
         additional_columns_to_drop (list, optional): The list of additional columns to drop. Defaults to None.
         selected_columns_to_keep (list, optional): The list of selected columns to keep. Defaults to None.
         save_outputs (bool, optional): If True, save the outputs. Defaults to True.
+        only_if_target_exist_n_not_zero (bool, optional): If True, only if target exists and not zero. Defaults to True.
         
 
     Returns:
@@ -459,7 +460,8 @@ def readMXFile(
     return mdf
 
 
-# Upgrade to return a dataframe with the windows added as new columns to the original dataframe
+
+
 def get_fdb_ao_vector_window(
     df,
     out_s_name="vector_ao_fdbs",
