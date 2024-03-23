@@ -1,0 +1,12 @@
+{
+  "item_id": "string",
+  "timestamp": "string",
+  "target_value": "number",
+  "ao": "number",
+  "jaw": "number",
+  "teeth": "number",
+  "lips": "number",
+  "fdbb": "number",
+  "price_peak_bellow": "integer",
+  "ao_peak_bellow": "integer"
+}

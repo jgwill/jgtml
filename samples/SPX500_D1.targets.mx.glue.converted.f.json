@@ -1,0 +1,44 @@
+{
+  "Attributes": [
+    {
+      "AttributeName": "item_id",
+      "AttributeType": "string"
+    },
+    {
+      "AttributeName": "timestamp",
+      "AttributeType": "timestamp"
+    },
+    {
+      "AttributeName": "target_value",
+      "AttributeType": "float"
+    },
+    {
+      "AttributeName": "ao",
+      "AttributeType": "string"
+    },
+    {
+      "AttributeName": "jaw",
+      "AttributeType": "string"
+    },
+    {
+      "AttributeName": "teeth",
+      "AttributeType": "string"
+    },
+    {
+      "AttributeName": "lips",
+      "AttributeType": "string"
+    },
+    {
+      "AttributeName": "fdbb",
+      "AttributeType": "string"
+    },
+    {
+      "AttributeName": "price_peak_bellow",
+      "AttributeType": "string"
+    },
+    {
+      "AttributeName": "ao_peak_bellow",
+      "AttributeType": "string"
+    }
+  ]
+}

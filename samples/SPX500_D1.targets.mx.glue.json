@@ -1,0 +1,42 @@
+[
+  {
+    "Name": "item_id",
+    "Type": "string"
+  },
+  {
+    "Name": "timestamp",
+    "Type": "string"
+  },
+  {
+    "Name": "target_value",
+    "Type": "number"
+  },
+  {
+    "Name": "ao",
+    "Type": "number"
+  },
+  {
+    "Name": "jaw",
+    "Type": "number"
+  },
+  {
+    "Name": "teeth",
+    "Type": "number"
+  },
+  {
+    "Name": "lips",
+    "Type": "number"
+  },
+  {
+    "Name": "fdbb",
+    "Type": "number"
+  },
+  {
+    "Name": "price_peak_bellow",
+    "Type": "integer"
+  },
+  {
+    "Name": "ao_peak_bellow",
+    "Type": "integer"
+  }
+]
