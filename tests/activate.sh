@@ -1,0 +1,2 @@
+conda activate jgtml-tests
+
