@@ -12,6 +12,9 @@ import tlid
 from jgtutils.jgtos import get_data_path
 
 
+from jgtutils.jgtconstants import *
+
+
 # %% Functions
 
 
@@ -132,6 +135,7 @@ def pto_target_calculation(
     selected_columns_to_keep=None,
     save_outputs=True,
     only_if_target_exist_n_not_zero=True,
+    use_fresh=False,
 ):
     """
     Prototype Calculation of target based on the given POV parameters and output to file with report.
@@ -162,6 +166,7 @@ def pto_target_calculation(
         selected_columns_to_keep (list, optional): The list of selected columns to keep. Defaults to None.
         save_outputs (bool, optional): If True, save the outputs. Defaults to True.
         only_if_target_exist_n_not_zero (bool, optional): If True, only if target exists and not zero. Defaults to True.
+        use_fresh (bool, optional): If True, use fresh data. Defaults to False.
         
 
     Returns:
@@ -172,7 +177,7 @@ def pto_target_calculation(
     if tlid_tag is None:
         tlid_tag = tlid.get_minutes()
 
-    default_jgtpy_data_full = "full/data"
+    #default_jgtpy_data_full = "full/data"
     default_jgtpy_data_full = "/var/lib/jgt/full/data"
     data_dir_full = os.getenv("JGTPY_DATA_FULL", default_jgtpy_data_full)
     indir_cds = os.path.join(data_dir_full, "cds")
@@ -209,6 +214,7 @@ def pto_target_calculation(
         save_outputs=save_outputs,
         write_reporting=write_reporting,
         only_if_target_exist_n_not_zero=only_if_target_exist_n_not_zero,
+        use_fresh=use_fresh,
         
     )
     return df_result_tmx, sel1, sel2
@@ -254,6 +260,8 @@ def _pov_target_calculation_n_output240223(
     selected_columns_to_keep=None,
     save_outputs=True,
     only_if_target_exist_n_not_zero=True,
+    use_fresh=False,
+    keep_fdb_count_separated_columns=False,
 ):
     if tlid_tag is None:
         tlid_tag = tlid.get_minutes()
@@ -270,8 +278,16 @@ def _pov_target_calculation_n_output240223(
     # Possible crop of the dataframe to a specific date range
 
     # Read the source data of already calculated CDS
+    
+    #@STCIssue Generate if not exist
+    cds_full_filename = f"{indir_cds}/{ifn}_{t}.csv"
+    if not os.path.exists(cds_full_filename):
+        from jgtpy import JGTCDS as cds
+        print("JTC is generating the CDS file from PDS file because it could not find it on disk.")
+        cds.createFromPDSFileToCDSFile(instrument=i, timeframe=t,use_full=True,use_fresh=use_fresh)#@STCGoal Use Fresh
+        
     df_cds_source = pd.read_csv(
-        f"{indir_cds}/{ifn}_{t}.csv", index_col=0, parse_dates=True
+        cds_full_filename, index_col=0, parse_dates=True
     )
 
     df_result_tmx = calculate_target_variable_min_max(
@@ -297,7 +313,37 @@ def _pov_target_calculation_n_output240223(
             only_if_target_exist_n_not_zero=only_if_target_exist_n_not_zero,
             
         )
-
+        #@STCGoal Count of the ao vector in the window
+        df_result_tmx.loc[:, VECTOR_AO_FDBS_COUNT] = df_result_tmx[VECTOR_AO_FDBS].apply(lambda x: len(x.split(',')))
+        df_result_tmx.loc[:, VECTOR_AO_FDBB_COUNT] = df_result_tmx[VECTOR_AO_FDBB].apply(lambda x: len(x.split(',')))
+        
+        df_result_tmx.loc[:, VECTOR_AO_FDBS_COUNT] = df_result_tmx.apply(lambda x: 0 if x[VECTOR_AO_FDBS_COUNT] == 1 else x[VECTOR_AO_FDBS_COUNT], axis=1)
+        df_result_tmx.loc[:, VECTOR_AO_FDBB_COUNT] = df_result_tmx.apply(lambda x: 0 if x[VECTOR_AO_FDBB_COUNT] == 1 else x[VECTOR_AO_FDBB_COUNT], axis=1)
+        
+        if keep_fdb_count_separated_columns:                
+            sel_1_keeping_columns.append(VECTOR_AO_FDBS_COUNT)
+            sel_2_keeping_columns.append(VECTOR_AO_FDBS_COUNT)
+            sel_1_keeping_columns.append(VECTOR_AO_FDBB_COUNT)
+            sel_2_keeping_columns.append(VECTOR_AO_FDBB_COUNT)
+            
+        
+        #VECTOR_AO_FDB_COUNT
+        sel_1_keeping_columns.append(VECTOR_AO_FDB_COUNT)
+        sel_2_keeping_columns.append(VECTOR_AO_FDB_COUNT)
+        selected_columns_to_keep.append(VECTOR_AO_FDB_COUNT)
+        
+        #VECTOR_AO_FDB_COUNT column gets the value of the vector ao fdbs count or fdbb count if not 1
+        
+        df_result_tmx.loc[:, VECTOR_AO_FDB_COUNT] = df_result_tmx.apply(lambda x: x[VECTOR_AO_FDBS_COUNT] if x[VECTOR_AO_FDBS_COUNT] != 1 else x[VECTOR_AO_FDBB_COUNT] != 1, axis=1)
+        
+        df_result_tmx.loc[:, VECTOR_AO_FDB_COUNT] = df_result_tmx.apply(lambda x: 0 if x[VECTOR_AO_FDB_COUNT] == 1 else x[VECTOR_AO_FDB_COUNT], axis=1)
+        
+        #fill with zero if nan or 1
+        df_result_tmx[VECTOR_AO_FDB_COUNT] = df_result_tmx[VECTOR_AO_FDB_COUNT].fillna(0)
+        
+        
+        #df_result_tmx[VECTOR_AO_FDB_COUNT] = df_result_tmx[VECTOR_AO_FDB_COUNT].fillna(0)
+        
         if pto_vec_fdb_ao_out_s_name  not in sel_1_keeping_columns:
             sel_1_keeping_columns.append(pto_vec_fdb_ao_out_s_name )
         
@@ -322,7 +368,10 @@ def _pov_target_calculation_n_output240223(
         in_t_val_name = 'ao'
     """
 
+    # Selection 1
     sel1 = df_result_tmx[sel_1_keeping_columns].copy()
+    
+    # Select only rows where profit or loss
     sel1 = sel1[(sel1["p"] != 0) | (sel1["l"] != 0)]
 
 
@@ -411,6 +460,7 @@ def readMXFile(
     sel_1_suffix="_sel",
     sel_2_suffix="_tnd",
     also_read_selections=False,
+    generate_if_not_exist=True,
 ):
     """
     Read a MX Target file and return a pandas DataFrame.
@@ -426,6 +476,7 @@ def readMXFile(
     sel_1_suffix (str, optional): The suffix for the first selection. Defaults to "_sel".
     sel_2_suffix (str, optional): The suffix for the second selection. Defaults to "_tnd".
     also_read_selections (bool, optional): If True, also read the selections. Defaults to False.
+    generate_if_not_exist (bool, optional): If True, generate the MX Target data if it does not exist. Default is True.
 
     Returns:
     pandas.DataFrame: The DataFrame containing the MX Target data.
@@ -435,7 +486,23 @@ def readMXFile(
     # Define the file path based on the environment variable or local path
     data_path_cds = get_data_path("targets/mx", use_full=use_full)
     fpath = pds.mk_fullpath(instrument, timeframe, "csv", data_path_cds)
-    mdf = pd.read_csv(fpath)
+    
+    try:
+        mdf = pd.read_csv(fpath)
+    except:
+        print(f"Error reading file {fpath}")
+        print("GENERATING THE MX Targets")
+        try:
+            pto_target_calculation(instrument,timeframe,pto_vec_fdb_ao_vector_window_flag=True,
+                drop_calc_col=False,
+                selected_columns_to_keep=ML_DEFAULT_COLUMNS_TO_KEEP)
+        except:
+            raise ValueError(f"Error generating file {fpath}")
+        try:
+            mdf = pd.read_csv(fpath)
+        except:
+            raise ValueError(f"Error reading file {fpath}")
+    
 
     # Set 'Date' as the index and convert it to datetime
     mdf["Date"] = pd.to_datetime(mdf["Date"])

@@ -37,6 +37,6 @@ for i in instruments:
         r,s1,s2= jtc.pto_target_calculation(i,t,pto_vec_fdb_ao_vector_window_flag=True,
                 drop_calc_col=False,
                 selected_columns_to_keep=selected_columns_to_keep)
-
+        
 
 

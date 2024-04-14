@@ -1,0 +1,2 @@
+03.25.2024 17:52:52 INFO Failed to extract font properties from /usr/share/fonts/truetype/noto/NotoColorEmoji.ttf: In FT2Font: Could not set the fontsize (invalid pixel size; error code 0x17)
+03.25.2024 17:52:52 INFO generated new fontManager
