@@ -37,6 +37,15 @@ def parse_args():
     
     jgtcommon.add_use_full_argument(parser)
 
+    jgtcommon.add_use_fresh_argument(parser)
+    
+    jgtcommon.add_keepbidask_argument(parser)
+
+
+
+    parser.add_argument('-sc', '--selected-columns', nargs='+', help='List of selected columns to keep', default=['High','Low','ao','ac','jaw','teeth','lips','fh','fl','fdbb','fdbs','zlcb','zlcs','target','vector_ao_fdbs','vector_ao_fdbb'])
+    
+
     # jgtcommon.add_cds_argument(parser)
     args = parser.parse_args()
     return args
@@ -45,12 +54,28 @@ def parse_args():
 def main():
     
     args = parse_args()
+    
+    verbose_level = args.verbose
+    quiet = False
+    if verbose_level == 0:
+        quiet = True
+
     instrument = args.instrument
     timeframe = args.timeframe
     
+    keep_bid_ask = False
+    if args.keepbidask:
+        keep_bid_ask = True
+        
     full = False
     if args.full:
         full = True
+        print_quiet(quiet, "USING FULL MODE")
+    fresh = False
+    
+    if args.fresh:
+        fresh = True
+        print_quiet(quiet, "USING FRESH MODE")
 
     date_from = None
     date_to = None
@@ -66,11 +91,6 @@ def main():
 
         
 
-    
-    verbose_level = args.verbose
-    quiet = False
-    if verbose_level == 0:
-        quiet = True
     
 
     if verbose_level > 1:
@@ -88,7 +108,10 @@ def main():
         for instrument in instruments:
             for timeframe in timeframes:
                 print("-------JTC Processing : " + instrument + "_" + timeframe)
-                selected_columns_to_keep  =['High','Low','ao','ac','jaw','teeth','lips','fh','fl','fdbb','fdbs','zlcb','zlcs','target','vector_ao_fdbs','vector_ao_fdbb']
+
+                #selected_columns_to_keep  =['High','Low','ao','ac','jaw','teeth','lips','fh','fl','fdbb','fdbs','zlcb','zlcs','target','vector_ao_fdbs','vector_ao_fdbb']
+                selected_columns_to_keep = args.selected_columns
+   
                 #selected_columns_to_keep=['Volume','High','Low','ao','ac','jaw','teeth','lips','fh','fl','fdbb','fdbs','aocolor','accolor','zcol','sz','bz','acs','acb','ss','sb','price_peak_above','price_peak_bellow','ao_peak_above','ao_peak_bellow']
                 if full:
                     #Full column
@@ -100,7 +123,9 @@ def main():
                     pto_vec_fdb_ao_vector_window_flag=True,
                     drop_calc_col=False,
                     selected_columns_to_keep=selected_columns_to_keep,
-                    save_outputs=True
+                    save_outputs=True,
+                    keep_bid_ask=keep_bid_ask,
+                    use_fresh=fresh,
                     )
 
     except Exception as e:

@@ -136,6 +136,7 @@ def pto_target_calculation(
     save_outputs=True,
     only_if_target_exist_n_not_zero=True,
     use_fresh=False,
+    keep_bid_ask=True,
 ):
     """
     Prototype Calculation of target based on the given POV parameters and output to file with report.
@@ -167,6 +168,7 @@ def pto_target_calculation(
         save_outputs (bool, optional): If True, save the outputs. Defaults to True.
         only_if_target_exist_n_not_zero (bool, optional): If True, only if target exists and not zero. Defaults to True.
         use_fresh (bool, optional): If True, use fresh data. Defaults to False.
+        keep_bid_ask (bool, optional): If True, keep bid and ask. Defaults to True.
         
 
     Returns:
@@ -215,6 +217,7 @@ def pto_target_calculation(
         write_reporting=write_reporting,
         only_if_target_exist_n_not_zero=only_if_target_exist_n_not_zero,
         use_fresh=use_fresh,
+        keep_bid_ask=keep_bid_ask,
         
     )
     return df_result_tmx, sel1, sel2
@@ -262,6 +265,7 @@ def _pov_target_calculation_n_output240223(
     only_if_target_exist_n_not_zero=True,
     use_fresh=False,
     keep_fdb_count_separated_columns=False,
+    keep_bid_ask=True,
 ):
     if tlid_tag is None:
         tlid_tag = tlid.get_minutes()
@@ -284,7 +288,7 @@ def _pov_target_calculation_n_output240223(
     if not os.path.exists(cds_full_filename):
         from jgtpy import JGTCDS as cds
         print("JTC is generating the CDS file from PDS file because it could not find it on disk.")
-        cds.createFromPDSFileToCDSFile(instrument=i, timeframe=t,use_full=True,use_fresh=use_fresh)#@STCGoal Use Fresh
+        cds.createFromPDSFileToCDSFile(instrument=i, timeframe=t,use_full=True,use_fresh=use_fresh,keep_bid_ask=keep_bid_ask)#@STCGoal Use Fresh
         
     df_cds_source = pd.read_csv(
         cds_full_filename, index_col=0, parse_dates=True
