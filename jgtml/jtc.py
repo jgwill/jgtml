@@ -186,6 +186,9 @@ def pto_target_calculation(
     outdir_tmx = os.path.join(
         data_dir_full, "targets", "mx"
     )  # @STCIssue Hardcoded path future JGTPY_DATA_FULL/.../mx
+    #make the outdir_tmx if not exist
+    os.makedirs(outdir_tmx, exist_ok=True)
+    
     df_result_tmx, sel1, sel2 = _pov_target_calculation_n_output240223(
         indir_cds=indir_cds,
         outdir_tmx=outdir_tmx,
