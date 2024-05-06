@@ -124,8 +124,8 @@ def pto_target_calculation(
     sel_1_keeping_columns=["High","Low", "fdbs", "fdbb", "tmax", "tmin", "p", "l", "target"],
     sel_2_suffix="_tnd",
     sel_2_keeping_columns=["Open", "High", "Low", "Close", "fdbs", "fdbb", "target"],
-    pto_vec_fdb_ao_out_s_name="vector_ao_fdbs",
-    pto_vec_fdb_ao_out_b_name="vector_ao_fdbb",
+    pto_vec_fdb_ao_out_s_name="vaos",
+    pto_vec_fdb_ao_out_b_name="vaob",
     pto_vec_fdb_ao_in_s_sig_name="fdbs",
     pto_vec_fdb_ao_in_s_win_end_sig_name="zlcb",
     pto_vec_fdb_ao_in_b_sig_name="fdbb",
@@ -156,8 +156,8 @@ def pto_target_calculation(
         sel_1_keeping_columns (list, optional): The list of columns to keep for the first selection. Defaults to ["Low", "fdbs", "fdbb", "tmax", "tmin", "p", "l", "target"].
         sel_2_suffix (str, optional): The suffix for the second selection. Defaults to "_tnd".
         sel_2_keeping_columns (list, optional): The list of columns to keep for the second selection. Defaults to ["Open", "High", "Low", "Close", "fdbs", "fdbb", "target"].  
-        pto_vec_fdb_ao_out_s_name (str, optional): The name of the output for fdb_ao_vector_window. Defaults to "vector_ao_fdbs".
-        pto_vec_fdb_ao_out_b_name (str, optional): The name of the output for fdb_ao_vector_window. Defaults to "vector_ao_fdbb".
+        pto_vec_fdb_ao_out_s_name (str, optional): The name of the output for fdb_ao_vector_window. Defaults to "vaos".
+        pto_vec_fdb_ao_out_b_name (str, optional): The name of the output for fdb_ao_vector_window. Defaults to "vaob".
         pto_vec_fdb_ao_in_s_sig_name (str, optional): The name of the input for fdb_ao_vector_window. Defaults to "fdbs".
         pto_vec_fdb_ao_in_s_win_end_sig_name (str, optional): The name of the input for fdb_ao_vector_window. Defaults to "zlcb".
         pto_vec_fdb_ao_in_b_sig_name (str, optional): The name of the input for fdb_ao_vector_window. Defaults to "fdbb".
@@ -252,8 +252,8 @@ def _pov_target_calculation_n_output240223(
     ],
     sel_2_suffix="_tnd",
     sel_2_keeping_columns=["Open", "High", "Low", "Close", "fdbs", "fdbb", "target"],
-    pto_vec_fdb_ao_out_s_name="vector_ao_fdbs",
-    pto_vec_fdb_ao_out_b_name="vector_ao_fdbb",
+    pto_vec_fdb_ao_out_s_name="vaos",
+    pto_vec_fdb_ao_out_b_name="vaob",
     pto_vec_fdb_ao_in_s_sig_name="fdbs",
     pto_vec_fdb_ao_in_s_win_end_sig_name="zlcb",
     pto_vec_fdb_ao_in_b_sig_name="fdbb",
@@ -363,8 +363,8 @@ def _pov_target_calculation_n_output240223(
         
 
     """  #@STCIssue We will Want those columns in the output selections
-        out_s_name = 'vector_ao_fdbs',
-        out_b_name = 'vector_ao_fdbb',
+        out_s_name = 'vector_ao_fdbs', # REPLACED 240506 vaos
+        out_b_name = 'vector_ao_fdbb', # REPLACED 240506 vaob
         in_s_sig_name = 'fdbs',
         in_s_win_end_sig_name = 'zlcb',            
         in_b_sig_name = 'fdbb',
@@ -535,8 +535,8 @@ def readMXFile(
 
 def get_fdb_ao_vector_window(
     df,
-    out_s_name="vector_ao_fdbs",
-    out_b_name="vector_ao_fdbb",
+    out_s_name="vaos",#VECTOR_AO_FDBS_COUNT
+    out_b_name="vaob",#VECTOR_AO_FDBB
     in_s_sig_name="fdbs",
     in_s_win_end_sig_name="zlcb",
     in_b_sig_name="fdbb",
@@ -609,8 +609,8 @@ def get_fdb_ao_vector_window(
 
 def get_fdb_ao_vector_window_v2(
     df,
-    out_s_name="vector_ao_fdbs",
-    out_b_name="vector_ao_fdbb",
+    out_s_name="vaos",
+    out_b_name="vaob",
     in_s_sig_name="fdbs",
     in_s_win_end_sig_name="zlcb",
     in_b_sig_name="fdbb",

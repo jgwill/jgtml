@@ -43,7 +43,7 @@ def parse_args():
 
 
 
-    parser.add_argument('-sc', '--selected-columns', nargs='+', help='List of selected columns to keep', default=['High','Low','ao','ac','jaw','teeth','lips','fh','fl','fdbb','fdbs','zlcb','zlcs','target','vector_ao_fdbs','vector_ao_fdbb'])
+    parser.add_argument('-sc', '--selected-columns', nargs='+', help='List of selected columns to keep', default=['High','Low','ao','ac','jaw','teeth','lips','fh','fl','fdbb','fdbs','zlcb','zlcs','target','vaos','vaob'])
     
 
     # jgtcommon.add_cds_argument(parser)
@@ -109,7 +109,7 @@ def main():
             for timeframe in timeframes:
                 print("-------JTC Processing : " + instrument + "_" + timeframe)
 
-                #selected_columns_to_keep  =['High','Low','ao','ac','jaw','teeth','lips','fh','fl','fdbb','fdbs','zlcb','zlcs','target','vector_ao_fdbs','vector_ao_fdbb']
+                #selected_columns_to_keep  =['High','Low','ao','ac','jaw','teeth','lips','fh','fl','fdbb','fdbs','zlcb','zlcs','target','vaos','vaob']
                 selected_columns_to_keep = args.selected_columns
    
                 #selected_columns_to_keep=['Volume','High','Low','ao','ac','jaw','teeth','lips','fh','fl','fdbb','fdbs','aocolor','accolor','zcol','sz','bz','acs','acb','ss','sb','price_peak_above','price_peak_bellow','ao_peak_above','ao_peak_bellow']
