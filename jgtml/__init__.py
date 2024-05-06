@@ -1,5 +1,5 @@
 # jgtml
-__version__ = "0.0.44"
+__version__ = "0.0.45"
 import sys
 import os
 
