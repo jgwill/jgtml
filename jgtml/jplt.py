@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from jgtpy import JGTCDS as cds
-from jgtml import jtc
+import jtc
 from jgtpy import JGTPDSP as pds
 import tlid
 from matplotlib.backends.backend_agg import FigureCanvasAgg

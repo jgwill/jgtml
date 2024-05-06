@@ -15,9 +15,9 @@ import argparse
 import pandas as pd
 
 #import jgtml as jml
-from jgtml import  jtc
+import  jtc
 
-from jgtml import jplt
+import jplt
 
 import tlid
 
@@ -36,7 +36,7 @@ def parse_args():
     jgtcommon.add_verbose_argument(parser)
     
     jgtcommon.add_use_full_argument(parser)
-
+    #add_use_fresh_argument
     jgtcommon.add_use_fresh_argument(parser)
     
     jgtcommon.add_keepbidask_argument(parser)
@@ -117,7 +117,7 @@ def main():
                     #Full column
                     selected_columns_to_keep = None
         
-                r,s1,s2= jtc.pto_target_calculation(
+                r,s1,s2= jtc.pto_target_calculation( #@STCIssue Exception: 'NoneType' object has no attribute 'append';jgtmlcli.py", line 120;tc.py", line 189, in pto_target_calculation;line 337, in _pov_target_calculation_n_output240223selected_columns_to_keep.append(VECTOR_AO_FDB_COUNT) AttributeError: 'NoneType' object has no attribute 'append'
                     instrument,
                     timeframe,
                     pto_vec_fdb_ao_vector_window_flag=True,

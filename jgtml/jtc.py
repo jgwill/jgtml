@@ -332,9 +332,12 @@ def _pov_target_calculation_n_output240223(
             
         
         #VECTOR_AO_FDB_COUNT
-        sel_1_keeping_columns.append(VECTOR_AO_FDB_COUNT)
-        sel_2_keeping_columns.append(VECTOR_AO_FDB_COUNT)
-        selected_columns_to_keep.append(VECTOR_AO_FDB_COUNT)
+        try:sel_1_keeping_columns.append(VECTOR_AO_FDB_COUNT)
+        except:pass
+        try:sel_2_keeping_columns.append(VECTOR_AO_FDB_COUNT)
+        except:pass
+        try:selected_columns_to_keep.append(VECTOR_AO_FDB_COUNT)
+        except:pass
         
         #VECTOR_AO_FDB_COUNT column gets the value of the vector ao fdbs count or fdbb count if not 1
         
