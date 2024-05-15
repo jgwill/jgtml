@@ -60,7 +60,7 @@ print(df.columns)
 """
 # create a dataset with only the columns we need.  'target', 'vaos', 'vaob', 'vaosc', 'vaobc', 'vaoc'
 # dfo = df[['target', 'vaos', 'vaob', 'vaosc', 'vaobc', 'vaoc']]
-dfo = df[['fdbs','fdbb','target', 'vaosc', 'vaobc', 'vaoc']]
+dfo = df[['fdbs','fdbb','target', 'vaosc', 'vaoc']]
 # %%
 print(dfo.columns)
 
@@ -71,8 +71,8 @@ dfo = dfo[dfo['target'] != 0]
 dfo
 
 # %%
-dfobuy = dfo[['fdbb','target', 'vaobc', 'vaoc']].copy()
-dfosell = dfo[['fdbs','target', 'vaosc', 'vaoc']].copy()
+dfobuy = dfo[['fdbb','target', 'vaoc']].copy()
+dfosell = dfo[['fdbs','target', 'vaoc']].copy()
 
 dfobuy = dfobuy[dfobuy['fdbb'] != 0] 
 
