@@ -342,15 +342,19 @@ def _pov_target_calculation_n_output240223(
         try:selected_columns_to_keep.append(VECTOR_AO_FDB_COUNT)
         except:pass
         
+        df_result_tmx.loc[:, VECTOR_AO_FDB_COUNT] = df_result_tmx[VECTOR_AO_FDBS_COUNT] + df_result_tmx[VECTOR_AO_FDBB_COUNT]
         #VECTOR_AO_FDB_COUNT column gets the value of the vector ao fdbs count or fdbb count if not 1
+        #df_result_tmx.loc[:, VECTOR_AO_FDB_COUNT] = df_result_tmx.apply(lambda x: x[VECTOR_AO_FDBS_COUNT] if x[VECTOR_AO_FDBS_COUNT] != 0 else x[VECTOR_AO_FDBB_COUNT] != 0, axis=1)
         
-        df_result_tmx.loc[:, VECTOR_AO_FDB_COUNT] = df_result_tmx.apply(lambda x: x[VECTOR_AO_FDBS_COUNT] if x[VECTOR_AO_FDBS_COUNT] != 1 else x[VECTOR_AO_FDBB_COUNT] != 1, axis=1)
+        # df_result_tmx.loc[:, VECTOR_AO_FDB_COUNT] = df_result_tmx.apply(lambda x: x[VECTOR_AO_FDBS_COUNT] if x[VECTOR_AO_FDBS_COUNT] != 1 else x[VECTOR_AO_FDBB_COUNT] != 1, axis=1)
         
-        df_result_tmx.loc[:, VECTOR_AO_FDB_COUNT] = df_result_tmx.apply(lambda x: 0 if x[VECTOR_AO_FDB_COUNT] == 1 else x[VECTOR_AO_FDB_COUNT], axis=1)
+        # df_result_tmx.loc[:, VECTOR_AO_FDB_COUNT] = df_result_tmx.apply(lambda x: 0 if x[VECTOR_AO_FDB_COUNT] == 1 else x[VECTOR_AO_FDB_COUNT], axis=1)
         
-        #fill with zero if nan or 1
+        # #fill with zero if nan or 1
         df_result_tmx[VECTOR_AO_FDB_COUNT] = df_result_tmx[VECTOR_AO_FDB_COUNT].fillna(0)
-        
+        #VECTOR_AO_FDB_COUNT column gets the value of the vector ao fdbs count or fdbb count if not 0
+        #df_result_tmx.loc[:, VECTOR_AO_FDB_COUNT] = df_result_tmx.apply(lambda x: x[VECTOR_AO_FDBS_COUNT] if x[VECTOR_AO_FDBS_COUNT] != 0 else x[VECTOR_AO_FDBB_COUNT] != 0, axis=1)
+        #df_result_tmx.loc[:, VECTOR_AO_FDB_COUNT] =
         
         #df_result_tmx[VECTOR_AO_FDB_COUNT] = df_result_tmx[VECTOR_AO_FDB_COUNT].fillna(0)
         
