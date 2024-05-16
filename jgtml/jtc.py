@@ -255,7 +255,7 @@ def _pov_target_calculation_n_output240223(
     WINDOW_MIN=1,
     WINDOW_MAX=150,
     output_report_dir=None,
-    pto_vec_fdb_ao_vector_window_flag=False,
+    pto_vec_fdb_ao_vector_window_flag=True,
     drop_calc_col=True,
     write_reporting=True,
     calc_col_to_drop_names=["tmax", "tmin", "p", "l"],
