@@ -41,7 +41,13 @@ def parse_args():
     
     jgtcommon.add_keepbidask_argument(parser)
 
-
+    jgtcommon.add_ids_mfi_argument(parser)
+    jgtcommon.add_ids_gator_oscillator_argument(parser)
+    jgtcommon.add_ids_balligator_argument(parser)
+    jgtcommon.add_ids_fractal_largest_period_argument(parser)
+    
+    #add argument to regenerate the cds
+    parser.add_argument('-rcds', '--regenerate_cds', action='store_true', help='Regenerate the CDS')
 
     parser.add_argument('-sc', '--selected-columns', nargs='+', help='List of selected columns to keep', default=['High','Low','ao','ac','jaw','teeth','lips','fh','fl','fdbb','fdbs','zlcb','zlcs','target','vaos','vaob'])
     
@@ -54,7 +60,8 @@ def parse_args():
 def main():
     
     args = parse_args()
-    
+    regenerate_cds=args.regenerate_cds
+
     verbose_level = args.verbose
     quiet = False
     if verbose_level == 0:
@@ -126,6 +133,12 @@ def main():
                     save_outputs=True,
                     keep_bid_ask=keep_bid_ask,
                     use_fresh=fresh,
+                    regenerate_cds=regenerate_cds,
+                    gator_oscillator_flag=args.gator_oscillator_flag,
+                    balligator_flag=args.balligator_flag,largest_fractal_period=args.largest_fractal_period,
+                    mfi_flag=args.mfi_flag,
+                    balligator_period_jaws=args.balligator_period_jaws,
+                    
                     )
 
     except Exception as e:
