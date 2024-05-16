@@ -116,7 +116,7 @@ def pto_target_calculation(
     WINDOW_MIN:int=1,
     WINDOW_MAX:int=150,
     output_report_dir=None,
-    pto_vec_fdb_ao_vector_window_flag=False,
+    pto_vec_fdb_ao_vector_window_flag=True,
     drop_calc_col=False,
     write_reporting=True,
     calc_col_to_drop_names=["tmax", "tmin", "p", "l"],
