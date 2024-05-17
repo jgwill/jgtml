@@ -5,7 +5,14 @@ jgtml
 
 from setuptools import find_packages, setup
 
-from jgtml import __version__ as version
+#from jgtml import __version__ as version
+def read_version():
+    with open("jgtml/__init__.py") as f:
+        for line in f:
+            if line.startswith("__version__"):
+                return line.strip().split()[-1][1:-1]
+
+version = read_version()
 
 # INSTALL_REQUIRES = [
 #     "pandas>=0.25.1",
