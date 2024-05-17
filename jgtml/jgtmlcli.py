@@ -70,19 +70,19 @@ def main():
     instrument = args.instrument
     timeframe = args.timeframe
     
-    keep_bid_ask = False
-    if args.keepbidask:
-        keep_bid_ask = True
+    keep_bid_ask = True
+    if args.rmbidask:
+        keep_bid_ask = False
         
-    full = False
-    if args.full:
-        full = True
-        print_quiet(quiet, "USING FULL MODE")
-    fresh = False
-    
-    if args.fresh:
-        fresh = True
-        print_quiet(quiet, "USING FRESH MODE")
+    full = True
+    if args.notfull:
+        full = False
+        print_quiet(quiet, "USING FULL MODE TURNED OFF")
+
+    fresh = True
+    if args.notfresh:
+        fresh = False
+        print_quiet(quiet, "USING FRESH MODE TURNED OFF")
 
     date_from = None
     date_to = None
