@@ -457,6 +457,7 @@ def _pov_target_calculation_n_output240223(
         return df_result_tmx, sel1, sel2
     
     if additional_columns_to_drop is not None:
+        #print("Dropping additional columns:", additional_columns_to_drop)
         try:
             df_result_tmx.drop(columns=additional_columns_to_drop, inplace=True)
         except:

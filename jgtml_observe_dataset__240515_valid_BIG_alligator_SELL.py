@@ -6,10 +6,15 @@ from sklearn.metrics import mean_squared_error
 import pandas as pd
 
 
+import os
 
 import numpy as np
 import pandas as pd
-from jgtpy import JGTCDS as cds
+try:
+    from jgtpy import JGTCDS as cds
+except:
+    print("pip install -U jgtpy")
+
 from jgtml import jtc
 
 def crop_dataframe(df, crop_last_dt: str = None, crop_start_dt: str = None):
@@ -25,31 +30,62 @@ def crop_dataframe(df, crop_last_dt: str = None, crop_start_dt: str = None):
 
 i = 'GBP/USD'
 i = 'SPX500'
+t = "H6"
 t = "H1"
 t = "D1"
-t = "H6"
+t = "H4"
+
+
+#if __main__
+if __name__ == "__main__":
+    import argparse
+    parser = argparse.ArgumentParser(description='Process some JGTML.')
+    parser.add_argument('-i','--instrument', type=str, default='SPX500', help='Instrument')
+    parser.add_argument('-t','--timeframe', type=str, default='D1', help='Timeframe')
+    args = parser.parse_args()
+    i = args.instrument
+    t = args.timeframe
+    print(f"i:{i} t:{t}")
+    
+
 
 ip="AOAC"
 ip ="JTLAOAC"
 showpc = True
 
-#savecsvpath='/data/src/fxpy/'
-#savecsvpath='/w/indicators/exports/'
-savecsvpath='./output'
-
-ifn=i.replace("/","-")
-idsfilepath=f"/var/lib/jgt/full/data/targets/mx/{ifn}_{t}.csv"
-#df = pd.read_csv(idsfilepath)
-df=None
-try:
-    df = jtc.readMXFile(i,t)
-except:
-    pass
-
+# FLAGS for the PROCESS we might want to configure or read from ENV
+force_regenerate_mxfiles=True
 mfi_flag=True
 balligator_flag=True
 regenerate_cds = True
 use_fresh=True
+
+# OUTPUTS Files
+result_drop_base="/b/Dropbox/jgt/drop" #$jgtdroot
+# result_source_dataset_archive= result_drop_base + "/data/arch/jgtml_240516"
+result_source_dataset_archive= os.path.join(result_drop_base, "data", "arch", "jgtml_240516")
+# result_file_base=result_drop_base+"/jgtml_observe_dataset__240515_valid_BIG_alligator_SELL.result"
+result_file_basename = "jgtml_observe_dataset__240515_valid_BIG_alligator_SELL.result"
+result_file_base = os.path.join(result_drop_base, result_file_basename)
+
+result_file_md=result_file_base + ".md"
+result_file_csv=result_file_base + ".csv"
+
+os.makedirs(result_source_dataset_archive,exist_ok=True)
+
+
+
+ifn=i.replace("/","-")
+data_dir = os.getenv("JGTPY_DATA_FULL")
+idsfilepath = os.path.join(data_dir, "targets", "mx", f"{ifn}_{t}.csv")
+#df = pd.read_csv(idsfilepath)
+df=None
+try:
+    if not force_regenerate_mxfiles:
+        df = jtc.readMXFile(i,t)
+except:
+    pass
+
 #%pip install -U jgtpy
 
 #set DF to None if column 'mfi' is not present
@@ -62,6 +98,7 @@ if df is None:
                                                 regenerate_cds=regenerate_cds,
                                                 use_fresh=use_fresh)
 
+#%%
 l=len(df)
 print(df.tail(1))
 #%% Columns
@@ -97,6 +134,9 @@ dfo = dfo[dfo['target'] != 0]
 # %%
 dfo
 
+
+#%% Direction
+direction = "S" #@STCIssue Se we can store it and later extend this
 # %%
 dfosell = dfo[sel_columns].copy()
 #dfosell = dfo[['fdbs','target', 'vaoc']].copy()
@@ -239,22 +279,58 @@ print("count_sell2s2 Low is Above Big Lips and Big Mouth is Open:",sig_in_blips_
 
 
 # %%
-def print_res(nb_entry, tsum, title):
-    per_trade=round(tsum/nb_entry,2)
-    print(f"{i}_{t} pt:{per_trade} t:{nb_entry} sum:{round(tsum,2)} title:{title}")
 
+
+def write_to_result_csv(i,t,direction,nb_entry, tsum, title,_df=None):
+    per_trade=round(tsum/nb_entry,2)
+    if direction == "sell" or direction=="Sell" or direction=="SELL":direction="S"
+    if direction == "buy" or direction=="Buy" or direction=="BUY":direction="B"
+    
+    #per_trade="per_trade"
+    with open(result_file_csv, "a") as file_object:
+        tsum_rounded = round(tsum,2)
+        file_object.write(f"{i},{t},{direction},{per_trade},{nb_entry},{tsum_rounded},{title}\n")
+    if _df is not None:
+        save_df_archives(i, t, title, _df)
+
+def save_df_archives(i, t, title, _df,quiet=True):
+    ifn = i.replace("/","-")
+    csv_fn = f"{result_source_dataset_archive}/{ifn}_{t}_{title}.csv"
+    if not quiet:
+        print("Writing CSV to file:",csv_fn)
+    _df.to_csv(csv_fn)
+
+#save the original df
+save_df_archives(i, t, "original", df)
+#write_to_result_csv("instrument","timeframe","nb_entry","tsum","title")
+
+def write_to_result_md(entry_line):
+    with open(result_file_md, "a") as file_object:
+        file_object.write(f"{entry_line}\n")
+
+def print_res(i,t,direction,nb_entry, tsum, title,_df=None):
+    per_trade=round(tsum/nb_entry,2)
+    tsum_rounded = round(tsum,2)
+    entry_line = f"{i}_{t} {direction} pt:{per_trade} t:{nb_entry} sum:{tsum_rounded} title:{title}"
+    print(entry_line)
+    write_to_result_md(entry_line)
+    write_to_result_csv(i,t,direction,nb_entry, tsum, title,_df)
 # %%
-print("==============================================================")
-print_res(all_sell_signal_count,all_sell_signal_sum,"All Sell Signal - no filtering")
-print_res(mouth_is_open_count,mouth_is_open_sum,"mouth_is_open")
-print("==============================================================")
-print_res(not_in_lips_teeth_count,not_in_lips_teeth_sum,"not_in_lips_teeth")
-print("==============================================================")
-print_res(sig_is_in_bteeth_count,sig_is_in_bteeth_sum,"sig_is_in_bteeth_sum")
-print_res(sig_in_blips_bmouth_is_open_count,sig_in_blips_bmouth_is_open_sum,"sig_in_blips_bmouth_is_open")
+
+write_to_result_md("  ")
+write_to_result_md("----")
+write_to_result_md("  ")
+write_to_result_md("==============================================================")
+print_res(i,t,direction,all_sell_signal_count,all_sell_signal_sum,"all_sell_sig",dfosell)
+print_res(i,t,direction,mouth_is_open_count,mouth_is_open_sum,"mouth_is_open",mouth_is_open)
+write_to_result_md("==============================================================")
+print_res(i,t,direction,not_in_lips_teeth_count,not_in_lips_teeth_sum,"not_in_lips_teeth",not_in_lips_teeth)
+write_to_result_md("==============================================================")
+print_res(i,t,direction,sig_is_in_bteeth_count,sig_is_in_bteeth_sum,"sig_is_in_bteeth_sum",sig_is_in_bteeth)
+print_res(i,t,direction,sig_in_blips_bmouth_is_open_count,sig_in_blips_bmouth_is_open_sum,"sig_in_blips_bmouth_is_open",sig_in_blips_bmouth_is_open)
 #pt:32.42 t:132 sum:4279.999999999999 title:count_sell2s2 Low is Above Big Lips and Big Mouth is Open
-print_res(big_m_open_in_bteeth_count,big_m_open_in_bteeth_sum,"big_m_open_in_bteeth_sum")
-print("==============================================================")
+print_res(i,t,direction,big_m_open_in_bteeth_count,big_m_open_in_bteeth_sum,"big_m_open_in_bteeth_sum",big_m_open_in_bteeth)
+write_to_result_md("==============================================================")
 
 
 #@STCIssue SPX500 D1, big_m_open_in_bteeth_sum has an interesting value when the Signal bar is in the big mouth
