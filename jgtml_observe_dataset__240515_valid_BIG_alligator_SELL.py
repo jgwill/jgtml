@@ -49,9 +49,6 @@ if __name__ == "__main__":
     
 
 
-ip="AOAC"
-ip ="JTLAOAC"
-showpc = True
 
 # FLAGS for the PROCESS we might want to configure or read from ENV
 force_regenerate_mxfiles=True
