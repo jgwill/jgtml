@@ -36,6 +36,39 @@ t = "D1"
 t = "H4"
 
 
+
+
+# FLAGS for the PROCESS we might want to configure or read from ENV
+force_regenerate_mxfiles=True
+mfi_flag=True
+balligator_flag=True
+regenerate_cds = True
+use_fresh=True
+
+# OUTPUTS Files
+jgtdroot_default="/b/Dropbox/jgt" #$jgtdroot
+jgtdroot=os.getenv("jgtdroot",jgtdroot_default)
+#result_drop_base_default="/b/Dropbox/jgt/drop" #$jgtdroot
+result_drop_base=os.path.join(jgtdroot, "drop")
+
+# result_source_dataset_archive= result_drop_base + "/data/arch/jgtml_240516"
+result_source_dataset_archive= os.path.join(result_drop_base, "data", "arch", "jgtml_240516")
+# result_file_base=result_drop_base+"/jgtml_observe_dataset__240515_valid_BIG_alligator_SELL.result"
+result_file_basename = "jgtml_observe_dataset__240515_valid_BIG_alligator_SELL.result"
+
+# Columns to select
+sel_columns_sell = ['High','Low','bjaw','blips','bteeth','jaw','teeth','lips','fdbs','target', 'vaosc', 'vaoc']
+sel_columns_buy = ['High','Low','bjaw','blips','bteeth','jaw','teeth','lips','fdbb','target', 'vaobc', 'vaoc']
+
+jgtpy_data_full_var_name = "JGTPY_DATA_FULL"
+
+bs="S" # This prototype is for SELL signals only, we can extend it to BUY signals later
+if bs=="S":
+    sel_columns = sel_columns_sell
+else:
+    if bs=="B":
+        sel_columns = sel_columns_buy
+
 #if __main__
 if __name__ == "__main__":
     import argparse
@@ -48,21 +81,6 @@ if __name__ == "__main__":
     print(f"i:{i} t:{t}")
     
 
-
-
-# FLAGS for the PROCESS we might want to configure or read from ENV
-force_regenerate_mxfiles=True
-mfi_flag=True
-balligator_flag=True
-regenerate_cds = True
-use_fresh=True
-
-# OUTPUTS Files
-result_drop_base="/b/Dropbox/jgt/drop" #$jgtdroot
-# result_source_dataset_archive= result_drop_base + "/data/arch/jgtml_240516"
-result_source_dataset_archive= os.path.join(result_drop_base, "data", "arch", "jgtml_240516")
-# result_file_base=result_drop_base+"/jgtml_observe_dataset__240515_valid_BIG_alligator_SELL.result"
-result_file_basename = "jgtml_observe_dataset__240515_valid_BIG_alligator_SELL.result"
 result_file_base = os.path.join(result_drop_base, result_file_basename)
 
 result_file_md=result_file_base + ".md"
@@ -73,7 +91,7 @@ os.makedirs(result_source_dataset_archive,exist_ok=True)
 
 
 ifn=i.replace("/","-")
-data_dir = os.getenv("JGTPY_DATA_FULL")
+data_dir = os.getenv(jgtpy_data_full_var_name)
 idsfilepath = os.path.join(data_dir, "targets", "mx", f"{ifn}_{t}.csv")
 #df = pd.read_csv(idsfilepath)
 df=None
@@ -117,7 +135,7 @@ print("len(df):",len(df))
 """
 # create a dataset with only the columns we need.  'target', 'vaos', 'vaob', 'vaosc', 'vaobc', 'vaoc'
 # dfo = df[['target', 'vaos', 'vaob', 'vaosc', 'vaobc', 'vaoc']]
-sel_columns = ['High','Low','bjaw','blips','bteeth','jaw','teeth','lips','fdbs','target', 'vaosc', 'vaoc']
+
 dfo = df[sel_columns]
 
 
@@ -133,12 +151,15 @@ dfo
 
 
 #%% Direction
-direction = "S" #@STCIssue Se we can store it and later extend this
+direction = bs
 # %%
-dfosell = dfo[sel_columns].copy()
+dfo_context = dfo[sel_columns].copy()
 #dfosell = dfo[['fdbs','target', 'vaoc']].copy()
 
-dfosell = dfosell[dfosell['fdbs'] != 0].copy()
+fdb_context_colname = 'fdbs'
+if bs=="B":
+    fdb_context_colname = 'fdbb'
+dfo_context = dfo_context[dfo_context[fdb_context_colname] != 0].copy()
 
 
 #dfosell = dfosell[dfosell['fdbs'] != 0] 
@@ -147,19 +168,25 @@ dfosell = dfosell[dfosell['fdbs'] != 0].copy()
 
 # dfo = dfo[dfo['target'] != 0] #Where target is not 0
 # %%
-dfosell.tail(40)
+dfo_context.tail(40)
 # %%
-all_sell_signal_count = len(dfosell)
+all_context_signal_count = len(dfo_context)
 
-all_sell_signal_sum=dfosell['target'].sum()
+target_colname = 'target'
+all_sell_signal_sum=dfo_context[target_colname].sum()
 
-print("count_sell:",all_sell_signal_count," sum0:",all_sell_signal_sum)
+print("count:",all_context_signal_count," sum0:",all_sell_signal_sum)
 
 # %%
 #Remove invalid signal when column High < lips
 #@STCGoal Valid Signals are bellow the lips and teeth 
-not_in_lips_teeth = dfosell[dfosell['Low'] > dfosell['lips']].copy()
-not_in_lips_teeth = not_in_lips_teeth[not_in_lips_teeth['Low'] > not_in_lips_teeth['teeth']]
+if bs=="S":
+    not_in_lips_teeth = dfo_context[dfo_context['Low'] > dfo_context['lips']].copy()
+    not_in_lips_teeth = not_in_lips_teeth[not_in_lips_teeth['Low'] > not_in_lips_teeth['teeth']]
+else:
+    not_in_lips_teeth = dfo_context[dfo_context['High'] < dfo_context['lips']].copy()
+    not_in_lips_teeth = not_in_lips_teeth[not_in_lips_teeth['High'] < not_in_lips_teeth['teeth']]
+
 not_in_lips_teeth_count = len(not_in_lips_teeth)
 not_in_lips_teeth_sum=not_in_lips_teeth['target'].sum()
 
@@ -180,13 +207,13 @@ mouth_is_open_count = len(mouth_is_open)
 mouth_is_open_sum=mouth_is_open['target'].sum()
 
 
-print("count_sell3:",mouth_is_open_count," sum3:",mouth_is_open_sum)
+print("count3:",mouth_is_open_count," sum3:",mouth_is_open_sum)
 
 # %%
 mouth_is_open.tail(40)
 # %%
-print("count_sell (no validation):",all_sell_signal_count," sum0:",all_sell_signal_sum)
-print("count_sell2 not_in_lips_teeth:",not_in_lips_teeth_count," sum2:",not_in_lips_teeth_sum)
+print("count (no validation):",all_context_signal_count," sum0:",all_sell_signal_sum)
+print("count_2 not_in_lips_teeth:",not_in_lips_teeth_count," sum2:",not_in_lips_teeth_sum)
 print("count_sell3 mouth_is_open:",mouth_is_open_count," sum3:",mouth_is_open_sum)
 
 
@@ -318,7 +345,7 @@ write_to_result_md("  ")
 write_to_result_md("----")
 write_to_result_md("  ")
 write_to_result_md("==============================================================")
-print_res(i,t,direction,all_sell_signal_count,all_sell_signal_sum,"all_sell_sig",dfosell)
+print_res(i,t,direction,all_context_signal_count,all_sell_signal_sum,"all_sell_sig",dfo_context)
 print_res(i,t,direction,mouth_is_open_count,mouth_is_open_sum,"mouth_is_open",mouth_is_open)
 write_to_result_md("==============================================================")
 print_res(i,t,direction,not_in_lips_teeth_count,not_in_lips_teeth_sum,"not_in_lips_teeth",not_in_lips_teeth)
