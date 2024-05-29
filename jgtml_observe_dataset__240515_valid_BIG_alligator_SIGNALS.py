@@ -34,6 +34,16 @@ The script outputs the following metrics for each signal type:
 
 The script also generates a markdown file summarizing the key findings and a CSV file containing the detailed results of the analysis.
 
+Details of each type of signals
+
+- all_signals: All valid signals made by the jgtml.jtc.pto_target_calculation function
+- mouth_is_open: Signals where the mouth of the "Regular Alligator" is open
+- not_in_lips_teeth: Signals where the price bar is out of the lips and teeth of the "Regular Alligator"
+- sig_is_in_bteeth: Signals where the price bar has came back in the big teeth of the "Big Alligator" without the mouth being open or not.
+- big_m_open_in_bteeth: Signals where the price bar has came back in the big teeth and the mouth of the "Big Alligator" is open (Exploring a Strategic entry when the mouth is open and we want to enter at the end of a retracement.  This explores signals that pulled back in the big teeth(the middest of the big balancing lines system))
+- sig_in_blips_bmouth_is_open: Signals where the price bar has came back in the big lips and the mouth of the "Big Alligator" is open (Exploring a Strategic entry when the mouth is open and we want to enter at the end of a retracement. This explores signals that pulled back in the big lips (the smallest of the big balancing lines system) )
+
+Further analysis and interpretation of the results are needed to draw meaningful conclusions and insights from the data. The script is intended to be a starting point for more in-depth research and exploration of technical indicators in trading.
 
 """
 
