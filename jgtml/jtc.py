@@ -143,6 +143,8 @@ def pto_target_calculation(
     balligator_flag=False,
     balligator_period_jaws=89,
     largest_fractal_period=89,
+    talligator_flag=False,
+    talligator_period_jaws=377,
 ):
     """
     Prototype Calculation of target based on the given POV parameters and output to file with report.
@@ -181,6 +183,8 @@ def pto_target_calculation(
         balligator_flag (bool, optional): If True, calculate the Alligator. Defaults to False.
         balligator_period_jaws (int, optional): The period for the Alligator jaws. Defaults to 89.
         largest_fractal_period (int, optional): The period for the largest fractal. Defaults to 89.
+        talligator_flag (bool, optional): If True, calculate the T-Alligator. Defaults to False.
+        talligator_period_jaws (int, optional): The period for the T-Alligator jaws. Defaults to 377.
 
         
 
@@ -239,7 +243,9 @@ def pto_target_calculation(
         mfi_flag=mfi_flag,
         balligator_flag=balligator_flag,
         balligator_period_jaws=balligator_period_jaws,
-        largest_fractal_period=largest_fractal_period,        
+        largest_fractal_period=largest_fractal_period,
+        talligator_flag=talligator_flag,
+        talligator_period_jaws=talligator_period_jaws, 
     )
     return df_result_tmx, sel1, sel2
 
@@ -293,6 +299,8 @@ def _pov_target_calculation_n_output240223(
     balligator_flag=False,
     balligator_period_jaws=89,
     largest_fractal_period=89,
+    talligator_flag=False,
+    talligator_period_jaws=377,
 ):
     if tlid_tag is None:
         tlid_tag = tlid.get_minutes()
@@ -328,7 +336,9 @@ def _pov_target_calculation_n_output240223(
                                        mfi_flag=mfi_flag,
                                        balligator_flag=balligator_flag,
                                        balligator_period_jaws=balligator_period_jaws,
-                                       largest_fractal_period=largest_fractal_period)#@STCGoal Use Fresh
+                                       largest_fractal_period=largest_fractal_period,
+                                       talligator_flag=talligator_flag,
+                                       talligator_period_jaws=talligator_period_jaws)#@STCGoal Use Fresh
         
     df_cds_source = pd.read_csv(
         cds_full_filename, index_col=0, parse_dates=True
