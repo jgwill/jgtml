@@ -24,8 +24,8 @@ Future work includes further data analysis to identify additional patterns and i
 The 6 types of signals analyzed in this script are:
 
 - all_signals
-- mouth_is_open
-- not_in_lips_teeth
+- sig_mouth_is_open
+- sig_not_in_lips_teeth
 - sig_is_in_tteeth
 - tide_m_open_in_tteeth
 - sig_in_tlips_tmouth_is_open
@@ -42,8 +42,8 @@ The script also generates a markdown file summarizing the key findings and a CSV
 Details of each type of signals
 
 - all_signals: All valid signals made by the jgtml.jtc.pto_target_calculation function
-- mouth_is_open: Signals where the mouth of the "Regular Alligator" is open
-- not_in_lips_teeth: Signals where the price bar is out of the lips and teeth of the "Regular Alligator"
+- sig_mouth_is_open: Signals where the mouth of the "Regular Alligator" is open
+- sig_not_in_lips_teeth: Signals where the price bar is out of the lips and teeth of the "Regular Alligator"
 - sig_is_in_tteeth: Signals where the price bar has came back in the big teeth of the "Big Alligator" without the mouth being open or not.
 - tide_m_open_in_tteeth: Signals where the price bar has came back in the big teeth and the mouth of the "Big Alligator" is open (Exploring a Strategic entry when the mouth is open and we want to enter at the end of a retracement.  This explores signals that pulled back in the big teeth(the middest of the big balancing lines system))
 - sig_in_tlips_tmouth_is_open: Signals where the price bar has came back in the big lips and the mouth of the "Big Alligator" is open (Exploring a Strategic entry when the mouth is open and we want to enter at the end of a retracement. This explores signals that pulled back in the big lips (the smallest of the big balancing lines system) )
@@ -133,7 +133,7 @@ archive_used_dataset=True
 
 
 def main():
-    global i,t,bs,print_abstract,regenerate_cds,result_drop_base_override,source_dataset_archival_path_override,quiet,data_dir_override
+    global i,t,bs,print_abstract,regenerate_cds,result_drop_base_override,source_dataset_archival_path_override,quiet,data_dir_override,use_fresh
     import argparse
     parser = argparse.ArgumentParser(description=CLI_DESCRIPTION,epilog=EPILOG)
     parser.add_argument('-i','--instrument', type=str, default='SPX500', help='Instrument')
@@ -141,7 +141,10 @@ def main():
     #bs
     parser.add_argument('-bs','--buysell', type=str, default='S', help='Buy or Sell')
     #regenerate_cds
-    parser.add_argument('-nocds','--dont_regenerate_cds', type=bool, default=False, help='Dont Regenerate CDS')
+    parser.add_argument('-nocds','--dont_regenerate_cds', help='Dont Regenerate CDS',action='store_true')
+    #use_fresh
+    parser.add_argument('-nf','--nofresh', help='Dont Use Fresh (Assuming you need CDS Already generated and available)',action='store_true')
+
     #data_dir_override
     parser.add_argument('-dd','--data_dir_override', type=str, default=None, help='Data Directory Override path (JGTPY_DATA_FULL env var will be used if not provided)')
     #result_drop_base_override
@@ -149,7 +152,7 @@ def main():
     #source_dataset_archival_path_override
     parser.add_argument('-sda','--source_dataset_archival_path_override', type=str, default=None, help='Source Dataset Archival Path Override')
     # quiet
-    parser.add_argument('-q','--quiet', type=bool, default=True, help='Quiet')
+    parser.add_argument('-q','--quiet', help='Quiet',action='store_true')
     #print X_ABSTRACT
     parser.add_argument('-abstract','--print_abstract', action='store_true', help='Print Abstract')
     #result_file_basename
@@ -171,6 +174,8 @@ def main():
     source_dataset_archival_path_override = args.source_dataset_archival_path_override
     quiet = args.quiet
     data_dir_override = args.data_dir_override
+    use_fresh= False if args.nofresh else True
+
 
 NB_CONTEXT_RUN=False
 def _chg_logics_for_notebook_context():
@@ -319,22 +324,22 @@ print("count:",all_context_signal_count," sum0:",all_signalsnal_sum)
 #Remove invalid signal when column High < lips
 #@STCGoal Valid Signals are bellow the lips and teeth 
 if bs=="S":
-    not_in_lips_teeth = dfo_context[dfo_context[LOW] > dfo_context[LIPS]].copy()
-    not_in_lips_teeth = not_in_lips_teeth[not_in_lips_teeth[LOW] > not_in_lips_teeth[TEETH]]
+    sig_not_in_lips_teeth = dfo_context[dfo_context[LOW] > dfo_context[LIPS]].copy()
+    sig_not_in_lips_teeth = sig_not_in_lips_teeth[sig_not_in_lips_teeth[LOW] > sig_not_in_lips_teeth[TEETH]]
 
     #@STCGoal Valid Signals when mouth is open
-    mouth_is_open = not_in_lips_teeth[not_in_lips_teeth[JAW] < not_in_lips_teeth[TEETH]].copy()
-    mouth_is_open = mouth_is_open[mouth_is_open[TEETH] < mouth_is_open[LIPS]]
-    mouth_is_open = mouth_is_open[mouth_is_open[JAW] < mouth_is_open[LIPS]]
+    sig_mouth_is_open = sig_not_in_lips_teeth[sig_not_in_lips_teeth[JAW] < sig_not_in_lips_teeth[TEETH]].copy()
+    sig_mouth_is_open = sig_mouth_is_open[sig_mouth_is_open[TEETH] < sig_mouth_is_open[LIPS]]
+    sig_mouth_is_open = sig_mouth_is_open[sig_mouth_is_open[JAW] < sig_mouth_is_open[LIPS]]
 
     #sig_is_in_tteeth
-    sig_is_in_tteeth = not_in_lips_teeth[
-    not_in_lips_teeth[LOW] > not_in_lips_teeth[TTEETH]
+    sig_is_in_tteeth = sig_not_in_lips_teeth[
+    sig_not_in_lips_teeth[LOW] > sig_not_in_lips_teeth[TTEETH]
     ].copy()
 
     #tide_m_open_in_tteeth
-    tide_m_open_in_tteeth = not_in_lips_teeth[
-        not_in_lips_teeth[LOW] > not_in_lips_teeth[TTEETH]
+    tide_m_open_in_tteeth = sig_not_in_lips_teeth[
+        sig_not_in_lips_teeth[LOW] > sig_not_in_lips_teeth[TTEETH]
         ].copy()
 
     tide_m_open_in_tteeth = tide_m_open_in_tteeth[  #@a The Big Mouth Is Open
@@ -345,8 +350,8 @@ if bs=="S":
         ]        
 
     #sig_in_tlips_tmouth_is_open
-    sig_in_tlips_tmouth_is_open = not_in_lips_teeth[
-        not_in_lips_teeth[LOW] < not_in_lips_teeth[TLIPS]
+    sig_in_tlips_tmouth_is_open = sig_not_in_lips_teeth[
+        sig_not_in_lips_teeth[LOW] < sig_not_in_lips_teeth[TLIPS]
         ].copy()
 
     # the BMouth is Openned
@@ -361,23 +366,23 @@ if bs=="S":
                     
 
 else:
-    not_in_lips_teeth = dfo_context[dfo_context[HIGH] < dfo_context[LIPS]].copy()
-    not_in_lips_teeth = not_in_lips_teeth[not_in_lips_teeth[HIGH] < not_in_lips_teeth[TEETH]]
+    sig_not_in_lips_teeth = dfo_context[dfo_context[HIGH] < dfo_context[LIPS]].copy()
+    sig_not_in_lips_teeth = sig_not_in_lips_teeth[sig_not_in_lips_teeth[HIGH] < sig_not_in_lips_teeth[TEETH]]
 
-    #mouth_is_open
-    mouth_is_open = not_in_lips_teeth[not_in_lips_teeth[JAW] > not_in_lips_teeth[TEETH]].copy()
-    mouth_is_open = mouth_is_open[mouth_is_open[TEETH] > mouth_is_open[LIPS]]
-    mouth_is_open = mouth_is_open[mouth_is_open[JAW] > mouth_is_open[LIPS]]
+    #sig_mouth_is_open
+    sig_mouth_is_open = sig_not_in_lips_teeth[sig_not_in_lips_teeth[JAW] > sig_not_in_lips_teeth[TEETH]].copy()
+    sig_mouth_is_open = sig_mouth_is_open[sig_mouth_is_open[TEETH] > sig_mouth_is_open[LIPS]]
+    sig_mouth_is_open = sig_mouth_is_open[sig_mouth_is_open[JAW] > sig_mouth_is_open[LIPS]]
 
     #sig_is_in_tteeth
-    sig_is_in_tteeth = not_in_lips_teeth[
-    not_in_lips_teeth[HIGH] < not_in_lips_teeth[TTEETH]
+    sig_is_in_tteeth = sig_not_in_lips_teeth[
+    sig_not_in_lips_teeth[HIGH] < sig_not_in_lips_teeth[TTEETH]
     ].copy()
 
     #
     #tide_m_open_in_tteeth
-    tide_m_open_in_tteeth = not_in_lips_teeth[
-        not_in_lips_teeth[HIGH] < not_in_lips_teeth[TTEETH]
+    tide_m_open_in_tteeth = sig_not_in_lips_teeth[
+        sig_not_in_lips_teeth[HIGH] < sig_not_in_lips_teeth[TTEETH]
         ].copy()
 
     tide_m_open_in_tteeth = tide_m_open_in_tteeth[  #@a The Big Mouth Is Open
@@ -389,8 +394,8 @@ else:
     
     #
     #sig_in_tlips_tmouth_is_open
-    sig_in_tlips_tmouth_is_open = not_in_lips_teeth[
-        not_in_lips_teeth[HIGH] > not_in_lips_teeth[TLIPS]
+    sig_in_tlips_tmouth_is_open = sig_not_in_lips_teeth[
+        sig_not_in_lips_teeth[HIGH] > sig_not_in_lips_teeth[TLIPS]
         ].copy()
 
     # the BMouth is Openned
@@ -409,37 +414,37 @@ else:
 
 
 # INDEPENDENT OF DIRECTIONS
-not_in_lips_teeth_count = len(not_in_lips_teeth)
-not_in_lips_teeth_sum=not_in_lips_teeth[FDB_TARGET].sum()
+sig_not_in_lips_teeth_count = len(sig_not_in_lips_teeth)
+sig_not_in_lips_teeth_sum=sig_not_in_lips_teeth[FDB_TARGET].sum()
 
-mouth_is_open_count = len(mouth_is_open)
-mouth_is_open_sum=mouth_is_open[FDB_TARGET].sum()
+sig_mouth_is_open_count = len(sig_mouth_is_open)
+sig_mouth_is_open_sum=sig_mouth_is_open[FDB_TARGET].sum()
 
 
 
 
 
 if not quiet:
-    print("not_in_lips_teeth:",not_in_lips_teeth_count," sum:",not_in_lips_teeth_sum)
+    print("sig_not_in_lips_teeth:",sig_not_in_lips_teeth_count," sum:",sig_not_in_lips_teeth_sum)
 
 
 # %%
 
 if not quiet:
-    print(not_in_lips_teeth.tail(40))
-    print("count3:",mouth_is_open_count," sum3:",mouth_is_open_sum)
+    print(sig_not_in_lips_teeth.tail(40))
+    print("count3:",sig_mouth_is_open_count," sum3:",sig_mouth_is_open_sum)
 
 # %%
 
 if not quiet:
-    print(mouth_is_open.tail(40))
+    print(sig_mouth_is_open.tail(40))
 
 
 # %%
 if not quiet:
     print("count (no validation):",all_context_signal_count," sum0:",all_signalsnal_sum)
-    print("count_2 not_in_lips_teeth:",not_in_lips_teeth_count," sum2:",not_in_lips_teeth_sum)
-    print("count_sell3 mouth_is_open:",mouth_is_open_count," sum3:",mouth_is_open_sum)
+    print("count_2 sig_not_in_lips_teeth:",sig_not_in_lips_teeth_count," sum2:",sig_not_in_lips_teeth_sum)
+    print("count_sell3 sig_mouth_is_open:",sig_mouth_is_open_count," sum3:",sig_mouth_is_open_sum)
 
 
 
@@ -551,9 +556,9 @@ write_to_result_md("----")
 write_to_result_md("  ")
 write_to_result_md("==============================================================")
 print_res(i,t,direction,all_context_signal_count,all_signalsnal_sum,"all_signals",dfo_context)
-print_res(i,t,direction,mouth_is_open_count,mouth_is_open_sum,"mouth_is_open",mouth_is_open)
+print_res(i,t,direction,sig_mouth_is_open_count,sig_mouth_is_open_sum,"sig_mouth_is_open",sig_mouth_is_open)
 write_to_result_md("==============================================================")
-print_res(i,t,direction,not_in_lips_teeth_count,not_in_lips_teeth_sum,"not_in_lips_teeth",not_in_lips_teeth)
+print_res(i,t,direction,sig_not_in_lips_teeth_count,sig_not_in_lips_teeth_sum,"sig_not_in_lips_teeth",sig_not_in_lips_teeth)
 write_to_result_md("==============================================================")
 print_res(i,t,direction,sig_is_in_tteeth_count,sig_is_in_tteeth_sum,"sig_is_in_tteeth_sum",sig_is_in_tteeth)
 print_res(i,t,direction,sig_in_tlips_tmouth_is_open_count,sig_in_tlips_tmouth_is_open_sum,"sig_in_tlips_tmouth_is_open",sig_in_tlips_tmouth_is_open)
