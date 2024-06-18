@@ -44,6 +44,7 @@ def parse_args():
     jgtcommon.add_ids_mfi_argument(parser)
     jgtcommon.add_ids_gator_oscillator_argument(parser)
     jgtcommon.add_ids_balligator_argument(parser)
+    jgtcommon.add_ids_talligator_argument(parser)
     jgtcommon.add_ids_fractal_largest_period_argument(parser)
     
     #add argument to regenerate the cds

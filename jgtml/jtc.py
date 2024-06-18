@@ -145,6 +145,7 @@ def pto_target_calculation(
     largest_fractal_period=89,
     talligator_flag=False,
     talligator_period_jaws=377,
+    use_ttf=True,
 ):
     """
     Prototype Calculation of target based on the given POV parameters and output to file with report.
@@ -246,6 +247,7 @@ def pto_target_calculation(
         largest_fractal_period=largest_fractal_period,
         talligator_flag=talligator_flag,
         talligator_period_jaws=talligator_period_jaws, 
+        use_ttf=use_ttf
     )
     return df_result_tmx, sel1, sel2
 
@@ -301,6 +303,7 @@ def _pov_target_calculation_n_output240223(
     largest_fractal_period=89,
     talligator_flag=False,
     talligator_period_jaws=377,
+    use_ttf=True,
 ):
     if tlid_tag is None:
         tlid_tag = tlid.get_minutes()
@@ -322,27 +325,36 @@ def _pov_target_calculation_n_output240223(
     cds_full_filename = f"{indir_cds}/{ifn}_{t}.csv"
     if not os.path.exists(cds_full_filename) or regenerate_cds or use_fresh:
         from jgtpy import JGTCDS as cds
-        msg = "JTC is generating the CDS file: "
+        reason = "(dont exist)" if not os.path.exists(cds_full_filename) else "" 
+        msg = f"JTC is generating the CDS file{reason}: "
         msg = msg + " regenerated flag active" if regenerate_cds else msg
         msg = msg + " use fresh flag active" if use_fresh else msg
 
         print(msg)
         use_full = True
-        cds.createFromPDSFileToCDSFile(instrument=i, 
-                                       timeframe=t,
-                                       use_full=use_full,
-                                       use_fresh=use_fresh,keep_bid_ask=keep_bid_ask,
-                                       gator_oscillator_flag=gator_oscillator_flag,
-                                       mfi_flag=mfi_flag,
-                                       balligator_flag=balligator_flag,
-                                       balligator_period_jaws=balligator_period_jaws,
-                                       largest_fractal_period=largest_fractal_period,
-                                       talligator_flag=talligator_flag,
-                                       talligator_period_jaws=talligator_period_jaws)#@STCGoal Use Fresh
-        
-    df_cds_source = pd.read_csv(
-        cds_full_filename, index_col=0, parse_dates=True
-    )
+        #@STCIssue UPGRADE to use JGTCDSSvc
+        from jgtpy import JGTCDSSvc as svc
+        svc.get(instrument=i, timeframe=t, use_full=use_full, use_fresh=use_fresh)
+        # cds.createFromPDSFileToCDSFile(instrument=i, 
+        #                                timeframe=t,
+        #                                use_full=use_full,
+        #                                use_fresh=use_fresh,keep_bid_ask=keep_bid_ask,
+        #                                gator_oscillator_flag=gator_oscillator_flag,
+        #                                mfi_flag=mfi_flag,
+        #                                balligator_flag=balligator_flag,
+        #                                balligator_period_jaws=balligator_period_jaws,
+        #                                largest_fractal_period=largest_fractal_period,
+        #                                talligator_flag=talligator_flag,
+        #                                talligator_period_jaws=talligator_period_jaws)#@STCGoal Use Fresh
+    if use_ttf:
+        from ptottf import read_ttf_csv
+        print("jgtml is using ttf....")
+        df_cds_source = read_ttf_csv(i, t, use_full=True)
+        #print("JGTML::Debug len of df_cds_source:", len(df_cds_source))
+    else:
+        df_cds_source = pd.read_csv(
+            cds_full_filename, index_col=0, parse_dates=True
+        )
 
     df_result_tmx = calculate_target_variable_min_max(
         df_cds_source, 

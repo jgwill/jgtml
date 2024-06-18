@@ -16,7 +16,7 @@ if __name__ == "__main__":
     parser.add_argument("-uf", "--full", action="store_true", help="Use full dataset")
     parser.add_argument("-new", "--fresh", action="store_true", help="Use fresh data")
     parser.add_argument("-fr", "--force_read", action="store_true", help="Force to read CDS (should increase speed but relies on existing data)")
-    parser.add_argument("-c", "--quotescount", type=int, default=333, help="Number of quotes to retrieve (default: 333)")
+    parser.add_argument("-c", "--quotescount", type=int, default=-1, help="Number of quotes to retrieve (default: 333)")
 
     args = parser.parse_args()
-    create_ttf_csv(args.instrument, args.timeframe, args.full, args.fresh, args.quotescount, args.force_read)
+    create_ttf_csv(args.instrument, args.timeframe, args.full if args.full else False, args.fresh, args.quotescount, args.force_read)
