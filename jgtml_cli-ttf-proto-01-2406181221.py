@@ -6,7 +6,7 @@ from jgtutils.jgtconstants import (MFI_VAL, ZCOL, AO)
 
 import os
 
-def get_basedir(use_full,ns="ttf"):
+def get_ttf_basedir(use_full,ns="ttf"):
     if use_full:
         bd=os.getenv("JGTPY_DATA_FULL")
         if bd is None:
@@ -20,8 +20,8 @@ def get_basedir(use_full,ns="ttf"):
     os.makedirs(fulldir, exist_ok=True)
     return fulldir
 
-def get_outfile_fullpath(i,t,use_full,suffix="",ns="ttf"):
-    save_basedir=get_basedir(use_full,ns)
+def get_ttf_outfile_fullpath(i,t,use_full,suffix="",ns="ttf"):
+    save_basedir=get_ttf_basedir(use_full,ns)
     ifn=i.replace("/","-")
     output_filename = f"{ifn}_{t}_ttf{suffix}.csv"
     return os.path.join(save_basedir,output_filename)
@@ -41,7 +41,7 @@ def make_htf_created_columns_array(workset,t):
     return created_columns
 
 def read_ttf_csv(i, t, use_full=False):
-    output_filename=get_outfile_fullpath(i,t,use_full)
+    output_filename=get_ttf_outfile_fullpath(i,t,use_full)
     return pd.read_csv(output_filename, index_col=0)
   
 def create_ttf_csv(i, t, use_full=False, use_fresh=True, quotescount=333,force_read=False):
@@ -75,13 +75,14 @@ def create_ttf_csv(i, t, use_full=False, use_fresh=True, quotescount=333,force_r
     
     #save basedir is $JGTPY_DATA/ttf is not use_full, if use_full save basedir is $JGTPY_DATA_FULL/ttf
     
-    output_filename=get_outfile_fullpath(i,t,use_full)
-    output_filename_sel=get_outfile_fullpath(i,t,use_full,suffix="_sel")
+    output_filename=get_ttf_outfile_fullpath(i,t,use_full)
+    output_filename_sel=get_ttf_outfile_fullpath(i,t,use_full,suffix="_sel")
     
     ttf.to_csv(output_filename, index=True)
     ttf_sel.to_csv(output_filename_sel, index=True)
     print(f"Output CSV file '{output_filename}' created successfully.")
     print(f"Output CSV file '{output_filename_sel}' created successfully.")
+    return ttf
 
 
 if __name__ == "__main__":
