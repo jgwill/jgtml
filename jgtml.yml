@@ -42,7 +42,7 @@ dependencies:
   - ptyprocess=0.7.0=pyhd3deb0d_0
   - pure_eval=0.2.2=pyhd8ed1ab_0
   - pygments=2.17.2=pyhd8ed1ab_0
-  - python=3.10.13=h955ad1f_0
+  - python=3.10.14=h955ad1f_0
   - python_abi=3.10=2_cp310
   - pyzmq=25.1.2=py310h6a678d5_0
   - readline=8.2=h5eee18b_0

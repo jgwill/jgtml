@@ -2,9 +2,6 @@
 	"folders": [
 		{
 			"path": "."
-		},
-		{
-			"path": "../../../../var/lib/jgt/full/data/targets/mx"
 		}
 	],
 	"settings": {
@@ -20,6 +17,8 @@
 			"dist": true,
 			"jgtml.egg-info": true
 		},
-		"explorerExclude.backup": {}
+		"explorerExclude.backup": {},
+		"editor.tabSize": 2,
+		"files.autoSave": "afterDelay"
 	}
 }

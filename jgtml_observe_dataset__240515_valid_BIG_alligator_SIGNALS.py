@@ -12,7 +12,8 @@ This Python script is designed to analyze the effectiveness of signals in the co
 
 The script then evaluates the profitability of each valid signal's direction, analyzes the distribution of profit potential across different signal types, and compares their performance. The results of the analysis are outputted as a CSV file, and a markdown file summarizing the key findings is also generated.
 """
-X_ABSTRACT="## Abstract"+EPILOG+"""
+X_ABSTRACT="""
+# Abstract"""+EPILOG+"""
 
 
 
@@ -62,7 +63,7 @@ except:
 
 from jgtml import jtc
 
-#TODO Use jgtconstants column names from jgtutils
+# Use jgtconstants column names from jgtutils
 from jgtutils.jgtconstants import LOW,HIGH,FDBB,FDBS,BJAW,BLIPS,BTEETH,JAW,TEETH,LIPS,FDB_TARGET,VECTOR_AO_FDBS_COUNT,VECTOR_AO_FDBB_COUNT,VECTOR_AO_FDB_COUNT
 FDB_TARGET=FDB_TARGET
 
@@ -94,8 +95,8 @@ jgtdroot_default="/b/Dropbox/jgt" #$jgtdroot
 jgtdroot=os.getenv("jgtdroot",jgtdroot_default)
 #result_drop_base_default="/b/Dropbox/jgt/drop" #$jgtdroot
 drop_subdir = "drop"
-result_file_basename = "jgtml_observe_dataset__240515_valid_BIG_alligator_SIGNALS.result"
-
+result_file_basename_default = "jgtml_observe_dataset__240515_valid_BIG_alligator_SIGNALS.result"
+result_file_basename=result_file_basename_default
 
 # Columns to select
 sel_columns_sell = [HIGH,LOW,BJAW,BLIPS,BTEETH,JAW,TEETH,LIPS,FDBS,FDB_TARGET,VECTOR_AO_FDBS_COUNT,VECTOR_AO_FDB_COUNT]
@@ -126,10 +127,12 @@ if __name__ == "__main__":
     parser.add_argument('-rdb','--result_drop_base_override', type=str, default=None, help='Result Drop Base Override')
     #source_dataset_archival_path_override
     parser.add_argument('-sda','--source_dataset_archival_path_override', type=str, default=None, help='Source Dataset Archival Path Override')
-    #quiet
+    # quiet
     parser.add_argument('-q','--quiet', type=bool, default=True, help='Quiet')
     #print X_ABSTRACT
     parser.add_argument('-abstract','--print_abstract', action='store_true', help='Print Abstract')
+    #result_file_basename
+    parser.add_argument('-rfb','--result_file_basename', type=str, default=result_file_basename_default, help='Result File Base Name')
 
     args = parser.parse_args()
     print_abstract = args.print_abstract
@@ -218,9 +221,8 @@ if not quiet:
        'p', 'l', TARGET, 'vaos', 'vaob', 'vaosc', 'vaobc', 'vaoc'],
       
 """
-# create a dataset with only the columns we need.  TARGET, 'vaos', 'vaob', 'vaosc', 'vaobc', 'vaoc'
-# dfo = df[[TARGET, 'vaos', 'vaob', 'vaosc', 'vaobc', 'vaoc']]
 
+# create a dataset with only the columns we need.  
 dfo = df[sel_columns]
 
 
