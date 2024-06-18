@@ -24,11 +24,11 @@ Future work includes further data analysis to identify additional patterns and i
 The 6 types of signals analyzed in this script are:
 
 - all_signals
-- sig_mouth_is_open
-- sig_not_in_lips_teeth
+- sig_nmopen
+- sig_basic_filtering
 - sig_is_in_tteeth
-- tide_m_open_in_tteeth
-- sig_in_tlips_tmouth_is_open
+- sig_tmopen_in_tteeth
+- sig_tmopen_in_tlips
 
 The script outputs the following metrics for each signal type:
 
@@ -42,11 +42,11 @@ The script also generates a markdown file summarizing the key findings and a CSV
 Details of each type of signals
 
 - all_signals: All valid signals made by the jgtml.jtc.pto_target_calculation function
-- sig_mouth_is_open: Signals where the mouth of the "Regular Alligator" is open
-- sig_not_in_lips_teeth: Signals where the price bar is out of the lips and teeth of the "Regular Alligator"
+- sig_nmopen: Signals where the mouth of the "Regular Alligator" is open
+- sig_basic_filtering: Signals where the price bar is out of the lips and teeth of the "Regular Alligator"
 - sig_is_in_tteeth: Signals where the price bar has came back in the big teeth of the "Big Alligator" without the mouth being open or not.
-- tide_m_open_in_tteeth: Signals where the price bar has came back in the big teeth and the mouth of the "Big Alligator" is open (Exploring a Strategic entry when the mouth is open and we want to enter at the end of a retracement.  This explores signals that pulled back in the big teeth(the middest of the big balancing lines system))
-- sig_in_tlips_tmouth_is_open: Signals where the price bar has came back in the big lips and the mouth of the "Big Alligator" is open (Exploring a Strategic entry when the mouth is open and we want to enter at the end of a retracement. This explores signals that pulled back in the big lips (the smallest of the big balancing lines system) )
+- sig_tmopen_in_tteeth: Signals where the price bar has came back in the big teeth and the mouth of the "Big Alligator" is open (Exploring a Strategic entry when the mouth is open and we want to enter at the end of a retracement.  This explores signals that pulled back in the big teeth(the middest of the big balancing lines system))
+- sig_tmopen_in_tlips: Signals where the price bar has came back in the big lips and the mouth of the "Big Alligator" is open (Exploring a Strategic entry when the mouth is open and we want to enter at the end of a retracement. This explores signals that pulled back in the big lips (the smallest of the big balancing lines system) )
 
 Further analysis and interpretation of the results are needed to draw meaningful conclusions and insights from the data. The script is intended to be a starting point for more in-depth research and exploration of technical indicators in trading.
 
@@ -324,86 +324,86 @@ print("count:",all_context_signal_count," sum0:",all_signalsnal_sum)
 #Remove invalid signal when column High < lips
 #@STCGoal Valid Signals are bellow the lips and teeth 
 if bs=="S":
-    sig_not_in_lips_teeth = dfo_context[dfo_context[LOW] > dfo_context[LIPS]].copy()
-    sig_not_in_lips_teeth = sig_not_in_lips_teeth[sig_not_in_lips_teeth[LOW] > sig_not_in_lips_teeth[TEETH]]
+    sig_basic_filtering = dfo_context[dfo_context[LOW] > dfo_context[LIPS]].copy()
+    sig_basic_filtering = sig_basic_filtering[sig_basic_filtering[LOW] > sig_basic_filtering[TEETH]]
 
     #@STCGoal Valid Signals when mouth is open
-    sig_mouth_is_open = sig_not_in_lips_teeth[sig_not_in_lips_teeth[JAW] < sig_not_in_lips_teeth[TEETH]].copy()
-    sig_mouth_is_open = sig_mouth_is_open[sig_mouth_is_open[TEETH] < sig_mouth_is_open[LIPS]]
-    sig_mouth_is_open = sig_mouth_is_open[sig_mouth_is_open[JAW] < sig_mouth_is_open[LIPS]]
+    sig_nmopen = sig_basic_filtering[sig_basic_filtering[JAW] < sig_basic_filtering[TEETH]].copy()
+    sig_nmopen = sig_nmopen[sig_nmopen[TEETH] < sig_nmopen[LIPS]]
+    sig_nmopen = sig_nmopen[sig_nmopen[JAW] < sig_nmopen[LIPS]]
 
     #sig_is_in_tteeth
-    sig_is_in_tteeth = sig_not_in_lips_teeth[
-    sig_not_in_lips_teeth[LOW] > sig_not_in_lips_teeth[TTEETH]
+    sig_is_in_tteeth = sig_basic_filtering[
+    sig_basic_filtering[LOW] > sig_basic_filtering[TTEETH]
     ].copy()
 
-    #tide_m_open_in_tteeth
-    tide_m_open_in_tteeth = sig_not_in_lips_teeth[
-        sig_not_in_lips_teeth[LOW] > sig_not_in_lips_teeth[TTEETH]
+    #sig_tmopen_in_tteeth
+    sig_tmopen_in_tteeth = sig_basic_filtering[
+        sig_basic_filtering[LOW] > sig_basic_filtering[TTEETH]
         ].copy()
 
-    tide_m_open_in_tteeth = tide_m_open_in_tteeth[  #@a The Big Mouth Is Open
-        tide_m_open_in_tteeth[TLIPS] < tide_m_open_in_tteeth[TTEETH]
+    sig_tmopen_in_tteeth = sig_tmopen_in_tteeth[  #@a The Big Mouth Is Open
+        sig_tmopen_in_tteeth[TLIPS] < sig_tmopen_in_tteeth[TTEETH]
         ]
-    tide_m_open_in_tteeth = tide_m_open_in_tteeth[  #@a The Big Mouth Is Open
-        tide_m_open_in_tteeth[TTEETH] < tide_m_open_in_tteeth[TJAW]
+    sig_tmopen_in_tteeth = sig_tmopen_in_tteeth[  #@a The Big Mouth Is Open
+        sig_tmopen_in_tteeth[TTEETH] < sig_tmopen_in_tteeth[TJAW]
         ]        
 
-    #sig_in_tlips_tmouth_is_open
-    sig_in_tlips_tmouth_is_open = sig_not_in_lips_teeth[
-        sig_not_in_lips_teeth[LOW] < sig_not_in_lips_teeth[TLIPS]
+    #sig_tmopen_in_tlips
+    sig_tmopen_in_tlips = sig_basic_filtering[
+        sig_basic_filtering[LOW] < sig_basic_filtering[TLIPS]
         ].copy()
 
     # the BMouth is Openned
-    sig_in_tlips_tmouth_is_open = sig_in_tlips_tmouth_is_open[
-        sig_in_tlips_tmouth_is_open[TLIPS] < sig_in_tlips_tmouth_is_open[TTEETH]
+    sig_tmopen_in_tlips = sig_tmopen_in_tlips[
+        sig_tmopen_in_tlips[TLIPS] < sig_tmopen_in_tlips[TTEETH]
         ]
-    sig_in_tlips_tmouth_is_open = sig_in_tlips_tmouth_is_open[
-        sig_in_tlips_tmouth_is_open[TTEETH] < sig_in_tlips_tmouth_is_open[TJAW]
+    sig_tmopen_in_tlips = sig_tmopen_in_tlips[
+        sig_tmopen_in_tlips[TTEETH] < sig_tmopen_in_tlips[TJAW]
         ]
     
     #
                     
 
 else:
-    sig_not_in_lips_teeth = dfo_context[dfo_context[HIGH] < dfo_context[LIPS]].copy()
-    sig_not_in_lips_teeth = sig_not_in_lips_teeth[sig_not_in_lips_teeth[HIGH] < sig_not_in_lips_teeth[TEETH]]
+    sig_basic_filtering = dfo_context[dfo_context[HIGH] < dfo_context[LIPS]].copy()
+    sig_basic_filtering = sig_basic_filtering[sig_basic_filtering[HIGH] < sig_basic_filtering[TEETH]]
 
-    #sig_mouth_is_open
-    sig_mouth_is_open = sig_not_in_lips_teeth[sig_not_in_lips_teeth[JAW] > sig_not_in_lips_teeth[TEETH]].copy()
-    sig_mouth_is_open = sig_mouth_is_open[sig_mouth_is_open[TEETH] > sig_mouth_is_open[LIPS]]
-    sig_mouth_is_open = sig_mouth_is_open[sig_mouth_is_open[JAW] > sig_mouth_is_open[LIPS]]
+    #sig_nmopen
+    sig_nmopen = sig_basic_filtering[sig_basic_filtering[JAW] > sig_basic_filtering[TEETH]].copy()
+    sig_nmopen = sig_nmopen[sig_nmopen[TEETH] > sig_nmopen[LIPS]]
+    sig_nmopen = sig_nmopen[sig_nmopen[JAW] > sig_nmopen[LIPS]]
 
     #sig_is_in_tteeth
-    sig_is_in_tteeth = sig_not_in_lips_teeth[
-    sig_not_in_lips_teeth[HIGH] < sig_not_in_lips_teeth[TTEETH]
+    sig_is_in_tteeth = sig_basic_filtering[
+    sig_basic_filtering[HIGH] < sig_basic_filtering[TTEETH]
     ].copy()
 
     #
-    #tide_m_open_in_tteeth
-    tide_m_open_in_tteeth = sig_not_in_lips_teeth[
-        sig_not_in_lips_teeth[HIGH] < sig_not_in_lips_teeth[TTEETH]
+    #sig_tmopen_in_tteeth
+    sig_tmopen_in_tteeth = sig_basic_filtering[
+        sig_basic_filtering[HIGH] < sig_basic_filtering[TTEETH]
         ].copy()
 
-    tide_m_open_in_tteeth = tide_m_open_in_tteeth[  #@a The Big Mouth Is Open
-        tide_m_open_in_tteeth[TLIPS] > tide_m_open_in_tteeth[TTEETH]
+    sig_tmopen_in_tteeth = sig_tmopen_in_tteeth[  #@a The Big Mouth Is Open
+        sig_tmopen_in_tteeth[TLIPS] > sig_tmopen_in_tteeth[TTEETH]
         ]
-    tide_m_open_in_tteeth = tide_m_open_in_tteeth[  #@a The Big Mouth Is Open
-        tide_m_open_in_tteeth[TTEETH] > tide_m_open_in_tteeth[TJAW]
+    sig_tmopen_in_tteeth = sig_tmopen_in_tteeth[  #@a The Big Mouth Is Open
+        sig_tmopen_in_tteeth[TTEETH] > sig_tmopen_in_tteeth[TJAW]
         ]      
     
     #
-    #sig_in_tlips_tmouth_is_open
-    sig_in_tlips_tmouth_is_open = sig_not_in_lips_teeth[
-        sig_not_in_lips_teeth[HIGH] > sig_not_in_lips_teeth[TLIPS]
+    #sig_tmopen_in_tlips
+    sig_tmopen_in_tlips = sig_basic_filtering[
+        sig_basic_filtering[HIGH] > sig_basic_filtering[TLIPS]
         ].copy()
 
     # the BMouth is Openned
-    sig_in_tlips_tmouth_is_open = sig_in_tlips_tmouth_is_open[
-        sig_in_tlips_tmouth_is_open[TLIPS] > sig_in_tlips_tmouth_is_open[TTEETH]
+    sig_tmopen_in_tlips = sig_tmopen_in_tlips[
+        sig_tmopen_in_tlips[TLIPS] > sig_tmopen_in_tlips[TTEETH]
         ]
-    sig_in_tlips_tmouth_is_open = sig_in_tlips_tmouth_is_open[
-        sig_in_tlips_tmouth_is_open[TTEETH] > sig_in_tlips_tmouth_is_open[TJAW]
+    sig_tmopen_in_tlips = sig_tmopen_in_tlips[
+        sig_tmopen_in_tlips[TTEETH] > sig_tmopen_in_tlips[TJAW]
         ]
     
     #
@@ -414,37 +414,37 @@ else:
 
 
 # INDEPENDENT OF DIRECTIONS
-sig_not_in_lips_teeth_count = len(sig_not_in_lips_teeth)
-sig_not_in_lips_teeth_sum=sig_not_in_lips_teeth[FDB_TARGET].sum()
+sig_basic_filtering_count = len(sig_basic_filtering)
+sig_basic_filtering_sum=sig_basic_filtering[FDB_TARGET].sum()
 
-sig_mouth_is_open_count = len(sig_mouth_is_open)
-sig_mouth_is_open_sum=sig_mouth_is_open[FDB_TARGET].sum()
+sig_nmopen_count = len(sig_nmopen)
+sig_nmopen_sum=sig_nmopen[FDB_TARGET].sum()
 
 
 
 
 
 if not quiet:
-    print("sig_not_in_lips_teeth:",sig_not_in_lips_teeth_count," sum:",sig_not_in_lips_teeth_sum)
+    print("sig_basic_filtering:",sig_basic_filtering_count," sum:",sig_basic_filtering_sum)
 
 
 # %%
 
 if not quiet:
-    print(sig_not_in_lips_teeth.tail(40))
-    print("count3:",sig_mouth_is_open_count," sum3:",sig_mouth_is_open_sum)
+    print(sig_basic_filtering.tail(40))
+    print("count3:",sig_nmopen_count," sum3:",sig_nmopen_sum)
 
 # %%
 
 if not quiet:
-    print(sig_mouth_is_open.tail(40))
+    print(sig_nmopen.tail(40))
 
 
 # %%
 if not quiet:
     print("count (no validation):",all_context_signal_count," sum0:",all_signalsnal_sum)
-    print("count_2 sig_not_in_lips_teeth:",sig_not_in_lips_teeth_count," sum2:",sig_not_in_lips_teeth_sum)
-    print("count_sell3 sig_mouth_is_open:",sig_mouth_is_open_count," sum3:",sig_mouth_is_open_sum)
+    print("count_2 sig_basic_filtering:",sig_basic_filtering_count," sum2:",sig_basic_filtering_sum)
+    print("count_sell3 sig_nmopen:",sig_nmopen_count," sum3:",sig_nmopen_sum)
 
 
 
@@ -486,26 +486,26 @@ if not quiet:
 # %%  BIG ALLIGATOR  - Eval Low is Above Big Lips and Big Mouth is Open OR RELATED tO BUY
 
                                        
-tide_m_open_in_tteeth_count = len(tide_m_open_in_tteeth)
-tide_m_open_in_tteeth_sum=tide_m_open_in_tteeth[FDB_TARGET].sum()
+sig_tmopen_in_tteeth_count = len(sig_tmopen_in_tteeth)
+sig_tmopen_in_tteeth_sum=sig_tmopen_in_tteeth[FDB_TARGET].sum()
 
 # %%
 
 if not quiet:
-    print(tide_m_open_in_tteeth.tail(40))
-    print("count_sell2s2 Low is Above Big Teeth and Big Mouth is Open:",tide_m_open_in_tteeth_count," sum2s2:",tide_m_open_in_tteeth_sum)
+    print(sig_tmopen_in_tteeth.tail(40))
+    print("count_sell2s2 Low is Above Big Teeth and Big Mouth is Open:",sig_tmopen_in_tteeth_count," sum2s2:",sig_tmopen_in_tteeth_sum)
 
 
 # %%  BIG ALLIGATOR - Eval Low is Above Big Lips and Big Mouth is Open OR RELATED tO BUY
 
                                                                     
-sig_in_tlips_tmouth_is_open_count = len(sig_in_tlips_tmouth_is_open)
-sig_in_tlips_tmouth_is_open_sum=sig_in_tlips_tmouth_is_open[FDB_TARGET].sum()
+sig_tmopen_in_tlips_count = len(sig_tmopen_in_tlips)
+sig_tmopen_in_tlips_sum=sig_tmopen_in_tlips[FDB_TARGET].sum()
 
 # %%
 if not quiet:
-    print(sig_in_tlips_tmouth_is_open.tail(40))
-    print("count_sell2s2 Low is Above Big Lips and Big Mouth is Open:",sig_in_tlips_tmouth_is_open_count," sum2s2:",sig_in_tlips_tmouth_is_open_sum)
+    print(sig_tmopen_in_tlips.tail(40))
+    print("count_sell2s2 Low is Above Big Lips and Big Mouth is Open:",sig_tmopen_in_tlips_count," sum2s2:",sig_tmopen_in_tlips_sum)
 
 
 
@@ -556,17 +556,17 @@ write_to_result_md("----")
 write_to_result_md("  ")
 write_to_result_md("==============================================================")
 print_res(i,t,direction,all_context_signal_count,all_signalsnal_sum,"all_signals",dfo_context)
-print_res(i,t,direction,sig_mouth_is_open_count,sig_mouth_is_open_sum,"sig_mouth_is_open",sig_mouth_is_open)
+print_res(i,t,direction,sig_nmopen_count,sig_nmopen_sum,"sig_nmopen",sig_nmopen)
 write_to_result_md("==============================================================")
-print_res(i,t,direction,sig_not_in_lips_teeth_count,sig_not_in_lips_teeth_sum,"sig_not_in_lips_teeth",sig_not_in_lips_teeth)
+print_res(i,t,direction,sig_basic_filtering_count,sig_basic_filtering_sum,"sig_basic_filtering",sig_basic_filtering)
 write_to_result_md("==============================================================")
 print_res(i,t,direction,sig_is_in_tteeth_count,sig_is_in_tteeth_sum,"sig_is_in_tteeth_sum",sig_is_in_tteeth)
-print_res(i,t,direction,sig_in_tlips_tmouth_is_open_count,sig_in_tlips_tmouth_is_open_sum,"sig_in_tlips_tmouth_is_open",sig_in_tlips_tmouth_is_open)
+print_res(i,t,direction,sig_tmopen_in_tlips_count,sig_tmopen_in_tlips_sum,"sig_tmopen_in_tlips",sig_tmopen_in_tlips)
 #pt:32.42 t:132 sum:4279.999999999999 title:count_sell2s2 Low is Above Big Lips and Big Mouth is Open
-print_res(i,t,direction,tide_m_open_in_tteeth_count,tide_m_open_in_tteeth_sum,"tide_m_open_in_tteeth_sum",tide_m_open_in_tteeth)
+print_res(i,t,direction,sig_tmopen_in_tteeth_count,sig_tmopen_in_tteeth_sum,"sig_tmopen_in_tteeth_sum",sig_tmopen_in_tteeth)
 write_to_result_md("==============================================================")
 
 
-#@STCIssue SPX500 D1, tide_m_open_in_tteeth_sum has an interesting value when the Signal bar is in the big mouth
-#pt:83.2 t:99 sum:8237.0 title:tide_m_open_in_tteeth_sum
+#@STCIssue SPX500 D1, sig_tmopen_in_tteeth_sum has an interesting value when the Signal bar is in the big mouth
+#pt:83.2 t:99 sum:8237.0 title:sig_tmopen_in_tteeth_sum
 # %%
