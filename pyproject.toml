@@ -27,7 +27,7 @@ dependencies = [
   'flask',
   'bokeh',
   'jinja2',
-  'sklearn'
+  'scikit-learn'
 ]	
 
 optional-dependencies = {  dev-lint = [
