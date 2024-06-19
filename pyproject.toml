@@ -26,7 +26,8 @@ dependencies = [
   'dash',
   'flask',
   'bokeh',
-  'jinja2'
+  'jinja2',
+  'sklearn'
 ]	
 
 optional-dependencies = {  dev-lint = [
