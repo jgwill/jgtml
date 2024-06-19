@@ -82,6 +82,7 @@ i = 'SPX500'
 t = "H4"
 t = "D1"
 
+
 # FLAGS for the PROCESS we might want to configure or read from ENV
 force_regenerate_mxfiles=True
 mfi_flag=True
