@@ -23,7 +23,10 @@ dependencies = [
   'scipy>=1.7.3',
   'panel>=1.2.3',
   'seaborn>=0.13.2', 
-  'dash'
+  'dash',
+  'flask',
+  'bokeh',
+  'jinja2'
 ]	
 
 optional-dependencies = {  dev-lint = [
