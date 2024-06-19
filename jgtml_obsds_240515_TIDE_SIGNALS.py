@@ -211,6 +211,11 @@ else:
 # Where to save the results
 result_drop_base=os.path.join(jgtdroot, drop_subdir) if result_drop_base_override is None else result_drop_base_override
 
+if not os.path.exists(result_drop_base):
+    result_drop_base=os.path.join(".", drop_subdir)
+    os.makedirs(result_drop_base,exist_ok=True)
+    
+
 #Where source dataset is archived 
 source_dataset_archival_path= os.path.join(result_drop_base, "data", "arch", "jgtml_240516") if source_dataset_archival_path_override is None else source_dataset_archival_path_override
 
