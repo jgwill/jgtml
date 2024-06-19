@@ -55,3 +55,6 @@ classifiers = [
 
 [project.scripts]
 jgtmlcli = "jgtml.jgtmlcli:main"
+ptojgtmltidealligator= "jgtml.ptojgtmltidealligator:main"
+ptojgtmlclittfprotocli="jgtml.ptojgtmlclittfprotocli:main"
+

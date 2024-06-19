@@ -9,7 +9,8 @@
   },
   "scripts": {
     "test": "bash pypi-conda-gaia-env.sh",
-    "build": "make dist",
+    "pre-build-pto": "bash pto-pre-build.sh",
+    "build": "bash pto-pre-build.sh;make dist",
     "release": "make dist && twine upload dist/*",
     "publish": "twine upload dist/*"
   },
