@@ -100,7 +100,7 @@ jgtdroot_default="/b/Dropbox/jgt" #$jgtdroot
 jgtdroot=os.getenv("jgtdroot",jgtdroot_default)
 #result_drop_base_default="/b/Dropbox/jgt/drop" #$jgtdroot
 drop_subdir = "drop"
-result_file_basename_default = "jgtml_obsds_240515_TIDE_SIGNALS.result"
+result_file_basename_default = os.getenv("result_file_basename_default") if os.getenv("result_file_basename_default") is not None else "jgtml_obsds_240515_TIDE_SIGNALS.result"
 result_file_basename=result_file_basename_default
 
 # Columns to select
@@ -142,8 +142,8 @@ def main():
     global i,t,bs,print_abstract,regenerate_cds,result_drop_base_override,source_dataset_archival_path_override,quiet,data_dir_override,use_fresh
     import argparse
     parser = argparse.ArgumentParser(description=CLI_DESCRIPTION,epilog=EPILOG)
-    parser.add_argument('-i','--instrument', type=str, default='SPX500', help='Instrument')
-    parser.add_argument('-t','--timeframe', type=str, default='D1', help='Timeframe')
+    parser.add_argument('-i','--instrument', type=str, help='Instrument')
+    parser.add_argument('-t','--timeframe', type=str, help='Timeframe')
     #bs
     parser.add_argument('-bs','--buysell', type=str, default='S', help='Buy or Sell')
     #regenerate_cds
@@ -211,6 +211,8 @@ if not NB_CONTEXT_RUN:
 else:
     _chg_logics_for_notebook_context()
 
+#%% 
+print(f"i:{i} t:{t} bs:{bs}")
 #%%
 
 # Where to save the results
