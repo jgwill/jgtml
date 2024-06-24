@@ -42,10 +42,11 @@ def make_htf_created_columns_array(workset,t):
 
 def read_ttf_csv(i, t, use_full=False):
     output_filename=get_ttf_outfile_fullpath(i,t,use_full)
-    print("Read TTF: ", output_filename)
-    #if not os.path.exists(output_filename): create it
     if not os.path.exists(output_filename):
+        print("Non existent, Creating TTF: ", output_filename)
         create_ttf_csv(i, t, use_full,force_read=True)
+    else:
+        print("Read TTF: ", output_filename)
     return pd.read_csv(output_filename, index_col=0)
   
 def read_ttf_csv_selection(i, t, use_full=False):
