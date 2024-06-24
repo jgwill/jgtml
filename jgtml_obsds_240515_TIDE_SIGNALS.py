@@ -150,6 +150,7 @@ def main():
     parser.add_argument('-nocds','--dont_regenerate_cds', help='Dont Regenerate CDS',action='store_true')
     #use_fresh
     parser.add_argument('-nf','--nofresh', help='Dont Use Fresh (Assuming you need CDS Already generated and available)',action='store_true')
+    #parser.add_argument('-old','--not_fresh', help='Dont Use Fresh (Assuming you need CDS Already generated and available)',action='store_true')
 
     #data_dir_override
     parser.add_argument('-dd','--data_dir_override', type=str, default=None, help='Data Directory Override path (JGTPY_DATA_FULL env var will be used if not provided)')
