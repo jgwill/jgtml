@@ -139,7 +139,7 @@ use_ttf_default = True
 
 
 def main():
-    global i,t,bs,print_abstract,regenerate_cds,result_drop_base_override,source_dataset_archival_path_override,quiet,data_dir_override,use_fresh
+    #global i,t,bs,print_abstract,regenerate_cds,result_drop_base_override,source_dataset_archival_path_override,quiet,data_dir_override,use_fresh,use_env
     import argparse
     parser = argparse.ArgumentParser(description=CLI_DESCRIPTION,epilog=EPILOG)
     parser.add_argument('-i','--instrument', type=str, help='Instrument')
