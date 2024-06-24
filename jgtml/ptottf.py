@@ -53,8 +53,8 @@ def read_ttf_csv_selection(i, t, use_full=False):
     return pd.read_csv(output_filename_sel, index_col=0)
  
 def create_ttf_csv(i, t, use_full=False, use_fresh=True, quotescount=-1,force_read=False):
-  if use_full:
-    print("Using full dataset")
+  #if use_full:
+  #  print("Using full dataset")
 
   povs = jpov.get_higher_tf_array(t)
   ttf = pd.DataFrame()
