@@ -92,6 +92,6 @@ def create_ttf_csv(i, t, use_full=False, use_fresh=True, quotescount=-1,force_re
   
   ttf.to_csv(output_filename, index=True)
   ttf_sel.to_csv(output_filename_sel, index=True)
-  print(f"Output CSV file '{output_filename}' created successfully.")
-  print(f"Output CSV file '{output_filename_sel}' created successfully.")
+  print(f"MX Output full:'{output_filename}' created successfully.")
+  print(f"MX Output sel :'{output_filename_sel}' created successfully.")
   return ttf
