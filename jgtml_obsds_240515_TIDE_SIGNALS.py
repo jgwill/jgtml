@@ -275,7 +275,7 @@ if df is None:
 
 #%%
 if NB_CONTEXT_RUN:
-    quiet=False
+    quiet=False if os.getenv("quiet") is None else quiet
 
 if not quiet:
     l=len(df)
