@@ -449,6 +449,7 @@ def _pov_target_calculation_n_output240223(
 
 
     if save_outputs:
+        print("Saving MX Target data to file...")
         output_sel_cols_fn = f"{outdir_tmx}/{ifn}_{t}{sel_1_suffix}.csv"
         try:
             sel1.to_csv(output_sel_cols_fn, index=True)
