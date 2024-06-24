@@ -348,7 +348,7 @@ def _pov_target_calculation_n_output240223(
         #                                talligator_period_jaws=talligator_period_jaws)#@STCGoal Use Fresh
     if use_ttf:
         from ptottf import read_ttf_csv
-        print("jgtml is using ttf....")
+        print("                                 jgtml is using ttf....")
         df_cds_source = read_ttf_csv(i, t, use_full=True)
         #print("JGTML::Debug len of df_cds_source:", len(df_cds_source))
     else:
@@ -515,13 +515,14 @@ def _reporting(df_selection2, ifn, t, pipsize, tlid_tag, output_report_dir=None)
         os.makedirs(output_report_dir, exist_ok=True)
 
     report_file = f"{output_report_dir}/report-calc-{tlid_tag}.txt"
-    print("Reporting to:", report_file)
-    print(" tail -f ", report_file)
-
-    with open(report_file, "a") as f:
-        f.write(f"--- {ifn}_{t} --pipsize:{pipsize}---\n")
-        f.write(f"Sum of target: {df_selection2['target'].sum()}\n\n")
-        # f.write(f" (rounded): {(df_selection2['target'].sum()).round(2)}\n\n")
+    reporting_flag=True if os.getenv("JGT_REPORTING_FLAG") == "True" else False
+    if reporting_flag:
+        print("Reporting to:", report_file)
+        print(" tail -f ", report_file)
+        with open(report_file, "a") as f:
+            f.write(f"--- {ifn}_{t} --pipsize:{pipsize}---\n")
+            f.write(f"Sum of target: {df_selection2['target'].sum()}\n\n")
+            # f.write(f" (rounded): {(df_selection2['target'].sum()).round(2)}\n\n")
 
 
 def readMXFile(
