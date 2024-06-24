@@ -118,14 +118,6 @@ sel_columns_common=sel_columns_base + \
 sel_columns_sell = sel_columns_common + [FDBS, VECTOR_AO_FDBS_COUNT]
 sel_columns_buy = sel_columns_common + [FDBB, VECTOR_AO_FDBB_COUNT]
 
-# print(sel_columns_common)
-# print(sel_columns_sell)
-# print(sel_columns_buy)
-#%%
-
-# sel_columns_sell = [HIGH,LOW,BJAW,BLIPS,BTEETH,TJAW,TTEETH,TLIPS,JAW,TEETH,LIPS,FDBS,FDB_TARGET,VECTOR_AO_FDBS_COUNT,VECTOR_AO_FDB_COUNT]
-# sel_columns_buy = [HIGH,LOW,BJAW,BLIPS,BTEETH,TJAW,TTEETH,TLIPS,JAW,TEETH,LIPS,FDBB,FDB_TARGET,VECTOR_AO_FDBB_COUNT,VECTOR_AO_FDB_COUNT]
-
 jgtpy_data_full_var_name = "JGTPY_DATA_FULL"
 
 bs="S" # This prototype is for SELL signals only, we can extend it to BUY signals later
