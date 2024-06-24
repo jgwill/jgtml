@@ -51,7 +51,9 @@ def parse_args():
     parser.add_argument('-rcds', '--regenerate_cds', action='store_true', help='Regenerate the CDS')
 
     parser.add_argument('-sc', '--selected-columns', nargs='+', help='List of selected columns to keep', default=['High','Low','ao','ac','jaw','teeth','lips','fh','fl','fdbb','fdbs','zlcb','zlcs','target','vaos','vaob'])
-    
+
+    # dont drop calculated columns
+    parser.add_argument('-ddcc', '--dont_drop_calc_col', action='store_true', help='Dont drop calculated columns')
 
     # jgtcommon.add_cds_argument(parser)
     args = parser.parse_args()
@@ -97,7 +99,7 @@ def main():
         return
 
 
-        
+    dont_drop_calc_col=True if args.dont_drop_calc_col else False
 
     
 
@@ -129,7 +131,7 @@ def main():
                     instrument,
                     timeframe,
                     pto_vec_fdb_ao_vector_window_flag=True,
-                    drop_calc_col=False,
+                    drop_calc_col=dont_drop_calc_col,
                     selected_columns_to_keep=selected_columns_to_keep,
                     save_outputs=True,
                     keep_bid_ask=keep_bid_ask,

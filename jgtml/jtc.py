@@ -117,7 +117,7 @@ def pto_target_calculation(
     WINDOW_MAX:int=150,
     output_report_dir=None,
     pto_vec_fdb_ao_vector_window_flag=True,
-    drop_calc_col=False,
+    drop_calc_col=True,
     write_reporting=True,
     calc_col_to_drop_names=["tmax", "tmin", "p", "l"],
     sel_1_suffix="_sel",
@@ -469,6 +469,9 @@ def _pov_target_calculation_n_output240223(
             print(f"Saved to {output_tnd_targetNdata_fn}")
         except Exception as e:
             print(f"Error occurred while saving to {output_tnd_targetNdata_fn}: {str(e)}")
+
+    if selected_columns_to_keep is not None:
+        print("   Selected columns to keep:", selected_columns_to_keep)
 
     if drop_calc_col and selected_columns_to_keep is None:
         df_result_tmx.drop(columns=calc_col_to_drop_names, inplace=True)
