@@ -18,12 +18,15 @@ for l in $(cat $pto_package_csv_list);do
   echo "# SOURCE NAME: $src_file" >> $package_name/$dst_file
   echo "# ------------------------------------" >> $package_name/$dst_file
   cat $src_file >> $package_name/$dst_file
-  echo "vi pyproject.toml"
+  git add $package_name/$dst_file &>/dev/null
+  git commit $package_name/$dst_file -m "pto:Updated $dst_file" &>/dev/null
+
   # Add Script line to pyproject.toml if it is not already there.
   if grep -q "$dst_namespace" pyproject.toml; then
     echo "Script line already exists in pyproject.toml"
     continue
   else 
+    echo "vi pyproject.toml"
     pyproject_script_line="$dst_namespace=\"$package_name.$dst_namespace:main\""
     echo "Adding as commented: # $pyproject_script_line to pyproject.toml"
     echo "$pyproject_script_line" >> pyproject.toml
