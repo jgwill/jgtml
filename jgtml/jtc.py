@@ -474,6 +474,7 @@ def _pov_target_calculation_n_output240223(
         print("   Selected columns to keep:", selected_columns_to_keep)
 
     if drop_calc_col and selected_columns_to_keep is None:
+        print("Dropping calculated columns:", calc_col_to_drop_names)
         df_result_tmx.drop(columns=calc_col_to_drop_names, inplace=True)
     
     

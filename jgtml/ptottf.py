@@ -43,17 +43,17 @@ def make_htf_created_columns_array(workset,t):
 def read_ttf_csv(i, t, use_full=False):
     output_filename=get_ttf_outfile_fullpath(i,t,use_full)
     if not os.path.exists(output_filename):
-        print("Non existent, Creating TTF: ", output_filename)
-        create_ttf_csv(i, t, use_full,force_read=True)
+        print("   Non existent, Creating TTF: ", output_filename)
+        return create_ttf_csv(i, t, use_full,force_read=True)
     else:
-        print("Read TTF: ", output_filename)
-    return pd.read_csv(output_filename, index_col=0)
+        print("   Read TTF: ", output_filename)
+        return pd.read_csv(output_filename, index_col=0)
   
 def read_ttf_csv_selection(i, t, use_full=False):
     output_filename_sel=get_ttf_outfile_fullpath(i,t,use_full,suffix="_sel")
     return pd.read_csv(output_filename_sel, index_col=0)
  
-def create_ttf_csv(i, t, use_full=False, use_fresh=True, quotescount=-1,force_read=False):
+def create_ttf_csv(i, t, use_full=False, use_fresh=True, quotescount=-1,force_read=False,dropna=True):
   #if use_full:
   #  print("Using full dataset")
 
@@ -90,6 +90,8 @@ def create_ttf_csv(i, t, use_full=False, use_fresh=True, quotescount=-1,force_re
   output_filename=get_ttf_outfile_fullpath(i,t,use_full)
   output_filename_sel=get_ttf_outfile_fullpath(i,t,use_full,suffix="_sel")
   
+  if dropna:
+    ttf.dropna(inplace=True)
   ttf.to_csv(output_filename, index=True)
   ttf_sel.to_csv(output_filename_sel, index=True)
   print(f"    MX Output full:'{output_filename}'")
