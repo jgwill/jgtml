@@ -9,9 +9,10 @@
   },
   "scripts": {
     "test": "bash pypi-conda-gaia-env.sh",
-    "pre-build-pto": "bash pto-pre-build.sh",
-    "build": "bash pto-pre-build.sh;make dist",
-    "release": "make dist && twine upload dist/*",
+    "pre-build-pto": "bash pre-build.sh;git commit jgtml/pto*.py -m up:pto",
+    "build": "npm run pre-build-pto && make dist",
+    "release": "bash release-n-test.sh",
+    "release1": "make dist && twine upload dist/*",
     "publish": "twine upload dist/*"
   },
   "repository": {
