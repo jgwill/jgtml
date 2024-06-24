@@ -100,7 +100,7 @@ jgtdroot_default="/b/Dropbox/jgt" #$jgtdroot
 jgtdroot=os.getenv("jgtdroot",jgtdroot_default)
 #result_drop_base_default="/b/Dropbox/jgt/drop" #$jgtdroot
 drop_subdir = "drop"
-result_file_basename_default = os.getenv("result_file_basename_default") if os.getenv("result_file_basename_default") is not None else "jgtml_obsds_240515_TIDE_SIGNALS.result"
+result_file_basename_default = os.getenv("result_file_basename_default") if os.getenv("result_file_basename_default") is not None else "jgtml_obsds_240515_SIGNALS.result"
 result_file_basename=result_file_basename_default
 
 # Columns to select

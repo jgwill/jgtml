@@ -34,3 +34,16 @@ for l in $(cat $pto_package_csv_list);do
 
 done
 
+#doing replacement of TJAW by BJAW, TTEETH by BTEETH and TLIPS by BLIPS in ptojgtmlbigalligator.py
+bfile=$package_name/ptojgtmlbigalligator.py
+sed -i 's/TJAW/BJAW/g' $bfile
+sed -i 's/TTEETH/BTEETH/g' $bfile
+sed -i 's/TLIPS/BLIPS/g' $bfile
+
+sed -i 's/tjaw/bjaw/g' $bfile
+sed -i 's/tteeth/bteeth/g' $bfile
+sed -i 's/tlips/blips/g' $bfile
+#tmopen
+sed -i 's/tmopen/bmopen/g' $bfile
+sed -i 's/Tide/Big/g' $bfile
+sed -i 's/tide/big/g' $bfile
