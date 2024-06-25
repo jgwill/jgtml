@@ -35,6 +35,7 @@ for l in $(cat $pto_package_csv_list);do
 
 done
 
+#@STCGoal Big ALligator Proto from Tide Alligator 
 #doing replacement of TJAW by BJAW, TTEETH by BTEETH and TLIPS by BLIPS in ptojgtmlbigalligator.py
 bfile=$package_name/ptojgtmlbigalligator.py
 sed -i 's/TJAW/BJAW/g' $bfile
@@ -48,3 +49,4 @@ sed -i 's/tlips/blips/g' $bfile
 sed -i 's/tmopen/bmopen/g' $bfile
 sed -i 's/Tide/Big/g' $bfile
 sed -i 's/tide/big/g' $bfile
+git commit $bfile -m "pto:Updated $bfile" &>/dev/null
