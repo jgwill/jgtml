@@ -16,7 +16,8 @@ for l in $(cat $pto_package_csv_list);do
   echo "$pre_script_warning" > $package_name/$dst_file
   echo "# $(date)" >> $package_name/$dst_file
   echo "# SOURCE NAME: $src_file" >> $package_name/$dst_file
-  echo "# ------------------------------------" >> $package_name/$dst_file
+  echo "########################" >> $package_name/$dst_file
+  echo " " >> $package_name/$dst_file
   cat $src_file >> $package_name/$dst_file
   git add $package_name/$dst_file &>/dev/null
   git commit $package_name/$dst_file -m "pto:Updated $dst_file" &>/dev/null
