@@ -290,7 +290,7 @@ else:
 print_context()
 print("--------AFTER MAIN---------")
 print(f"i:{i} t:{t} bs:{bs}")
-
+print("regenerate_cds:",regenerate_cds)
 
 # Where to save the results
 def create_result_directory(jgtdroot, drop_subdir, result_drop_base_override):
