@@ -116,20 +116,54 @@ result_file_basename_default = "jgtml_obsds_240515_SIGNALS.result"
 result_file_basename_default = os.getenv("result_file_basename_default") if os.getenv("result_file_basename_default") is not None else result_file_basename_default
 result_file_basename=result_file_basename_default
 
-# Columns to select
-sel_columns_base=[HIGH,LOW,JAW,TEETH,LIPS]
+# Columns to select that are part of the settings in this whole process
 
-sel_columns_tide_alligator=[TJAW,TTEETH,TLIPS]
-sel_columns_big_alligator=[BJAW,BTEETH,BLIPS]
+def getBaseColumns():
+    sel_columns_base=[HIGH,LOW,JAW,TEETH,LIPS]
+    return sel_columns_base
+
+
+def get_tide_alligator_columns():
+    sel_columns_tide_alligator=[TJAW,TTEETH,TLIPS]
+    return sel_columns_tide_alligator
+
+def get_big_alligator_columns():
+    sel_columns_big_alligator=[BJAW,BTEETH,BLIPS]
+    return sel_columns_big_alligator
+
+sel_columns_base = getBaseColumns()
+sel_columns_tide_alligator = get_tide_alligator_columns()
+sel_columns_big_alligator = get_big_alligator_columns()
+
+eval_target_colname = FDB_TARGET # We will want to choose different target column in further analysis, for now we are using the FDB_TARGET
+eval_signal_sell_colname=FDBS
+eval_signal_buy_colname=FDBB
+
+#@STCIssue How are these columns called in the process (future extra column that we can learn from) ? 
+eval_extra_vector_signals_count_colname=VECTOR_AO_FDB_COUNT
+eval_extra_vector_signal_sell_count_colname=VECTOR_AO_FDBS_COUNT
+eval_extra_vector_signal_buy_count_colname=VECTOR_AO_FDBB_COUNT
+
 
 # Select columns according to Flags (big alligator and tide alligator)
 sel_columns_common=sel_columns_base + \
     (sel_columns_big_alligator if balligator_flag else None) +  \
         (sel_columns_tide_alligator if talligator_flag else None) + \
-            [FDB_TARGET,VECTOR_AO_FDB_COUNT]
+            [eval_target_colname,eval_extra_vector_signals_count_colname]
 
-sel_columns_sell = sel_columns_common + [FDBS, VECTOR_AO_FDBS_COUNT]
-sel_columns_buy = sel_columns_common + [FDBB, VECTOR_AO_FDBB_COUNT]
+"""
+FUTURE POSSIBLE COLUMN NAMES
+
+    sell_signal_columns
+    sell_indicator_fields
+    sell_analysis_features
+    sell_criteria_columns
+    sell_trigger_attributes
+
+"""
+
+sel_columns_sell = sel_columns_common + [eval_signal_sell_colname,eval_extra_vector_signal_sell_count_colname ]
+sel_columns_buy = sel_columns_common + [eval_signal_buy_colname,eval_extra_vector_signal_buy_count_colname ]
 
 jgtpy_data_full_var_name = "JGTPY_DATA_FULL"
 
@@ -283,51 +317,70 @@ source_dataset_archival_path = get_source_dataset_archival_path(source_dataset_a
 
 
 # Columns to select based on the direction    
-if bs=="S" or bs=="SELL" or bs=="sell":
-    sel_columns = sel_columns_sell
-else:
-    if bs=="B" or bs=="BUY" or bs=="buy":
-        sel_columns = sel_columns_buy
+def make_columns_list_from_bs(sel_columns_sell, sel_columns_buy, bs):
+    if bs=="S" or bs=="SELL" or bs=="sell":
+        sel_columns = sel_columns_sell
+    else:
+        if bs=="B" or bs=="BUY" or bs=="buy":
+            sel_columns = sel_columns_buy
+    return sel_columns
 
-result_file_base = os.path.join(result_drop_base, result_file_basename)
+sel_columns = make_columns_list_from_bs(sel_columns_sell, sel_columns_buy, bs)
 
-result_file_md=result_file_base + ".md"
-result_file_csv=result_file_base + ".csv"
+def prepare_result_files(result_file_basename, result_drop_base):
+    result_file_base = os.path.join(result_drop_base, result_file_basename)
+
+    result_file_md=result_file_base + ".md"
+    result_file_csv=result_file_base + ".csv"
+    return result_file_md,result_file_csv
+
+result_file_md, result_file_csv = prepare_result_files(result_file_basename, result_drop_base)
 
 
-try:
-    os.makedirs(source_dataset_archival_path,exist_ok=True)
-except:
+def ensure_archival_directory_exists(source_dataset_archival_path):
+    try:
+        os.makedirs(source_dataset_archival_path,exist_ok=True)
+    except:
     #exit the app with error about the directory
-    print(f"Error creating directory {source_dataset_archival_path}")
-    exit(1)
+        print(f"Error creating directory {source_dataset_archival_path}")
+        exit(1)
+
+ensure_archival_directory_exists(source_dataset_archival_path)
 
 
 
-ifn=i.replace("/","-")
-data_dir = os.getenv(jgtpy_data_full_var_name) if data_dir_override is None else data_dir_override
-#idsfilepath = os.path.join(data_dir, "targets", "mx", f"{ifn}_{t}.csv")
-#df = pd.read_csv(idsfilepath)
-df=None
-try:
-    if not force_regenerate_mxfiles:
-        df = jtc.readMXFile(i,t)
-except:
-    pass
+
+
+def get_pto_dataframe_mx_based_en_ttf(i, t, force_regenerate_mxfiles, mfi_flag, balligator_flag, talligator_flag, regenerate_cds, use_fresh, use_ttf_default):
+    df=None
+    try:
+        if not force_regenerate_mxfiles:
+            df = jtc.readMXFile(i,t)
+    except:
+        pass
 
 #%pip install -U jgtpy
 
 #set DF to None if column 'mfi' is not present (force regeneration)
-if df is not None and 'mfi' not in df.columns: #TMP to force regeneration if column mfi is not present
-    df = None
+    if df is not None and 'mfi' not in df.columns: #TMP to force regeneration if column mfi is not present
+        df = None
 
-if df is None:
-    df, sel1, sel2 = jtc.pto_target_calculation(i,t,
+    if df is None:
+        df, sel1, sel2 = jtc.pto_target_calculation(i,t,
                                                 mfi_flag=mfi_flag,talligator_flag=talligator_flag,
                                                 balligator_flag=balligator_flag,
                                                 regenerate_cds=regenerate_cds,
                                                 use_fresh=use_fresh,
                                                 use_ttf=use_ttf_default)
+                                                    
+    return df
+
+if _DEVFLAG:
+    use_fresh=False
+    regenerate_cds=False
+    print("DEVFLAG: use_fresh:",use_fresh)
+    
+df = get_pto_dataframe_mx_based_en_ttf(i, t, force_regenerate_mxfiles, mfi_flag, balligator_flag, talligator_flag, regenerate_cds, use_fresh, use_ttf_default)
 
 #%%
 if NB_CONTEXT_RUN:
@@ -340,16 +393,13 @@ if not quiet:
     print("len(df):",len(df))
 
 #%% 
-"""
-'Volume', 'Open', HIGH, LOW, 'Close', 'Median', 'ao', 'ac', JAW,
-       TEETH, LIPS, 'fh', 'fl', 'fh3', 'fl3', 'fh5', 'fl5', 'fh8', 'fl8',
-       'fh13', 'fl13', 'fh21', 'fl21', 'fh34', 'fl34', 'fh55', 'fl55', 'fh89',
-       'fl89', 'fdbb', 'fdbs', 'fdb', 'aoaz', 'aobz', 'zlc', 'zlcb', 'zlcs',
-       'zcol', 'sz', 'bz', 'acs', 'acb', 'ss', 'sb', 'price_peak_above',
-       'price_peak_bellow', 'ao_peak_above', 'ao_peak_bellow', 'tmax', 'tmin',
-       'p', 'l', TARGET, 'vaos', 'vaob', 'vaosc', 'vaobc', 'vaoc'],
+
+statement_from_this_point_and_next="""
+From this point, we start evaluating the performance of the signals generated by the "Fractal Divergent Bar" indicator within the "Tide Alligator" technical analysis tool. We will analyze the effectiveness of the signals in the context of the "Tide Alligator" tool and evaluate the profitability of each signal type.
       
 """
+
+
 
 # create a dataset with only the columns we need.  
 dfo = df[sel_columns]
@@ -369,13 +419,13 @@ if not quiet:
 
 
 #%% Direction
-direction = bs #Might use only one variable in the future to avoid confusion
+print("Direction:",bs)
 # %%
 dfo_context = dfo[sel_columns].copy()
 
 #
 fdb_context_colname = FDBS
-if direction=="B":
+if bs=="B":
     fdb_context_colname = FDBB
 dfo_context = dfo_context[dfo_context[fdb_context_colname] != 0].copy()
 
@@ -385,12 +435,13 @@ dfo_context = dfo_context[dfo_context[fdb_context_colname] != 0].copy()
 
 # dfo = dfo[dfo[TARGET] != 0] #Where target is not 0
 # %%
-dfo_context.tail(40)
+if _DEVFLAG:
+    dfo_context.tail(40)
 # %%
 all_context_signal_count = len(dfo_context)
 
-target_colname = FDB_TARGET
-all_signalsnal_sum=dfo_context[target_colname].sum()
+
+all_signalsnal_sum=dfo_context[eval_target_colname].sum()
 
 if _DEVFLAG:
     print("count:",all_context_signal_count," sum0:",all_signalsnal_sum)
@@ -398,6 +449,7 @@ if _DEVFLAG:
 # %%
 #Remove invalid signal when column High < lips
 #@STCGoal Valid Signals are bellow the lips and teeth 
+
 if bs=="S":
     sig_basic_filtering = dfo_context[dfo_context[LOW] > dfo_context[LIPS]].copy()
     sig_basic_filtering = sig_basic_filtering[sig_basic_filtering[LOW] > sig_basic_filtering[TEETH]]
@@ -490,10 +542,10 @@ else:
 
 # INDEPENDENT OF DIRECTIONS
 sig_basic_filtering_count = len(sig_basic_filtering)
-sig_basic_filtering_sum=sig_basic_filtering[FDB_TARGET].sum()
+sig_basic_filtering_sum=sig_basic_filtering[eval_target_colname].sum()
 
 sig_nmopen_count = len(sig_nmopen)
-sig_nmopen_sum=sig_nmopen[FDB_TARGET].sum()
+sig_nmopen_sum=sig_nmopen[eval_target_colname].sum()
 
 
 
@@ -547,7 +599,7 @@ NEXT STEP :
 
 
 sig_is_in_tteeth_count = len(sig_is_in_tteeth)
-sig_is_in_tteeth_sum=sig_is_in_tteeth[FDB_TARGET].sum()
+sig_is_in_tteeth_sum=sig_is_in_tteeth[eval_target_colname].sum()
 
 # %%
 
@@ -562,7 +614,7 @@ if not quiet:
 
                                        
 sig_tmopen_in_tteeth_count = len(sig_tmopen_in_tteeth)
-sig_tmopen_in_tteeth_sum=sig_tmopen_in_tteeth[FDB_TARGET].sum()
+sig_tmopen_in_tteeth_sum=sig_tmopen_in_tteeth[eval_target_colname].sum()
 
 # %%
 
@@ -575,7 +627,7 @@ if not quiet:
 
                                                                     
 sig_tmopen_in_tlips_count = len(sig_tmopen_in_tlips)
-sig_tmopen_in_tlips_sum=sig_tmopen_in_tlips[FDB_TARGET].sum()
+sig_tmopen_in_tlips_sum=sig_tmopen_in_tlips[eval_target_colname].sum()
 
 # %%
 if not quiet:
@@ -626,19 +678,32 @@ def print_res(i,t,direction,nb_entry, tsum, title,_df=None):
     write_to_result_csv(i,t,direction,nb_entry, tsum, title,_df)
 # %%
 
+# bellow all the output column names, in further development, we will want to have a more dynamic way to get the column names and evaluate both the Tide Alligator and Big ALligator and filter FDB signals with both of them, therefore, we will have a generic function that will create these column name according the which filtering is used
+out_all_signal_sum_colname = "all_signals"
+out_sig_in_normal_mouth_sum_colname = "sig_nmopen"
+out_basic_normal_mouth_filtered_sum_colname = "sig_basic_filtering"
+
+current_filtering_name = "Tide Alligator"
+
+out_sig_is_in_context_teth_sum_colname = "sig_is_in_tteeth_sum"
+out_sig_context_mouth_is_open_and_signal_is_in_context_lips_sum_colname = "sig_tmopen_in_tlips"
+out_sig_context_mouth_is_open_and_signal_is_in_context_teeth_sum_colname = "sig_tmopen_in_tteeth_sum"
+
+
 write_to_result_md("  ")
 write_to_result_md("----")
 write_to_result_md("  ")
 write_to_result_md("==============================================================")
-print_res(i,t,direction,all_context_signal_count,all_signalsnal_sum,"all_signals",dfo_context)
-print_res(i,t,direction,sig_nmopen_count,sig_nmopen_sum,"sig_nmopen",sig_nmopen)
+
+print_res(i,t,bs,all_context_signal_count,all_signalsnal_sum,out_all_signal_sum_colname,dfo_context)
+print_res(i,t,bs,sig_nmopen_count,sig_nmopen_sum,out_sig_in_normal_mouth_sum_colname,sig_nmopen)
 write_to_result_md("==============================================================")
-print_res(i,t,direction,sig_basic_filtering_count,sig_basic_filtering_sum,"sig_basic_filtering",sig_basic_filtering)
+print_res(i,t,bs,sig_basic_filtering_count,sig_basic_filtering_sum,out_basic_normal_mouth_filtered_sum_colname,sig_basic_filtering)
 write_to_result_md("==============================================================")
-print_res(i,t,direction,sig_is_in_tteeth_count,sig_is_in_tteeth_sum,"sig_is_in_tteeth_sum",sig_is_in_tteeth)
-print_res(i,t,direction,sig_tmopen_in_tlips_count,sig_tmopen_in_tlips_sum,"sig_tmopen_in_tlips",sig_tmopen_in_tlips)
+print_res(i,t,bs,sig_is_in_tteeth_count,sig_is_in_tteeth_sum,out_sig_is_in_context_teth_sum_colname,sig_is_in_tteeth)
+print_res(i,t,bs,sig_tmopen_in_tlips_count,sig_tmopen_in_tlips_sum,out_sig_context_mouth_is_open_and_signal_is_in_context_lips_sum_colname,sig_tmopen_in_tlips)
 #pt:32.42 t:132 sum:4279.999999999999 title:count_sell2s2 Low is Above Big Lips and Big Mouth is Open
-print_res(i,t,direction,sig_tmopen_in_tteeth_count,sig_tmopen_in_tteeth_sum,"sig_tmopen_in_tteeth_sum",sig_tmopen_in_tteeth)
+print_res(i,t,bs,sig_tmopen_in_tteeth_count,sig_tmopen_in_tteeth_sum,out_sig_context_mouth_is_open_and_signal_is_in_context_teeth_sum_colname,sig_tmopen_in_tteeth)
 write_to_result_md("==============================================================")
 
 
@@ -647,4 +712,4 @@ write_to_result_md("============================================================
 # %%
 print("Saved md: ",result_file_md)
 print("Saved csv: ",result_file_csv)
-print("Completed processing for ",i,t,direction)
+print("Completed processing for ",i,t,bs)
