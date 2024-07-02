@@ -541,6 +541,7 @@ def readMXFile(
     sel_2_suffix="_tnd",
     also_read_selections=False,
     generate_if_not_exist=True,
+    dropna=True,
 ):
     """
     Read a MX Target file and return a pandas DataFrame.
@@ -557,6 +558,7 @@ def readMXFile(
     sel_2_suffix (str, optional): The suffix for the second selection. Defaults to "_tnd".
     also_read_selections (bool, optional): If True, also read the selections. Defaults to False.
     generate_if_not_exist (bool, optional): If True, generate the MX Target data if it does not exist. Default is True.
+    dropna (bool, optional): If True, drop the NaN values. Default is True.
 
     Returns:
     pandas.DataFrame: The DataFrame containing the MX Target data.
@@ -587,6 +589,9 @@ def readMXFile(
     # Set 'Date' as the index and convert it to datetime
     mdf["Date"] = pd.to_datetime(mdf["Date"])
     mdf.set_index("Date", inplace=True)
+
+    if dropna:
+        mdf.dropna(inplace=True)
     # Remove the specified columns
     if columns_to_remove is not None:
         mdf = mdf.drop(columns=columns_to_remove, errors="ignore")
