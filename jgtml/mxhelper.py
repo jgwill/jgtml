@@ -33,6 +33,8 @@ def mk_safename_namespace_path(i,t,x_fn_namespace,sub_namespace,suffix_base="",o
   fn=f"{x_fn_namespace}_{sub_namespace}_{ifn}_{t}{suffix_base}.csv"
   if out_dir!="":
     fn=os.path.join(out_dir,fn)
+    #make sure the directory exists   
+    os.makedirs(os.path.dirname(fn), exist_ok=True)
   return fn
 
 
