@@ -28,9 +28,12 @@ def _read_mx_and_prep_02(i,t,drop_columns_arr = ['BidOpen', 'BidHigh', 'BidLow',
 
 
 # utility
-def mk_safename_namespace_path(i,t,x_fn_namespace,sub_namespace,suffix_base=""):
+def mk_safename_namespace_path(i,t,x_fn_namespace,sub_namespace,suffix_base="",out_dir=""):
   ifn=i.replace('/','-')
-  return f"{x_fn_namespace}_{sub_namespace}_{ifn}_{t}{suffix_base}.csv"
+  fn=f"{x_fn_namespace}_{sub_namespace}_{ifn}_{t}{suffix_base}.csv"
+  if out_dir!="":
+    fn=os.path.join(out_dir,fn)
+  return fn
 
 
 
