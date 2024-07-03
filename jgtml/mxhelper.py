@@ -76,6 +76,9 @@ def _select_where_target_is_not_zero(df, target_colname='target'):
 
 
 def get_analysis_data_240702(i,t,bs,target_colname='target',signal_column='fdb',drop_signal_column=True,signal_column_sell_value=-1,signal_column_buy_value=1,quiet=False):
+  """
+  Get the analysis data for the prototype. This is a wrapper function that calls the other functions in this module. 
+  """
   df=wf_get_mfi_str_df(i,t)
   df=_select_where_target_is_not_zero(df,target_colname)
   if bs=='S' or bs=='s' or bs=='sell' or bs=='SELL' or bs=='Sell':
@@ -121,8 +124,10 @@ def _drop_column_part02(df,more2dropcolumns=['Volume', 'Open', 'High', 'Low', 'C
   return df
 
 def get_analysis_data_240702_cleaned(i,t,bs,target_colname='target',signal_column='fdb',drop_signal_column=True):
-    df=get_analysis_data_240702(i,t,bs,target_colname,signal_column,drop_signal_column)
-    df=_drop_column_part01(df)
-    df=_drop_column_part02(df)
-    return df
+  """Get the analysis data for the prototype. This is a wrapper function that calls the other functions in this module. It also drops columns that are not needed for the prototype.
+  """
+  df=get_analysis_data_240702(i,t,bs,target_colname,signal_column,drop_signal_column)
+  df=_drop_column_part01(df)
+  df=_drop_column_part02(df)
+  return df
 
