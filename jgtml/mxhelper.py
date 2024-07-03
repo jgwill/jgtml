@@ -87,12 +87,36 @@ def get_analysis_data_240702(i,t,bs,target_colname='target',signal_column='fdb',
     return df
 
 def _drop_column_part01(df,columnsToDrop = ['vaos','vaob','vaosc','vaobc','fh8', 'fl8', 'fh89', 'fl89','mfi','aoaz','aobz','sz','bz','acb','acs','ss','sb','mfi_sq', 'mfi_green','mfi_fade', 'mfi_fake','tmax', 'tmin', 'p', 'l']):
-    df.drop(columns=columnsToDrop,inplace=True)
-    return df
+  """
+  Drop columns from the dataframe part 01 of our prototype
+  
+  Parameters:
+  df: pd.DataFrame - the dataframe to drop columns from
+  columnsToDrop: list - the list of columns to drop
+  
+  Returns:
+  pd.DataFrame - the dataframe with the columns dropped
+  """
+  for col in columnsToDrop:
+    if col in df.columns:
+      df.drop(columns=[col],inplace=True)
+  return df
 
 def _drop_column_part02(df,more2dropcolumns=['Volume', 'Open', 'High', 'Low', 'Close', 'Median', 'ac', 'mfi_sig', 'zcol_M1', 'zcol_W1', 'ao_W1', 'vaoc','zlc', 'zlcb', 'zlcs', 'zcol','fh', 'fl', 'fh3', 'fl3', 'fh5', 'fl5', 'fdbb', 'fdbs','jaw', 'teeth', 'lips', 'bjaw', 'bteeth', 'blips', 'tjaw','tteeth', 'tlips','zcol_D1']):
-    df.drop(columns=more2dropcolumns,inplace=True)
-    return df
+  """
+  Drop columns from the dataframe part 02 of our prototype
+  
+  Parameters:
+  df: pd.DataFrame - the dataframe to drop columns from
+  more2dropcolumns: list - the list of columns to drop
+  
+  Returns:
+  pd.DataFrame - the dataframe with the columns dropped
+  """
+  for col in more2dropcolumns:
+    if col in df.columns:
+      df.drop(columns=[col],inplace=True)
+  return df
 
 def get_analysis_data_240702_cleaned(i,t,bs,target_colname='target',signal_column='fdb',drop_signal_column=True):
     df=get_analysis_data_240702(i,t,bs,target_colname,signal_column,drop_signal_column)
