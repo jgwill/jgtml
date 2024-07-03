@@ -75,16 +75,18 @@ def _select_where_target_is_not_zero(df, target_colname='target'):
   return dfresult
 
 
-def get_analysis_data_240702(i,t,bs,target_colname='target',signal_column='fdb',drop_signal_column=True):
-    df=wf_get_mfi_str_df(i,t)
-    df=_select_where_target_is_not_zero(df,target_colname)
-    if bs=='S':
-        df=df[df[signal_column]==-1]
-    else:
-        df=df[df[signal_column]==1]
-    if drop_signal_column:
-        df.drop(columns=[signal_column],inplace=True)
-    return df
+def get_analysis_data_240702(i,t,bs,target_colname='target',signal_column='fdb',drop_signal_column=True,signal_column_sell_value=-1,signal_column_buy_value=1,quiet=False):
+  df=wf_get_mfi_str_df(i,t)
+  df=_select_where_target_is_not_zero(df,target_colname)
+  if bs=='S' or bs=='s' or bs=='sell' or bs=='SELL' or bs=='Sell':
+    print('Selecting sell signals') if not quiet else None
+    df=df[df[signal_column]==signal_column_sell_value]
+  else:
+    df=df[df[signal_column]==signal_column_buy_value]
+    print('Selecting buy signals') if not quiet else None
+  if drop_signal_column:
+    df.drop(columns=[signal_column],inplace=True)
+  return df
 
 def _drop_column_part01(df,columnsToDrop = ['vaos','vaob','vaosc','vaobc','fh8', 'fl8', 'fh89', 'fl89','mfi','aoaz','aobz','sz','bz','acb','acs','ss','sb','mfi_sq', 'mfi_green','mfi_fade', 'mfi_fake','tmax', 'tmin', 'p', 'l']):
   """
