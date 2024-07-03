@@ -28,9 +28,11 @@ def _read_mx_and_prep_02(i,t,drop_columns_arr = ['BidOpen', 'BidHigh', 'BidLow',
 
 
 # utility
-def mk_safename_namespace_path(i,t,x_fn_namespace,sub_namespace,suffix_base="",out_dir=""):
+def mk_safename_namespace_path(i,t,x_fn_namespace,sub_namespace,suffix_base="",out_dir="",bs=""):
   ifn=i.replace('/','-')
-  fn=f"{x_fn_namespace}_{sub_namespace}_{ifn}_{t}{suffix_base}.csv"
+  bs = "_sell" if bs=="S" else "_buy" if bs=="B" else ""
+
+  fn=f"{x_fn_namespace}_{sub_namespace}_{ifn}_{t}{suffix_base}{bs}.csv"
   if out_dir!="":
     fn=os.path.join(out_dir,fn)
     #make sure the directory exists   
