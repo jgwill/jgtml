@@ -4,9 +4,9 @@ import sys
 
 sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
 from jgtutils.jgtconstants import MFI_VAL,MFI_SIGNAL,VOLUME,FDB_TARGET as TARGET
-from jgtpy import mfihelper as mfih
+from jgtpy import mfihelper
 from jgtpy.mfihelper import get_mfi_features_column_list_by_timeframe
-import anhelper as anh
+import anhelper
 
 import jtc
 import pandas as pd
@@ -54,7 +54,7 @@ def _mfi_str_add_lag_as_int(df: pd.DataFrame, t, lag_period=1, total_lagging_per
   columns_to_add_lags_to = get_mfi_features_column_list_by_timeframe(t)
   columns_to_add_lags_to.append(MFI_VAL) #We want a lag for the current TF
   
-  anh.add_lagging_columns(df, columns_to_add_lags_to, lag_period, total_lagging_periods, out_lag_midfix_str)
+  anhelper.add_lagging_columns(df, columns_to_add_lags_to, lag_period, total_lagging_periods, out_lag_midfix_str)
   #convert columns_to_add_lags_to to type int
   for col in columns_to_add_lags_to:
     for j in range(1, total_lagging_periods + 1):
@@ -68,7 +68,7 @@ def wf_get_mfi_str_df(i,t,common_columns = [MFI_VAL,TARGET, 'vaoc','fdb'],drop_c
        'AskLow', 'AskClose', 'fh13', 'fl13', 'fh21', 'fl21', 'fh34', 'fl34', 'fh55',
        'fl55','price_peak_above', 'price_peak_bellow', 'ao_peak_above','ao_peak_bellow'])->pd.DataFrame:
   df=_read_mx_and_prep_02(i,t,drop_columns_arr)
-  mfih.column_mfi_str_in_dataframe_to_id(df,t)
+  mfihelper.column_mfi_str_in_dataframe_to_id(df,t)
   _get_mfi_str_df(df,t,common_columns)
   #add lag
   _mfi_str_add_lag_as_int(df,t)
