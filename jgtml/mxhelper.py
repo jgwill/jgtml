@@ -7,6 +7,7 @@ from jgtutils.jgtconstants import MFI_VAL,MFI_SIGNAL,VOLUME,FDB_TARGET as TARGET
 from jgtpy import mfihelper
 from jgtpy.mfihelper import get_mfi_features_column_list_by_timeframe
 import anhelper
+import mxconstants
 
 import jtc
 import pandas as pd
@@ -49,7 +50,7 @@ def _get_mfi_str_df(mxdf,t,common_columns = [TARGET, 'vaoc','fdb']):
   mfi_str_df=mxdf[combined_columns]
   return mfi_str_df
 
-
+#@STCIssue Location could move to a Common to MX and Reality analysis (mfihelper??)
 def _mfi_str_add_lag_as_int(df: pd.DataFrame, t, lag_period=1, total_lagging_periods=5,out_lag_midfix_str='_lag_'):
   columns_to_add_lags_to = get_mfi_features_column_list_by_timeframe(t)
   columns_to_add_lags_to.append(MFI_VAL) #We want a lag for the current TF

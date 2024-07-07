@@ -4,13 +4,13 @@ import sys
 
 sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
 from jgtutils.jgtconstants import MFI_VAL,MFI_SIGNAL,VOLUME,FDB_TARGET as TARGET
-from jgtpy import mfihelper
-from jgtpy.mfihelper import get_mfi_features_column_list_by_timeframe
+from jgtpy import mfihelper,JGTCDSSvc as cdssvc
 import anhelper as anh
-
+import mxhelper
+import mxconstants
 import jtc
 import pandas as pd
-from jgtpy import JGTCDSSvc as cdssvc
+
 
 #@STCGoal We Have TTF Data with Lags for the pattern 'ttf_mfis_ao_2407a'
 #@STCIssue How are created the TTF ?  How to create them with the lags and smaller Datasets (we dont need full)?
@@ -18,8 +18,7 @@ from jgtpy import JGTCDSSvc as cdssvc
 def _pto_get_dataset_we_need_in_here__2407060929(i,t):
   from jgtml.ptottf import read_ttf_csv
   ttfdf=read_ttf_csv(i, t, use_full=True)
-  from jgtpy.mfihelper import get_mfi_features_column_list_by_timeframe
-  columns_to_add_lags_to = get_mfi_features_column_list_by_timeframe(t)
+  columns_to_add_lags_to = mxhelper.get_mfi_features_column_list_by_timeframe(t)
   from jgtml import anhelper
   ttfdf=anhelper.add_lagging_columns(ttfdf, columns_to_add_lags_to)
   
