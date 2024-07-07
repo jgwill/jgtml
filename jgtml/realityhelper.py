@@ -22,7 +22,7 @@ from jgtml.mfihelper2 import column_mfi_str_in_dataframe_to_id as convert_mfi_co
 
 from jgtml.mxhelper import _mfi_str_add_lag_as_int as add_mfi_lagging_feature_to_ttfdf
 
-def _pto_get_dataset_we_need_in_here__2407060929(i,t,lag_period=1, total_lagging_periods=5,dropna=True, use_full=True,columns_to_keep=None):
+def _pto_get_dataset_we_need_in_here__2407060929(i,t,lag_period=1, total_lagging_periods=5,dropna=True, use_full=True,columns_to_keep=None,columns_to_drop=None):
   #Read Data
   df=read_ttf_csv(i, t, use_full=use_full)
   #Convert the MFI columns from str to id before we add lags
@@ -33,13 +33,13 @@ def _pto_get_dataset_we_need_in_here__2407060929(i,t,lag_period=1, total_lagging
     df.dropna(inplace=True)
   if columns_to_keep:
     df=df[columns_to_keep]
+  if columns_to_drop:
+    df.drop(columns=columns_to_drop,inplace=True)
   #columns_to_add_lags_to = mxhelper.get_mfi_features_column_list_by_timeframe(t)
   #ttfdf=anhelper.add_lagging_columns(ttfdf, columns_to_add_lags_to)
   return df
   
 
-def create_pattern_dataset__ttf_mfis_ao_2407a(i,t,lag_period=1, total_lagging_periods=5,drop_columns_arr = ['BidOpen', 'BidHigh', 'BidLow', 'BidClose', 'AskOpen', 'AskHigh','AskLow', 'AskClose', 'fh13', 'fl13', 'fh21', 'fl21', 'fh34', 'fl34', 'fh55','fl55','price_peak_above', 'price_peak_bellow', 'ao_peak_above','ao_peak_bellow'],dropna_volume=True):
-  
-  df=_read_mx_and_prep_02(i,t,drop_columns_arr,dropna_volume)
-  _mfi_str_add_lag_as_int(df,t,lag_period, total_lagging_periods)
-  return df
+def create_pattern_dataset__ttf_mfis_ao_2407a_pto_get_dataset_we_need_in_here__2407060929(i,t,lag_period=1, total_lagging_periods=5,dropna=True, use_full=True,columns_to_keep=None,columns_to_drop=None):
+  print("INFO::Requires experimentation with training, testing prediction to select from this what we need in reality to make the model work and predict reality of a signal.")
+  return _pto_get_dataset_we_need_in_here__2407060929(i,t,lag_period=lag_period, total_lagging_periods=total_lagging_periods,dropna=dropna, use_full=use_full,columns_to_keep=columns_to_keep,columns_to_drop=columns_to_drop)
