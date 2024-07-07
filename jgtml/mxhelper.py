@@ -4,8 +4,8 @@ import sys
 
 sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
 from jgtutils.jgtconstants import MFI_VAL,MFI_SIGNAL,VOLUME,FDB_TARGET as TARGET
-from jgtpy import mfihelper
-from jgtpy.mfihelper import get_mfi_features_column_list_by_timeframe
+from jgtml import mfihelper2 as mfihelper
+from jgtml.mfihelper2 import get_mfi_features_column_list_by_timeframe
 import anhelper
 import mxconstants
 
