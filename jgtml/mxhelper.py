@@ -51,7 +51,9 @@ def _get_mfi_str_df(mxdf,t,common_columns = [TARGET, 'vaoc','fdb']):
   return mfi_str_df
 
 #@STCIssue Location could move to a Common to MX and Reality analysis (mfihelper??)
-def _mfi_str_add_lag_as_int(df: pd.DataFrame, t, lag_period=1, total_lagging_periods=5,out_lag_midfix_str='_lag_'):
+def _mfi_str_add_lag_as_int(df: pd.DataFrame, t, lag_period=1, total_lagging_periods=5,out_lag_midfix_str='_lag_',inplace=True):
+  if not inplace:
+    df = df.copy()
   columns_to_add_lags_to = get_mfi_features_column_list_by_timeframe(t)
   columns_to_add_lags_to.append(MFI_VAL) #We want a lag for the current TF
   
@@ -66,6 +68,13 @@ def _mfi_str_add_lag_as_int(df: pd.DataFrame, t, lag_period=1, total_lagging_per
 
 
 def wf_get_mfi_str_df(i,t,common_columns = [MFI_VAL,TARGET, 'vaoc','fdb'],drop_columns_arr = ['BidOpen', 'BidHigh', 'BidLow', 'BidClose', 'AskOpen', 'AskHigh',
+       'AskLow', 'AskClose', 'fh13', 'fl13', 'fh21', 'fl21', 'fh34', 'fl34', 'fh55',
+       'fl55','price_peak_above', 'price_peak_bellow', 'ao_peak_above','ao_peak_bellow'])->pd.DataFrame:
+  print("wf_get_mfi_str_df DEPRECATED")
+  print("Use wf_get_mxdf_and_add_mfi_features_to_df instead")
+  raise Exception("wf_get_mfi_str_df DEPRECATED")
+  
+def wf_get_mxdf_and_add_mfi_features_to_df(i,t,common_columns = [MFI_VAL,TARGET, 'vaoc','fdb'],drop_columns_arr = ['BidOpen', 'BidHigh', 'BidLow', 'BidClose', 'AskOpen', 'AskHigh',
        'AskLow', 'AskClose', 'fh13', 'fl13', 'fh21', 'fl21', 'fh34', 'fl34', 'fh55',
        'fl55','price_peak_above', 'price_peak_bellow', 'ao_peak_above','ao_peak_bellow'])->pd.DataFrame:
   df=_read_mx_and_prep_02(i,t,drop_columns_arr)
@@ -87,7 +96,7 @@ def get_analysis_data_240702(i,t,bs,target_colname='target',signal_column='fdb',
   """
   Get the analysis data for the prototype. This is a wrapper function that calls the other functions in this module. 
   """
-  df=wf_get_mfi_str_df(i,t)
+  df=wf_get_mxdf_and_add_mfi_features_to_df(i,t)
   df=_select_where_target_is_not_zero(df,target_colname)
   if bs=='S' or bs=='s' or bs=='sell' or bs=='SELL' or bs=='Sell':
     print('Selecting sell signals') if not quiet else None
@@ -99,7 +108,7 @@ def get_analysis_data_240702(i,t,bs,target_colname='target',signal_column='fdb',
     df.drop(columns=[signal_column],inplace=True)
   return df
 
-def _drop_column_part01(df,columnsToDrop = ['vaos','vaob','vaosc','vaobc','fh8', 'fl8', 'fh89', 'fl89','mfi','aoaz','aobz','sz','bz','acb','acs','ss','sb','mfi_sq', 'mfi_green','mfi_fade', 'mfi_fake','tmax', 'tmin', 'p', 'l']):
+def _drop_column_part01(df,columnsToDrop = ['vaos','vaob','vaosc','vaobc','fh8', 'fl8', 'fh89', 'fl89','mfi','aoaz','aobz','sz','bz','acb','acs','ss','sb','mfi_sq', 'mfi_green','mfi_fade', 'mfi_fake','tmax', 'tmin', 'p', 'l'],inplace=True):
   """
   Drop columns from the dataframe part 01 of our prototype
   
@@ -110,12 +119,14 @@ def _drop_column_part01(df,columnsToDrop = ['vaos','vaob','vaosc','vaobc','fh8',
   Returns:
   pd.DataFrame - the dataframe with the columns dropped
   """
+  if not inplace:
+    df = df.copy()
   for col in columnsToDrop:
     if col in df.columns:
       df.drop(columns=[col],inplace=True)
   return df
 
-def _drop_column_part02(df,more2dropcolumns=['Volume', 'Open', 'High', 'Low', 'Close', 'Median', 'ac', 'mfi_sig', 'zcol_M1', 'zcol_W1', 'ao_W1', 'vaoc','zlc', 'zlcb', 'zlcs', 'zcol','fh', 'fl', 'fh3', 'fl3', 'fh5', 'fl5', 'fdbb', 'fdbs','jaw', 'teeth', 'lips', 'bjaw', 'bteeth', 'blips', 'tjaw','tteeth', 'tlips','zcol_D1']):
+def _drop_column_part02(df,more2dropcolumns=['Volume', 'Open', 'High', 'Low', 'Close', 'Median', 'ac', 'mfi_sig', 'zcol_M1', 'zcol_W1', 'ao_W1', 'vaoc','zlc', 'zlcb', 'zlcs', 'zcol','fh', 'fl', 'fh3', 'fl3', 'fh5', 'fl5', 'fdbb', 'fdbs','jaw', 'teeth', 'lips', 'bjaw', 'bteeth', 'blips', 'tjaw','tteeth', 'tlips','zcol_D1'],inplace=True):
   """
   Drop columns from the dataframe part 02 of our prototype
   
@@ -126,6 +137,8 @@ def _drop_column_part02(df,more2dropcolumns=['Volume', 'Open', 'High', 'Low', 'C
   Returns:
   pd.DataFrame - the dataframe with the columns dropped
   """
+  if not inplace:
+    df = df.copy()
   for col in more2dropcolumns:
     if col in df.columns:
       df.drop(columns=[col],inplace=True)
