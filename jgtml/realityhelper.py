@@ -34,7 +34,10 @@ def _pto_get_dataset_we_need_in_here__2407060929(i,t,lag_period=1, total_lagging
   if columns_to_keep:
     df=df[columns_to_keep]
   if columns_to_drop:
-    df.drop(columns=columns_to_drop,inplace=True)
+    for col in columns_to_drop:
+      if col in df.columns:
+        df.drop(columns=[col],inplace=True)
+    #df.drop(columns=columns_to_drop,inplace=True)
   #columns_to_add_lags_to = mxhelper.get_mfi_features_column_list_by_timeframe(t)
   #ttfdf=anhelper.add_lagging_columns(ttfdf, columns_to_add_lags_to)
   return df
