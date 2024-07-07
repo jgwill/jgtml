@@ -4,7 +4,7 @@ import sys
 import os
 
 sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
-from jgtpy import mfihelper as mfih
+import mfihelper2 as mfih
 
 from jtc import (
     calculate_target_variable_min_max as calc_target_from_df,
