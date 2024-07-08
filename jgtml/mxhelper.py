@@ -59,7 +59,7 @@ def _mfi_str_add_lag_as_int(df: pd.DataFrame, t, lag_period=1, total_lagging_per
   
   anhelper.add_lagging_columns(df, columns_to_add_lags_to, lag_period, total_lagging_periods, out_lag_midfix_str)
   #convert columns_to_add_lags_to to type int
-  for col in columns_to_add_lags_to:
+  for col in columns_to_add_lags_to: #@STCIssue Isn't that done already ???  Or it thinks they are Double !!!!
     for j in range(1, total_lagging_periods + 1):
       df[f'{col}{out_lag_midfix_str}{j}']=df[f'{col}{out_lag_midfix_str}{j}'].astype(int)
   
