@@ -449,7 +449,7 @@ def _pov_target_calculation_n_output240223(
 
 
     if save_outputs:
-        print("Saving MX Target data to file...")
+        print("INFO::Saving MX Target data to file...")
         output_sel_cols_fn = f"{outdir_tmx}/{ifn}_{t}{sel_1_suffix}.csv"
         try:
             sel1.to_csv(output_sel_cols_fn, index=True)
@@ -466,21 +466,21 @@ def _pov_target_calculation_n_output240223(
     if save_outputs:
         try:
             sel2.to_csv(output_tnd_targetNdata_fn, index=True)
-            print(f"Saved to {output_tnd_targetNdata_fn}")
+            print(f"INFO::Saved to {output_tnd_targetNdata_fn}")
         except Exception as e:
-            print(f"Error occurred while saving to {output_tnd_targetNdata_fn}: {str(e)}")
+            print(f"ERROR::occurred while saving to {output_tnd_targetNdata_fn}: {str(e)}")
 
     if selected_columns_to_keep is not None:
-        print("   Selected columns to keep:", selected_columns_to_keep)
+        print("INFO::   Selected columns to keep:", selected_columns_to_keep)
 
     if drop_calc_col and selected_columns_to_keep is None:
-        print("Dropping calculated columns:", calc_col_to_drop_names)
+        print("INFO::   Dropping calculated columns:", calc_col_to_drop_names)
         df_result_tmx.drop(columns=calc_col_to_drop_names, inplace=True)
     
     
         
     if additional_columns_to_drop is not None and selected_columns_to_keep is not None:
-        print("You cannot use both additional_columns_to_drop and selected_columns_to_keep. Please use only one of them.")
+        print("ERROR::  You cannot use both additional_columns_to_drop and selected_columns_to_keep. Please use only one of them.")
         return df_result_tmx, sel1, sel2
     
     if additional_columns_to_drop is not None:
@@ -501,9 +501,9 @@ def _pov_target_calculation_n_output240223(
         output_all_cols_fn = f"{outdir_tmx}/{ifn}_{t}.csv"
         try:
             df_result_tmx.to_csv(output_all_cols_fn, index=True)
-            print(f"Saved to {output_all_cols_fn}")
+            print(f"INFO::Saved to {output_all_cols_fn}")
         except Exception as e:
-            print(f"Error occurred while saving to {output_all_cols_fn}: {str(e)}")
+            print(f"ERROR::Error occurred while saving to {output_all_cols_fn}: {str(e)}")
 
     if write_reporting:
         _reporting(sel2, ifn, t, pipsize, tlid_tag, output_report_dir=output_report_dir)
@@ -521,7 +521,7 @@ def _reporting(df_selection2, ifn, t, pipsize, tlid_tag, output_report_dir=None)
     report_file = f"{output_report_dir}/report-calc-{tlid_tag}.txt"
     reporting_flag=True if os.getenv("JGT_REPORTING_FLAG") == "True" else False
     if reporting_flag:
-        print("Reporting to:", report_file)
+        print("INFO::Reporting to:", report_file)
         print(" tail -f ", report_file)
         with open(report_file, "a") as f:
             f.write(f"--- {ifn}_{t} --pipsize:{pipsize}---\n")
@@ -572,14 +572,14 @@ def readMXFile(
     try:
         mdf = pd.read_csv(fpath)
     except:
-        print(f"Error reading file {fpath}")
-        print("GENERATING THE MX Targets")
+        print(f"WARN::Error reading file {fpath}")
+        print("INFO::  GENERATING THE MX Targets")
         try:
             pto_target_calculation(instrument,timeframe,pto_vec_fdb_ao_vector_window_flag=True,
                 drop_calc_col=False,
                 selected_columns_to_keep=ML_DEFAULT_COLUMNS_TO_KEEP)
         except:
-            raise ValueError(f"Error generating file {fpath}")
+            raise ValueError(f"ERROR:: generating file {fpath}")
         try:
             mdf = pd.read_csv(fpath)
         except:
