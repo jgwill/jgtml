@@ -542,6 +542,7 @@ def readMXFile(
     also_read_selections=False,
     generate_if_not_exist=True,
     dropna=True,
+    mx_targets_sub_path = "targets/mx",
 ):
     """
     Read a MX Target file and return a pandas DataFrame.
@@ -566,7 +567,7 @@ def readMXFile(
     tuple: A tuple containing the DataFrame and the selections DataFrames.
     """
     # Define the file path based on the environment variable or local path
-    data_path_cds = get_data_path("targets/mx", use_full=use_full)
+    data_path_cds = get_data_path(mx_targets_sub_path, use_full=use_full)
     fpath = pds.mk_fullpath(instrument, timeframe, "csv", data_path_cds)
     
     try:
