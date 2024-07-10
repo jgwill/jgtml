@@ -83,4 +83,10 @@ def _zoneint_add_lagging_feature(df: pd.DataFrame, t, lag_period=1, total_laggin
             df[f'{col}{out_lag_midfix_str}{j}']=df[f'{col}{out_lag_midfix_str}{j}'].astype(int)
     return df
     
-    
+
+def wf_mk_zone_ready_dataset__240708(df: pd.DataFrame, t, lag_period=1, total_lagging_periods=5,out_lag_midfix_str='_lag_',inplace=True):
+    if not inplace:
+        df = df.copy()
+    column_zone_str_in_dataframe_to_id(df,t,inplace=True)
+    _zoneint_add_lagging_feature(df,t,lag_period=lag_period, total_lagging_periods=total_lagging_periods,out_lag_midfix_str=out_lag_midfix_str,inplace=True)
+    return df
