@@ -96,6 +96,6 @@ def create_ttf_csv(i, t, use_full=False, use_fresh=True, quotescount=-1,force_re
     ttf.dropna(inplace=True)
   ttf.to_csv(output_filename, index=True)
   ttf_sel.to_csv(output_filename_sel, index=True)
-  print(f"    MX Output full:'{output_filename}'")
-  print(f"    MX Output sel :'{output_filename_sel}'")
+  print(f"    TTF Output full:'{output_filename}'")
+  print(f"    TTF Output sel :'{output_filename_sel}'")
   return ttf
