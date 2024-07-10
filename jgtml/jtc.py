@@ -12,11 +12,14 @@ import tlid
 from jgtutils.jgtos import get_data_path
 
 
-from jgtutils.jgtconstants import *
-
+#from jgtutils.jgtconstants import *
+from jgtutils.jgtconstants import VECTOR_AO_FDBS, VECTOR_AO_FDBB, VECTOR_AO_FDBS_COUNT, VECTOR_AO_FDBB_COUNT, VECTOR_AO_FDB_COUNT,ML_DEFAULT_COLUMNS_TO_KEEP,FDB_TARGET 
 
 # %% Functions
-
+__TARGET=FDB_TARGET
+def set_target_variable_name(target_name):
+    global __TARGET
+    __TARGET = target_name
 
 def _crop_dataframe(df, crop_last_dt: str = None, crop_start_dt: str = None):
     if crop_last_dt is not None:
@@ -53,7 +56,7 @@ def calculate_target_variable_min_max(
     df["tmin"] = float("nan")
     df["p"] = float("nan")
     df["l"] = float("nan")
-    df["target"] = float("nan")
+    df[__TARGET] = float("nan")
 
     # Calculate the maximum and minimum Close value in the window range for each row
     for i in range(WINDOW_MIN, len(df) - WINDOW_MAX):
@@ -64,12 +67,12 @@ def calculate_target_variable_min_max(
 
             if df.loc[i, "High"] < df.loc[i, "tmin"]:
                 df.loc[i, "l"] = round(df.loc[i, "High"] - df.loc[i, "Low"], rounder)
-                df.loc[i, "target"] = round(
+                df.loc[i, __TARGET] = round(
                     -1 * (df.loc[i, "High"] - df.loc[i, "Low"]), rounder
                 )
             else:
                 df.loc[i, "p"] = round(df.loc[i, "Low"] - df.loc[i, "tmax"], rounder)
-                df.loc[i, "target"] = round(
+                df.loc[i, __TARGET] = round(
                     df.loc[i, "Low"] - df.loc[i, "tmax"], rounder
                 )
         # FDBB
@@ -79,12 +82,12 @@ def calculate_target_variable_min_max(
 
             if df.loc[i, "Low"] > df.loc[i, "tmin"]:
                 df.loc[i, "l"] = round(df.loc[i, "High"] - df.loc[i, "Low"], rounder)
-                df.loc[i, "target"] = round(
+                df.loc[i, __TARGET] = round(
                     -1 * (df.loc[i, "High"] - df.loc[i, "Low"]), rounder
                 )
             else:
                 df.loc[i, "p"] = round(df.loc[i, "tmax"] - df.loc[i, "High"], rounder)
-                df.loc[i, "target"] = round(
+                df.loc[i, __TARGET] = round(
                     df.loc[i, "tmax"] - df.loc[i, "High"], rounder
                 )
 
@@ -93,10 +96,10 @@ def calculate_target_variable_min_max(
     df["tmin"] = df["tmin"].fillna(0)
     df["p"] = df["p"].fillna(0)
     df["l"] = df["l"].fillna(0)
-    df["target"] = df["target"].fillna(0)
+    df[__TARGET] = df[__TARGET].fillna(0)
     # After calculating the 'target' column
     if pipsize != -1:
-        df["target"] = df["target"] / pipsize
+        df[__TARGET] = df[__TARGET] / pipsize
 
     # @q Maybe set backnthe index !??
     if set_index:
@@ -121,9 +124,9 @@ def pto_target_calculation(
     write_reporting=True,
     calc_col_to_drop_names=["tmax", "tmin", "p", "l"],
     sel_1_suffix="_sel",
-    sel_1_keeping_columns=["High","Low", "fdbs", "fdbb", "tmax", "tmin", "p", "l", "target"],
+    sel_1_keeping_columns=["High","Low", "fdbs", "fdbb", "tmax", "tmin", "p", "l", __TARGET],
     sel_2_suffix="_tnd",
-    sel_2_keeping_columns=["Open", "High", "Low", "Close", "fdbs", "fdbb", "target"],
+    sel_2_keeping_columns=["Open", "High", "Low", "Close", "fdbs", "fdbb", __TARGET],
     pto_vec_fdb_ao_out_s_name="vaos",
     pto_vec_fdb_ao_out_b_name="vaob",
     pto_vec_fdb_ao_in_s_sig_name="fdbs",
@@ -162,9 +165,9 @@ def pto_target_calculation(
         write_reporting (bool, optional): If True, write the reporting. Defaults to True.
         calc_col_to_drop_names (list, optional): The list of column names to drop. Defaults to ["tmax", "tmin", "p", "l"].
         sel_1_suffix (str, optional): The suffix for the first selection. Defaults to "_sel".
-        sel_1_keeping_columns (list, optional): The list of columns to keep for the first selection. Defaults to ["Low", "fdbs", "fdbb", "tmax", "tmin", "p", "l", "target"].
+        sel_1_keeping_columns (list, optional): The list of columns to keep for the first selection. Defaults to ["Low", "fdbs", "fdbb", "tmax", "tmin", "p", "l", __TARGET].
         sel_2_suffix (str, optional): The suffix for the second selection. Defaults to "_tnd".
-        sel_2_keeping_columns (list, optional): The list of columns to keep for the second selection. Defaults to ["Open", "High", "Low", "Close", "fdbs", "fdbb", "target"].  
+        sel_2_keeping_columns (list, optional): The list of columns to keep for the second selection. Defaults to ["Open", "High", "Low", "Close", "fdbs", "fdbb", __TARGET].  
         pto_vec_fdb_ao_out_s_name (str, optional): The name of the output for fdb_ao_vector_window. Defaults to "vaos".
         pto_vec_fdb_ao_out_b_name (str, optional): The name of the output for fdb_ao_vector_window. Defaults to "vaob".
         pto_vec_fdb_ao_in_s_sig_name (str, optional): The name of the input for fdb_ao_vector_window. Defaults to "fdbs".
@@ -277,10 +280,10 @@ def _pov_target_calculation_n_output240223(
         "tmin",
         "p",
         "l",
-        "target",
+        __TARGET,
     ],
     sel_2_suffix="_tnd",
-    sel_2_keeping_columns=["Open", "High", "Low", "Close", "fdbs", "fdbb", "target"],
+    sel_2_keeping_columns=["Open", "High", "Low", "Close", "fdbs", "fdbb", __TARGET],
     pto_vec_fdb_ao_out_s_name="vaos",
     pto_vec_fdb_ao_out_b_name="vaob",
     pto_vec_fdb_ao_in_s_sig_name="fdbs",
@@ -458,8 +461,8 @@ def _pov_target_calculation_n_output240223(
             print(f"Error occurred while saving to {output_sel_cols_fn}: {str(e)}")
     
     sel2 = df_result_tmx[sel_2_keeping_columns].copy()
-    sel2["target"] = sel2["target"].round(rounder)
-    sel2 = sel2[(sel2["target"] != 0)]
+    sel2[__TARGET] = sel2[__TARGET].round(rounder)
+    sel2 = sel2[(sel2[__TARGET] != 0)]
 
     output_tnd_targetNdata_fn = f"{outdir_tmx}/{ifn}_{t}{sel_2_suffix}.csv"
     
@@ -636,13 +639,13 @@ def get_fdb_ao_vector_window(
     df[out_s_name] = np.nan
     df[out_b_name] = np.nan
 
-    col_target_exist_in_dataset = "target" in df.columns
+    col_target_exist_in_dataset = __TARGET in df.columns
     
     
     for index, row in df.iterrows():
         process_row = True
         if only_if_target_exist_n_not_zero:
-            col_target_exist_in_dataset and row["target"] != 0
+            col_target_exist_in_dataset and row[__TARGET] != 0
             
         if row[in_s_sig_name] == 1 and row[in_t_val_name] > 0 and process_row:
             window_start = index
@@ -712,13 +715,13 @@ def get_fdb_ao_vector_window_v2(
     df[out_s_name] = np.nan
     df[out_b_name] = np.nan
 
-    col_target_exist_in_dataset = "target" in df.columns
+    col_target_exist_in_dataset = __TARGET in df.columns
     
     
     for index, row in df.iterrows():
         process_row = True
         if only_if_target_exist_n_not_zero:
-            col_target_exist_in_dataset and row["target"] != 0
+            col_target_exist_in_dataset and row[__TARGET] != 0
             
         if row[in_s_sig_name] == 1 and row[in_t_val_name] > 0 and process_row:
             window_start = index
