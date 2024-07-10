@@ -60,6 +60,8 @@ def create_ttf_csv(i, t, use_full=False, use_fresh=True, quotescount=-1,force_re
   #  print("Using full dataset")
 
   povs = jpov.get_higher_tf_array(t)
+  if not quiet:
+    print(f"Povs:",povs)
   ttf = pd.DataFrame()
 
   workset = svc.get_higher_cdf_datasets(i, t, use_full=use_full, use_fresh=use_fresh, quotescount=quotescount, quiet=True, force_read=force_read)
