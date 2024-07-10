@@ -54,8 +54,15 @@ def read_ttf_csv(i, t, use_full=False,force_refresh=False):
 def read_ttf_csv_selection(i, t, use_full=False):
     output_filename_sel=get_ttf_outfile_fullpath(i,t,use_full,suffix="_sel")
     return pd.read_csv(output_filename_sel, index_col=0)
- 
-def create_ttf_csv(i, t, use_full=False, use_fresh=True, quotescount=-1,force_read=False,dropna=True):
+
+def _upgrade_ttf_depending_data(i, t, use_full=False, use_fresh=True, quotescount=-1,dropna=True,quiet=True):
+  try:
+    svc.get_higher_cdf_datasets(i, t, use_full=use_full, use_fresh=use_fresh, quotescount=quotescount, quiet=True, force_read=False)
+  except:
+    print("Error in _upgrade_ttf_depending_data")
+    raise Exception("Error in _upgrade_ttf_depending_data")
+
+def create_ttf_csv(i, t, use_full=False, use_fresh=True, quotescount=-1,force_read=False,dropna=True,quiet=True):
   #if use_full:
   #  print("Using full dataset")
 
@@ -63,7 +70,12 @@ def create_ttf_csv(i, t, use_full=False, use_fresh=True, quotescount=-1,force_re
   if not quiet:
     print(f"Povs:",povs)
   ttf = pd.DataFrame()
-
+  if use_fresh:
+    print("Upgrading/Refreshing the Depending Data before creating the TTF")
+    _upgrade_ttf_depending_data(i, t, use_full=use_full, use_fresh=True,quiet=quiet)
+    use_fresh=False
+    force_read=True #@STCissue Unclear if that force read the CDS or the TTF (ITS the CDS)
+    
   workset = svc.get_higher_cdf_datasets(i, t, use_full=use_full, use_fresh=use_fresh, quotescount=quotescount, quiet=True, force_read=force_read)
   ttf=workset[t]
   created_columns = make_htf_created_columns_array(workset, t)
