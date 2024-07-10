@@ -40,7 +40,9 @@ def make_htf_created_columns_array(workset,t):
             created_columns.append(new_col_name)
     return created_columns
 
-def read_ttf_csv(i, t, use_full=False):
+def read_ttf_csv(i, t, use_full=False,force_refresh=False):
+    if force_refresh:
+        return create_ttf_csv(i, t, use_full,use_fresh=True,force_read=False)
     output_filename=get_ttf_outfile_fullpath(i,t,use_full)
     if not os.path.exists(output_filename):
         print("   Non existent, Creating TTF: ", output_filename)
