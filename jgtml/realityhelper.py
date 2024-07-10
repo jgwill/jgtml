@@ -27,8 +27,15 @@ from jgtml.mxhelper import _mfi_str_add_lag_as_int as _add_mfi_lagging_feature_t
 
 
 
-def _load_data(i, t, use_full,force_refresh=False):
-    return ptottf.read_ttf_csv(i, t, use_full=use_full,force_refresh=force_refresh)
+def _load_data(i, t, use_full,force_refresh=False,quiet=True):
+  if force_refresh:
+    try:
+      #ptottf._upgrade_ttf_depending_data(i,t,use_full=use_full,use_fresh=True,quiet=quiet)
+      ptottf.create_ttf_csv(i,t,use_full=use_full,use_fresh=True,quiet=quiet)
+      force_refresh=False # We don't want to force refresh the next time
+    except:
+      print("ERROR::Failed to upgrade TTF depending data")
+  return ptottf.read_ttf_csv(i, t, use_full=use_full,force_refresh=force_refresh)
 
 
 #@STCIssue This should be Moved to mfihelper2.py
