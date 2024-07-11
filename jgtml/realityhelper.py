@@ -4,8 +4,7 @@ import sys
 
 sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
 from jgtutils.jgtconstants import VOLUME,FDB_TARGET as TARGET
-from jgtutils.jgtconstants import MFI_VAL as MFI_DEFAULT_COLNAME
-from jgtutils.jgtconstants import ZCOL as ZONE_DEFAULT_COLNAME
+from mlconstants import ZONE_DEFAULT_COLNAME,MFI_DEFAULT_COLNAME
 
 #from jgtpy import mfihelper,JGTCDSSvc as cdssvc
 import anhelper as anh
