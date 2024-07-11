@@ -9,11 +9,7 @@ import os
 import sys
 
 sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
-#from jgtpy import JGTCDSSvc as svc
-#from jgtutils import jgtpov as jpov
-#from jgtutils.jgtconstants import (MFI_VAL, ZCOL, AO)
 
-#from ptottf import create_ttf_csv
 import realityhelper
 
 
