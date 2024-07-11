@@ -67,12 +67,7 @@ def _mfi_str_add_lag_as_int(df: pd.DataFrame, t, lag_period=1, total_lagging_per
 
 
 
-def wf_get_mfi_str_df(i,t,common_columns = [MFI_VAL,TARGET, 'vaoc','fdb'],drop_columns_arr = ['BidOpen', 'BidHigh', 'BidLow', 'BidClose', 'AskOpen', 'AskHigh',
-       'AskLow', 'AskClose', 'fh13', 'fl13', 'fh21', 'fl21', 'fh34', 'fl34', 'fh55',
-       'fl55','price_peak_above', 'price_peak_bellow', 'ao_peak_above','ao_peak_bellow'])->pd.DataFrame:
-  print("wf_get_mfi_str_df DEPRECATED")
-  print("Use wf_get_mxdf_and_add_mfi_features_to_df instead")
-  raise Exception("wf_get_mfi_str_df DEPRECATED")
+
   
 def wf_get_mxdf_and_add_mfi_features_to_df(i,t,common_columns = [MFI_VAL,TARGET, 'vaoc','fdb'],drop_columns_arr = ['BidOpen', 'BidHigh', 'BidLow', 'BidClose', 'AskOpen', 'AskHigh',
        'AskLow', 'AskClose', 'fh13', 'fl13', 'fh21', 'fl21', 'fh34', 'fl34', 'fh55',
