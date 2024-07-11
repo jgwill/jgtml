@@ -90,7 +90,7 @@ def get_mlf_outfile_fullpath(i,t,use_full,suffix="",ns="mlf"):
 def create_pattern_dataset__ttf_mfis_ao_2407a_pto_get_dataset_we_need_in_here__2407060929(i,t,lag_period=1, total_lagging_periods=5,dropna=True, use_full=True,columns_to_keep=None,columns_to_drop=None,force_refresh=False,quiet=True):
   print("INFO::Requires experimentation with training, testing prediction to select from this what we need in reality to make the model work and predict reality of a signal.")
   df=_pto_get_dataset_we_need_in_here__2407060929(i,t,lag_period=lag_period, total_lagging_periods=total_lagging_periods,dropna=dropna, use_full=use_full,columns_to_keep=columns_to_keep,columns_to_drop=columns_to_drop,force_refresh=force_refresh,quiet=quiet)
-  output_filename=get_mlf_outfile_fullpath(i,t,use_full)
+  output_filename=get_mlf_outfile_fullpath(i,t,use_full,"mfiao")
   try:
     df.to_csv(output_filename, index=True)
     print("INFO::MLF Saved to : ", output_filename)
@@ -99,8 +99,8 @@ def create_pattern_dataset__ttf_mfis_ao_2407a_pto_get_dataset_we_need_in_here__2
   return df
 
 
-def get_mfis_ao_zone_2407b_feature(i,t,lag_period=1, total_lagging_periods=5,dropna=True, use_full=True,columns_to_keep=None,columns_to_drop=None,drop_bid_ask=False):
-  df=_pto_get_dataset_we_need_in_here__2407060929(i,t,lag_period=lag_period, total_lagging_periods=total_lagging_periods,dropna=dropna, use_full=use_full,columns_to_keep=columns_to_keep,columns_to_drop=columns_to_drop)
+def get_mfis_ao_zone_2407b_feature(i,t,lag_period=1, total_lagging_periods=5,dropna=True, use_full=True,columns_to_keep=None,columns_to_drop=None,drop_bid_ask=False,force_refresh=False,quiet=True):
+  df=_pto_get_dataset_we_need_in_here__2407060929(i,t,lag_period=lag_period, total_lagging_periods=total_lagging_periods,dropna=dropna, use_full=use_full,columns_to_keep=columns_to_keep,columns_to_drop=columns_to_drop,force_refresh=force_refresh,quiet=quiet)
   
   df=_prep_zone_features_in_dataframe(df,t,lag_period=lag_period, total_lagging_periods=total_lagging_periods,inplace=True)
   if dropna:
@@ -118,5 +118,12 @@ def get_mfis_ao_zone_2407b_feature(i,t,lag_period=1, total_lagging_periods=5,dro
     for col in bid_ask_columns:
       if col in df.columns:
         df.drop(columns=[col],inplace=True)
+  
+  output_filename=get_mlf_outfile_fullpath(i,t,use_full)
+  try:
+    df.to_csv(output_filename, index=True)
+    print("INFO::MLF Saved to : ", output_filename)
+  except:
+    print("ERROR::Failed to save MLF to : ", output_filename)
   return df
   

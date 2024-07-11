@@ -40,10 +40,17 @@ def main():
   parser.add_argument("-v", "--verbose", action="store_true", help="Verbose")
   #force_refresh
   parser.add_argument("-f", "--force_refresh", action="store_true", help="Force refresh")
+  #flag mfiao
+  parser.add_argument("-mfiao", "--mfiao", action="store_true", help="Use mfiao")
+  #drop_bidask
+  parser.add_argument("-dba", "--drop_bidask", action="store_true", help="Drop bidask")
+  
   args = parser.parse_args()
   force_refresh=args.force_refresh if args.force_refresh else True if args.fresh else False
   
-  realityhelper.create_pattern_dataset__ttf_mfis_ao_2407a_pto_get_dataset_we_need_in_here__2407060929(                 args.instrument,
+  #get_mfis_ao_zone_2407b_feature
+  if args.mfiao:
+    realityhelper.create_pattern_dataset__ttf_mfis_ao_2407a_pto_get_dataset_we_need_in_here__2407060929(                 args.instrument,
                             args.timeframe,
                             use_full=args.full if args.full else False,
                             force_refresh=force_refresh,
@@ -52,6 +59,18 @@ def main():
                             dropna=True if args.dont_dropna else False,
                             columns_to_keep=args.columns_to_keep,
                             columns_to_drop=args.columns_to_drop)
+  else:
+    realityhelper.get_mfis_ao_zone_2407b_feature(
+                            args.instrument,
+                            args.timeframe,
+                            use_full=args.full if args.full else False,
+                            force_refresh=force_refresh,
+                            lag_period=args.lag_period,
+                            total_lagging_periods=args.total_lagging_periods,
+                            dropna=True if args.dont_dropna else False,
+                            columns_to_keep=args.columns_to_keep,
+                            columns_to_drop=args.columns_to_drop,
+                            drop_bid_ask=True if args.drop_bidask else False)
   #create_ttf_csv(args.instrument, args.timeframe, args.full if args.full else False, args.fresh, args.quotescount, args.force_read)
 
 if __name__ == "__main__":
