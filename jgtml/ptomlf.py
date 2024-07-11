@@ -18,6 +18,36 @@ from jgtutils.jgtconstants import JAW,TEETH,LIPS,HIGH,LOW,BJAW,BTEETH,BLIPS,TJAW
 _NOT_VALIDATED__SEE_RAISED_MESSAGE = 'Not Validated, see: jgtml_obsds_240515_TIDE_SIGNALS.py for logics'
 
 
+
+def __detect_directions(df,detected_direction_colname = 'detected_dir',colvalue_if_direction_is_sell = -1,colvalue_if_direction_is_buy = 1,colvalue_if_oscillating = 0):
+  """
+  Detect the directions of the normal alligator (JAW,TEETH,LIPS) with the relationship of current price (HIGH,LOW).
+  
+  Parameters:
+  df: pd.DataFrame - the dataframe to detect the directions of the normal alligator using the 3 alligators existing columns (JAW,TEETH,LIPS) and the current price (HIGH,LOW)
+  detected_direction_colname: str - the column name to store the detected direction
+  colvalue_if_direction_is_sell: str - the column value if the direction is sell
+  colvalue_if_direction_is_buy: str - the column value if the direction is buy
+  colvalue_if_oscillating: str - the column value if the direction is oscillating
+  
+  Returns:
+  pd.DataFrame - the dataframe with the directions of the normal alligator detected
+  """
+  
+  #@STCGoal What is the optimal way to dectect direction ? 
+  def evaluate_direction(row):
+    if row[JAW] > row[TEETH] and row[TEETH] > row[LIPS] and row[HIGH] < row[LIPS]:
+      return colvalue_if_direction_is_sell
+    elif row[JAW] < row[TEETH] and row[TEETH] < row[LIPS] and row[LOW] > row[LIPS]:
+      return colvalue_if_direction_is_buy
+    else:
+      return colvalue_if_oscillating
+
+  
+  #df[detected_direction_colname]= colvalue_if_direction_is_sell if df[JAW] > df[TEETH] and df[TEETH] > df[LIPS] and df[HIGH] < df[LIPS] else colvalue_if_direction_is_buy if df[JAW] < df[TEETH] and df[TEETH] < df[LIPS] and df[LOW] > df[LIPS] else colvalue_if_oscillating
+  df[detected_direction_colname] = df.apply(evaluate_direction, axis=1)
+  return df
+
 from mlconstants import NORMAL_MOUTH_IS_OPEN_COLNAME
 def __add_normal_mouth_is_open(df):
   """
@@ -29,6 +59,7 @@ def __add_normal_mouth_is_open(df):
   Returns:
   pd.DataFrame - the dataframe with the Normal Mouth Is Open Flag added
   """
+  detected_direction=__detect_directions(df)
   df[NORMAL_MOUTH_IS_OPEN_COLNAME] = (df[JAW] > df[TEETH]) & (df[TEETH] > df[LIPS])#GENERATED
   raise NotImplementedError(_NOT_VALIDATED__SEE_RAISED_MESSAGE)
   return df

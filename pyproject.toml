@@ -67,3 +67,5 @@ jgtapp="jgtml.jgtapp:main"
 
 ptojgtmlbigalligator="jgtml.ptojgtmlbigalligator:main"
 jgtml_obsds_240515_TIDE_SIGNALS="jgtml.jgtml_obsds_240515_TIDE_SIGNALS:main"
+#jgtml/mlfcli.py
+jgtmlfcli="jgtml.mlfcli:main"
