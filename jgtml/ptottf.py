@@ -32,9 +32,11 @@ def get_ttf_outfile_fullpath(i,t,use_full,suffix="",ns="ttf",midfix="_ttf"):
     return os.path.join(save_basedir,output_filename)
   
 
-def make_htf_created_columns_array(workset,t):
+def make_htf_created_columns_array(workset,t,columns_list_from_higher_tf=None):
+    if columns_list_from_higher_tf is None:
+      columns_list_from_higher_tf = default_columns_to_get_from_higher_tf
     created_columns=[]
-    for c in columns_to_get_from_higher_tf:
+    for c in columns_list_from_higher_tf:
       for k in workset:
         if not c in created_columns: 
           created_columns.append(c)
