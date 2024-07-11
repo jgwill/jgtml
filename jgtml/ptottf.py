@@ -2,7 +2,12 @@
 import pandas as pd
 from jgtpy import JGTCDSSvc as svc
 from jgtutils import jgtpov as jpov
-from jgtutils.jgtconstants import (MFI_VAL, ZCOL, AO)
+from jgtutils.jgtconstants import ( AO,MFI_SIGNAL)
+
+from jgtutils.jgtconstants import ZCOL as ZONE_DEFAULT_COLNAME
+from jgtutils.jgtconstants import MFI_VAL as MFI_DEFAULT_COLNAME
+
+columns_to_get_from_higher_tf = [MFI_DEFAULT_COLNAME, ZONE_DEFAULT_COLNAME, AO]
 
 import os
 

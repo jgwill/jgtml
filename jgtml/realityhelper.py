@@ -3,7 +3,10 @@ import os
 import sys
 
 sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
-from jgtutils.jgtconstants import MFI_VAL,MFI_SIGNAL,VOLUME,FDB_TARGET as TARGET
+from jgtutils.jgtconstants import VOLUME,FDB_TARGET as TARGET
+from jgtutils.jgtconstants import MFI_VAL as MFI_DEFAULT_COLNAME
+from jgtutils.jgtconstants import ZCOL as ZONE_DEFAULT_COLNAME
+
 #from jgtpy import mfihelper,JGTCDSSvc as cdssvc
 import anhelper as anh
 import mxhelper
@@ -99,7 +102,10 @@ def create_pattern_dataset__ttf_mfis_ao_2407a_pto_get_dataset_we_need_in_here__2
   return df
 
 
-def get_mfis_ao_zone_2407b_feature(i,t,lag_period=1, total_lagging_periods=5,dropna=True, use_full=True,columns_to_keep=None,columns_to_drop=None,drop_bid_ask=False,force_refresh=False,quiet=True):
+
+def get_mfis_ao_zone_2407b_feature(i,t,lag_period=1, total_lagging_periods=5,dropna=True, use_full=True,columns_to_keep=None,columns_to_drop=None,drop_bid_ask=False,force_refresh=False,quiet=True,zone_colname=""):
+  if zone_colname=="":
+    zone_colname=ZONE_DEFAULT_COLNAME
   df=_pto_get_dataset_we_need_in_here__2407060929(i,t,lag_period=lag_period, total_lagging_periods=total_lagging_periods,dropna=dropna, use_full=use_full,columns_to_keep=columns_to_keep,columns_to_drop=columns_to_drop,force_refresh=force_refresh,quiet=quiet)
   
   df=_prep_zone_features_in_dataframe(df,t,lag_period=lag_period, total_lagging_periods=total_lagging_periods,inplace=True)
