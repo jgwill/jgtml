@@ -25,13 +25,12 @@ def get_ttf_basedir(use_full,ns="ttf"):
     os.makedirs(fulldir, exist_ok=True)
     return fulldir
 
-def get_ttf_outfile_fullpath(i,t,use_full,suffix="",ns="ttf"):
+def get_ttf_outfile_fullpath(i,t,use_full,suffix="",ns="ttf",midfix="_ttf"):
     save_basedir=get_ttf_basedir(use_full,ns)
     ifn=i.replace("/","-")
-    output_filename = f"{ifn}_{t}_ttf{suffix}.csv"
+    output_filename = f"{ifn}_{t}{midfix}{suffix}.csv"
     return os.path.join(save_basedir,output_filename)
   
-columns_to_get_from_higher_tf = [MFI_VAL, ZCOL, AO]
 
 def make_htf_created_columns_array(workset,t):
     created_columns=[]
