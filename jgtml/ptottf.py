@@ -76,18 +76,14 @@ def create_ttf_csv(i, t, use_full=False, use_fresh=True, quotescount=-1,force_re
   created_columns = make_htf_created_columns_array(workset, t, columns_list_from_higher_tf)
   
   write_patternname_columns_list(i,t,use_full,created_columns,midfix=midfix)
-    
-    
-  #print("Created Columns:",created_columns)
   
-  #print("Created Columns:",created_columns)
 
   for key_tf in workset:  
     if key_tf!=t:
-      v=workset[key_tf]
+      v:pd.DataFrame=workset[key_tf]
       for col in columns_list_from_higher_tf:
       
-        new_col_name = col+"_"+key_tf
+        new_col_name:str = col+"_"+key_tf
         df[new_col_name]=None
 
         for ii, row in df.iterrows():
