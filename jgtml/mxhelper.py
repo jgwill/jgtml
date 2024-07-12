@@ -6,8 +6,8 @@ sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
 from jgtutils.jgtconstants import VOLUME
 from mlconstants import TARGET
 from mlconstants import MFI_DEFAULT_COLNAME,ZONE_DEFAULT_COLNAME
-from jgtml import mfihelper2 as mfihelper
-from jgtml.mfihelper2 import get_mfi_features_column_list_by_timeframe
+import mfihelper2 as mfihelper
+from mfihelper2 import get_mfi_features_column_list_by_timeframe
 import anhelper
 from mxconstants import readmx_drop_columns_arr
 

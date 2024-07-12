@@ -1,10 +1,17 @@
+import os
+import sys
+
+sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
+
 import pandas as pd
-from jgtml import anhelper
+pd.options.mode.copy_on_write = True
+
+import anhelper
 
 from jgtutils.jgtconstants import ZONE_INT,ZONE_BUY_ID,ZONE_SELL_ID,ZONE_NEUTRAL_ID,ZONE_BUY_STR,ZONE_SELL_STR,ZONE_NEUTRAL_STR
 from jgtutils.colconverthelper import zone_str_to_id,get_zone_features_column_list_by_timeframe
 
-from jgtutils.jgtconstants import ZCOL as ZONE_DEFAULT_COLNAME
+from mlconstants import ZONE_DEFAULT_COLNAME
   
 def column_zone_str_in_dataframe_to_id(df:pd.DataFrame,t:str,inplace=False,zone_colname=""):
     """
@@ -38,7 +45,7 @@ def _zoneint_add_lagging_feature(df: pd.DataFrame, t, lag_period=1, total_laggin
     if not inplace:
         df = df.copy()
     columns_to_add_lags_to = get_zone_features_column_list_by_timeframe(t,zone_colname)
-    columns_to_add_lags_to.append(zone_colname) #We want a lag for the current TF
+    #columns_to_add_lags_to.append(zone_colname) #We want a lag for the current TF
     anhelper.add_lagging_columns(df, columns_to_add_lags_to, lag_period, total_lagging_periods, out_lag_midfix_str)
     for col in columns_to_add_lags_to:#@STCIssue Isn't that done already ???  Or it thinks they are Double !!!!
         for j in range(1, total_lagging_periods + 1):
@@ -52,6 +59,6 @@ def wf_mk_zone_ready_dataset__240708(df: pd.DataFrame, t, lag_period=1, total_la
         
     if not inplace:
         df = df.copy()
-    column_zone_str_in_dataframe_to_id(df,t,inplace=True,zone_colname=zone_colname)
+    #column_zone_str_in_dataframe_to_id(df,t,inplace=True,zone_colname=zone_colname)
     _zoneint_add_lagging_feature(df,t,lag_period=lag_period, total_lagging_periods=total_lagging_periods,out_lag_midfix_str=out_lag_midfix_str,inplace=True,zone_colname=zone_colname)
     return df

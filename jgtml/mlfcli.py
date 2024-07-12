@@ -41,6 +41,8 @@ def main():
   #drop_bidask
   parser.add_argument("-dba", "--drop_bidask", action="store_true", help="Drop bidask")
   
+  parser.add_argument("-pn", "--patternname", help="Pattern Name", default="ttf")
+  
   args = parser.parse_args()
   force_refresh=args.force_refresh if args.force_refresh else True if args.fresh else False
   
@@ -66,7 +68,8 @@ def main():
                             dropna=True if args.dont_dropna else False,
                             columns_to_keep=args.columns_to_keep,
                             columns_to_drop=args.columns_to_drop,
-                            drop_bid_ask=True if args.drop_bidask else False)
+                            drop_bid_ask=True if args.drop_bidask else False,
+                            patternname=args.patternname)
   #create_ttf_csv(args.instrument, args.timeframe, args.full if args.full else False, args.fresh, args.quotescount, args.force_read)
 
 if __name__ == "__main__":

@@ -45,7 +45,7 @@ def _load_ttf_data(i, t, use_full,force_refresh=False,quiet=True):
 
 #@STCIssue This should be Moved to mfihelper2.py
 def __prep_mfi_2407a_features_in_dataframe(t, lag_period, total_lagging_periods, dropna, columns_to_keep, columns_to_drop, df):
-    df=_convert_mfi_columns_from_str_to_id(df,t, inplace=True)
+    #df=_convert_mfi_columns_from_str_to_id(df,t, inplace=True)
   #add lags
     df=_add_mfi_lagging_feature_to_ttfdf(df,t,lag_period=lag_period, total_lagging_periods=total_lagging_periods,inplace=True)
     if dropna:
@@ -102,7 +102,8 @@ def create_pattern_dataset__ttf_mfis_ao_2407a_pto_get_dataset_we_need_in_here__2
 
 
 
-def get_mfis_ao_zone_2407b_feature(i,t,lag_period=1, total_lagging_periods=5,dropna=True, use_full=True,columns_to_keep=None,columns_to_drop=None,drop_bid_ask=False,force_refresh=False,quiet=True,zone_colname="",mfi_colname=""):
+def get_mfis_ao_zone_2407b_feature(i,t,lag_period=1, total_lagging_periods=5,dropna=True, use_full=True,columns_to_keep=None,columns_to_drop=None,drop_bid_ask=False,force_refresh=False,quiet=True,zone_colname="",mfi_colname="",patternname="ttf"):
+  print("WARN:::::: patternname is not IMPLEMENTED in MLF Now:",patternname)
   if zone_colname=="":
     zone_colname=ZONE_DEFAULT_COLNAME
   if mfi_colname=="":
@@ -110,7 +111,7 @@ def get_mfis_ao_zone_2407b_feature(i,t,lag_period=1, total_lagging_periods=5,dro
     
   df=_pto_get_dataset__with_mfi_ao__2407060929(i,t,lag_period=lag_period, total_lagging_periods=total_lagging_periods,dropna=dropna, use_full=use_full,columns_to_keep=columns_to_keep,columns_to_drop=columns_to_drop,force_refresh=force_refresh,quiet=quiet)
   
-  df=_prep_zone_features_in_dataframe(df,t,lag_period=lag_period, total_lagging_periods=total_lagging_periods,inplace=True)
+  df=_prep_zone_features_in_dataframe(df,t,lag_period=lag_period, total_lagging_periods=total_lagging_periods,inplace=True,zone_colname=zone_colname)
   if dropna:
     df.dropna(inplace=True)
   if columns_to_keep:
