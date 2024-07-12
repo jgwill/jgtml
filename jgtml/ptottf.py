@@ -62,7 +62,7 @@ def create_ttf_csv(i, t, use_full=False, use_fresh=True, quotescount=-1,force_re
   povs = jpov.get_higher_tf_array(t)
   if not quiet:
     print(f"Povs:",povs)
-  ttf = pd.DataFrame()
+  
   if use_fresh:
     print("create_ttf_csv::Calling ::_upgrade_ttf_depending_data")
     _upgrade_ttf_depending_data(i, t, use_full=use_full, use_fresh=True,quiet=quiet)
@@ -70,44 +70,41 @@ def create_ttf_csv(i, t, use_full=False, use_fresh=True, quotescount=-1,force_re
     force_read=True #@STCissue Unclear if that force read the CDS or the TTF (ITS the CDS)
     
   workset = svc.get_higher_cdf_datasets(i, t, use_full=use_full, use_fresh=use_fresh, quotescount=quotescount, quiet=True, force_read=force_read)
-  ttf=workset[t]
+  #Get the dataframe for the current timeframe
+  df:pd.DataFrame=workset[t]
+  
   created_columns = make_htf_created_columns_array(workset, t, columns_list_from_higher_tf)
-  try:
-    print("Serializing Pattern column list:",midfix," for the instrument:",i," and timeframe:",t)
-    #original_columns_prefix = 'o_'+midfix
-    #write_patternname_columns_list(i,t,use_full,columns_list_from_higher_tf,midfix=original_columns_prefix)
-    write_patternname_columns_list(i,t,use_full,created_columns,midfix=midfix)
-  except Exception as ex:
-    print("Error in write_ttf_midfix_patternname_columns_list")
-    print(ex)
-    raise Exception("Error in write_ttf_midfix_patternname_columns_list")
+  
+  write_patternname_columns_list(i,t,use_full,created_columns,midfix=midfix)
+    
     
   #print("Created Columns:",created_columns)
   
+  #print("Created Columns:",created_columns)
 
-  for k in workset:  
-    if k!=t:
-      v=workset[k]
-      for c in columns_list_from_higher_tf:
+  for key_tf in workset:  
+    if key_tf!=t:
+      v=workset[key_tf]
+      for col in columns_list_from_higher_tf:
       
-        new_col_name = c+"_"+k
-        ttf[new_col_name]=None
+        new_col_name = col+"_"+key_tf
+        df[new_col_name]=None
 
-        for ii, row in ttf.iterrows():
+        for ii, row in df.iterrows():
           #get the date of the current row (the index)
           date = ii
           #print(k)
           data = v[v.index <= date]
           if not data.empty:
             data = data.iloc[-1]
-            ttf.at[ii,new_col_name]=data[c]
+            df.at[ii,new_col_name]=data[col]
   
   if dropna_volume:
-    ttf=dropna_volume_in_dataframe(ttf)
+    df=dropna_volume_in_dataframe(df)
   
   columns_we_want_to_keep_to_view=created_columns
   
-  ttf_sel=ttf[columns_we_want_to_keep_to_view].copy()
+  ttf_sel=df[columns_we_want_to_keep_to_view].copy()
   
   #save basedir is $JGTPY_DATA/ttf is not use_full, if use_full save basedir is $JGTPY_DATA_FULL/ttf
   
@@ -115,10 +112,10 @@ def create_ttf_csv(i, t, use_full=False, use_fresh=True, quotescount=-1,force_re
   output_filename_sel=get_ttf_outfile_fullpath(i,t,use_full,suffix="_sel",midfix=midfix)
   
   if dropna:
-    ttf.dropna(inplace=True)
-  ttf.to_csv(output_filename, index=True)
+    df.dropna(inplace=True)
+  df.to_csv(output_filename, index=True)
   ttf_sel.to_csv(output_filename_sel, index=True)
   print(f"    TTF Output full:'{output_filename}'")
   print(f"    TTF Output sel :'{output_filename_sel}'")
-  drop_columns_if_exists(ttf,not_needed_columns)
-  return ttf
+  drop_columns_if_exists(df,not_needed_columns)
+  return df
