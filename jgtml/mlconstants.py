@@ -9,7 +9,9 @@ MFI_DEFAULT_COLTYPE=int
 ZONE_DEFAULT_COLTYPE=int
 TARGET_COLTYPE=float
 
+from jgtutils.coltypehelper import DTYPE_DEFINITIONS as DTYPE_DEFINITIONS__CDS
 
+ 
 TTF_DTYPE_DEFINITION = {MFI_DEFAULT_COLNAME: MFI_DEFAULT_COLTYPE,ZONE_DEFAULT_COLNAME: ZONE_DEFAULT_COLTYPE, 'zone_sig_M1':int,'zone_sig_W1':int,'zone_sig_D1':int,'zone_sig_H4':int,'zone_sig_H1':int, 'mfi_sig_M1':int,'mfi_sig_W1':int,'mfi_sig_D1':int,'mfi_sig_H4':int,'mfi_sig_H1':int,'zcol':str,'mfi_sq':int,'mfi_green':int,'mfi_fade':int,'mfi_fake':int,'price_peak_above':int,'price_peak_bellow':int,'ao_peak_above':int,'ao_peak_bellow':int,'ao_sig_M1':float,'ao_sig_W1':float,'ao_sig_D1':float,'ao_sig_H4':float,'ao_sig_H1':float,'ao_sig_m15':float,'ao_sig_m5':float,'mfi_str':str}
 
 
