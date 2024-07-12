@@ -27,7 +27,7 @@ def main():
   args = parser.parse_args()
   columns_list_from_higher_tf = args.columns_list_from_higher_tf if args.columns_list_from_higher_tf else None
   
-  print("Columns List from Higher TF:",columns_list_from_higher_tf)
+  #print("Columns List from Higher TF:",columns_list_from_higher_tf)
   
   create_ttf_csv(args.instrument, args.timeframe, args.full if args.full else False, True if args.fresh else False, args.quotescount, args.force_read, columns_list_from_higher_tf=columns_list_from_higher_tf, midfix=args.patternname)
 
