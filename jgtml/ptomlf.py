@@ -334,8 +334,8 @@ def _get_data_for_instrument_timeframe(i,t,
   Returns:
   pd.DataFrame - the data for the instrument and timeframe
   """
-  from realityhelper import _load_data
-  df=_load_data(i, t, use_full)
+  from realityhelper import _load_ttf_data
+  df=_load_ttf_data(i, t, use_full)
   raise NotImplementedError(_PTO_2407_NOT_IMPLEMENTED__or_JUST_LINKED_TO_CODE__MESSAGE)
   
 def create_mlf_data__STUB(i,
