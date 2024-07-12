@@ -357,7 +357,15 @@ def _pov_target_calculation_n_output240223(
     if use_ttf:
         from ptottf import read_ttf_csv
         print("                                 jgtml is using ttf....")
-        df_cds_source = read_ttf_csv(i, t, use_full=True,midfix=ttf_midfix)
+        df_cds_source:pd.DataFrame = read_ttf_csv(i, t, use_full=True,midfix=ttf_midfix)
+        #@STCGoal Pattern Name -> We have the Columns list serialized
+        from mldatahelper import read_patternname_columns_list
+        patternname=ttf_midfix
+        columns_list_from_higher_tf = read_patternname_columns_list(i,t,use_full=True,midfix=patternname,ns="ttf")
+        print("INFO::Columns list from higher TF:",columns_list_from_higher_tf)
+        print(">   We would use that to filter the columns and get our training data out of this refactored module (JTC.py)  -or shall I say from prototype to production/new module.  -> OUTPUT:  Training Data and Reality Data with which we would predict using our model.")
+        print(f"Does these columns read from the source we would use to create the MXTarget data align with the input pattern {patternname}:",df_cds_source.columns)
+        #sys.exit(0)
         #print("JGTML::Debug len of df_cds_source:", len(df_cds_source))
     else:
         df_cds_source = pd.read_csv(

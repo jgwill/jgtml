@@ -101,6 +101,35 @@ def create_pattern_dataset__ttf_mfis_ao_2407a_pto_get_dataset_we_need_in_here__2
   return df
 
 
+def _read_adequate_pattern_dataset(i,t,use_full,patternname):
+  #@STCGoal Read ttf pattern
+  from ptottf import read_ttf_csv
+  df=read_ttf_csv(i, t, use_full=use_full,midfix=patternname)
+  print(df.columns)
+  return df
+  #raise Exception("Not Implemented Yet::",patternname)
+
+def get_mlf_feature_pattern(i,t,lag_period=1, total_lagging_periods=5,dropna=True, use_full=True,columns_to_keep=None,columns_to_drop=None,drop_bid_ask=False,force_refresh=False,quiet=True,patternname="ttf"):
+  #@STCGoal Pattern Name -> We have the Columns list serialized
+  from mldatahelper import read_patternname_columns_list
+  columns_list_from_higher_tf = read_patternname_columns_list(i,t,use_full,midfix=patternname,ns="ttf")
+  print("INFO::Columns List from Higher TF to prep laggings using MLF:",columns_list_from_higher_tf)
+  print("-------------------------------------------------","Not Implemented Yet::",patternname)
+  
+  
+  df:pd.DataFrame=_read_adequate_pattern_dataset(i,t,use_full,patternname)
+  
+  __clean_dataframe(dropna, columns_to_keep, columns_to_drop, drop_bid_ask, df)
+  sys.exit(0)
+  import anhelper
+  anhelper.add_lagging_columns(df, columns_to_add_lags_to, lag_period, total_lagging_periods, out_lag_midfix_str)
+  for col in columns_to_add_lags_to:#@STCIssue Isn't that done already ???  Or it thinks they are Double !!!!
+      for j in range(1, total_lagging_periods + 1):
+          df[f'{col}{out_lag_midfix_str}{j}']=df[f'{col}{out_lag_midfix_str}{j}'].astype(int)
+  
+  
+  raise Exception("Not Implemented Yet::",patternname)
+
 
 def get_mfis_ao_zone_2407b_feature(i,t,lag_period=1, total_lagging_periods=5,dropna=True, use_full=True,columns_to_keep=None,columns_to_drop=None,drop_bid_ask=False,force_refresh=False,quiet=True,zone_colname="",mfi_colname="",patternname="ttf"):
   print("WARN:::::: patternname is not IMPLEMENTED in MLF Now:",patternname)
@@ -112,21 +141,8 @@ def get_mfis_ao_zone_2407b_feature(i,t,lag_period=1, total_lagging_periods=5,dro
   df=_pto_get_dataset__with_mfi_ao__2407060929(i,t,lag_period=lag_period, total_lagging_periods=total_lagging_periods,dropna=dropna, use_full=use_full,columns_to_keep=columns_to_keep,columns_to_drop=columns_to_drop,force_refresh=force_refresh,quiet=quiet)
   
   df=_prep_zone_features_in_dataframe(df,t,lag_period=lag_period, total_lagging_periods=total_lagging_periods,inplace=True,zone_colname=zone_colname)
-  if dropna:
-    df.dropna(inplace=True)
-  if columns_to_keep:
-    for col_name in columns_to_keep:
-      if col_name not in df.columns:
-        columns_to_keep.remove(col_name)
-  if columns_to_drop:
-    for col in columns_to_drop:
-      if col in df.columns:
-        df.drop(columns=[col],inplace=True)
-  if drop_bid_ask:
-    bid_ask_columns = ['BidOpen', 'BidHigh', 'BidLow', 'BidClose', 'AskOpen', 'AskHigh','AskLow', 'AskClose']
-    for col in bid_ask_columns:
-      if col in df.columns:
-        df.drop(columns=[col],inplace=True)
+  
+  __clean_dataframe(df, columns_to_keep, columns_to_drop, drop_bid_ask,dropna)
   
   output_filename=get_mlf_outfile_fullpath(i,t,use_full)
   try:
@@ -135,4 +151,26 @@ def get_mfis_ao_zone_2407b_feature(i,t,lag_period=1, total_lagging_periods=5,dro
   except:
     print("ERROR::Failed to save MLF to : ", output_filename)
   return df
+
+from jgtutils.jgtconstants import BIDOPEN,BIDHIGH,BIDLOW,BIDCLOSE,ASKOPEN,ASKHIGH,ASKLOW,ASKCLOSE
+def __clean_dataframe(df:pd.DataFrame, columns_to_keep=None, columns_to_drop=None, drop_bid_ask=False,dropna=True )->None:
+    """
+    Common cleanup for the dataframe we are creating with various patterns
+    
+    """
+    if dropna:
+      df.dropna(inplace=True)
+    if columns_to_keep:
+      for col_name in columns_to_keep:
+        if col_name not in df.columns:
+          columns_to_keep.remove(col_name)
+    if columns_to_drop:
+      for col in columns_to_drop:
+        if col in df.columns:
+          df.drop(columns=[col],inplace=True)
+    if drop_bid_ask:
+      bid_ask_columns = [BIDOPEN,BIDHIGH,BIDLOW,BIDCLOSE,ASKOPEN,ASKHIGH,ASKLOW,ASKCLOSE]
+      for col in bid_ask_columns:
+        if col in df.columns:
+          df.drop(columns=[col],inplace=True)
   

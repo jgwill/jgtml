@@ -1,0 +1,33 @@
+gtmlfcli --help
+usage: jgtmlfcli [-h] -i INSTRUMENT -t TIMEFRAME [-uf] [-new] [-fr] [-c QUOTESCOUNT] [-lp LAG_PERIOD]
+                 [-tlp TOTAL_LAGGING_PERIODS] [-ddna] [-ctk COLUMNS_TO_KEEP [COLUMNS_TO_KEEP ...]]
+                 [-ctd COLUMNS_TO_DROP [COLUMNS_TO_DROP ...]] [-v] [-f] [-mfiao] [-dba] [-pn PATTERNNAME]
+
+Create mlf alpha CSV file
+
+options:
+  -h, --help            show this help message and exit
+  -i INSTRUMENT, --instrument INSTRUMENT
+                        Instrument name
+  -t TIMEFRAME, --timeframe TIMEFRAME
+                        Timeframe (e.g., D1, H4)
+  -uf, --full           Use full dataset
+  -new, --fresh         Use fresh data
+  -fr, --force_read     Force to read CDS (should increase speed but relies on existing data)
+  -c QUOTESCOUNT, --quotescount QUOTESCOUNT
+                        Number of quotes to retrieve (default: 333)
+  -lp LAG_PERIOD, --lag_period LAG_PERIOD
+                        Lag period
+  -tlp TOTAL_LAGGING_PERIODS, --total_lagging_periods TOTAL_LAGGING_PERIODS
+                        Total lagging periods
+  -ddna, --dont_dropna  Dont dropna
+  -ctk COLUMNS_TO_KEEP [COLUMNS_TO_KEEP ...], --columns_to_keep COLUMNS_TO_KEEP [COLUMNS_TO_KEEP ...]
+                        List of selected columns to keep
+  -ctd COLUMNS_TO_DROP [COLUMNS_TO_DROP ...], --columns_to_drop COLUMNS_TO_DROP [COLUMNS_TO_DROP ...]
+                        List of selected columns to drop
+  -v, --verbose         Verbose
+  -f, --force_refresh   Force refresh
+  -mfiao, --mfiao       Use mfiao
+  -dba, --drop_bidask   Drop bidask
+  -pn PATTERNNAME, --patternname PATTERNNAME
+                        Pattern Name

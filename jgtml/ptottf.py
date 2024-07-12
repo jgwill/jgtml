@@ -8,12 +8,8 @@ from mlconstants import TTF_NOT_NEEDED_COLUMNS_LIST, default_columns_to_get_from
 
 import os
 from mlutils import get_basedir,get_outfile_fullpath
+from mldatahelper import get_ttf_outfile_fullpath,write_patternname_columns_list,read_patternname_columns_list
 
-
-def get_ttf_outfile_fullpath(i,t,use_full,suffix="",ns="ttf",midfix="ttf"):
-  return get_outfile_fullpath(i,t,use_full,ns,midfix=midfix,suffix=suffix)
-
-  
 
 def make_htf_created_columns_array(workset,t,columns_list_from_higher_tf=None):
     if columns_list_from_higher_tf is None:
@@ -55,22 +51,6 @@ def _upgrade_ttf_depending_data(i, t, use_full=False, use_fresh=True, quotescoun
     print("Error in _upgrade_ttf_depending_data")
     raise Exception("Error in _upgrade_ttf_depending_data")
 
-def write_patternname_columns_list(i,t,use_full,columns_list_from_higher_tf=None,midfix="ttf"):
-  if columns_list_from_higher_tf is None:
-    columns_list_from_higher_tf = default_columns_to_get_from_higher_tf
-  output_filename=get_ttf_outfile_fullpath(i,t,use_full,suffix="_columns",midfix=midfix)
-  with open(output_filename, 'w') as f:
-    for item in columns_list_from_higher_tf:
-      f.write("%s\n" % item)
-  print(f"    TTF Output columns :'{output_filename}'")
-  return output_filename
-
-def read_patternname_columns_list(i,t,use_full,midfix="ttf"):
-  output_filename=get_ttf_outfile_fullpath(i,t,use_full,suffix="_columns",midfix=midfix)
-  with open(output_filename, 'r') as f:
-    columns_list_from_higher_tf = f.readlines()
-  columns_list_from_higher_tf = [x.strip() for x in columns_list_from_higher_tf]
-  return columns_list_from_higher_tf
 
 def create_ttf_csv(i, t, use_full=False, use_fresh=True, quotescount=-1,force_read=False,dropna=True,quiet=True,columns_list_from_higher_tf=None,not_needed_columns=None,dropna_volume=True,midfix="ttf"):
   if not_needed_columns is None:
@@ -93,8 +73,10 @@ def create_ttf_csv(i, t, use_full=False, use_fresh=True, quotescount=-1,force_re
   ttf=workset[t]
   created_columns = make_htf_created_columns_array(workset, t, columns_list_from_higher_tf)
   try:
-    print("Try to serialize our created columns from the TTF pattern:",midfix," for the instrument:",i," and timeframe:",t)
-    write_patternname_columns_list(i,t,use_full,columns_list_from_higher_tf,midfix=midfix)
+    print("Serializing Pattern column list:",midfix," for the instrument:",i," and timeframe:",t)
+    #original_columns_prefix = 'o_'+midfix
+    #write_patternname_columns_list(i,t,use_full,columns_list_from_higher_tf,midfix=original_columns_prefix)
+    write_patternname_columns_list(i,t,use_full,created_columns,midfix=midfix)
   except Exception as ex:
     print("Error in write_ttf_midfix_patternname_columns_list")
     print(ex)
