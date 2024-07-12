@@ -1,5 +1,6 @@
 # %% Imports
 import pandas as pd
+pd.options.mode.copy_on_write = True
 import numpy as np
 import os
 import sys
@@ -10,10 +11,11 @@ import tlid
 
 
 from jgtutils.jgtos import get_data_path
-
+from mlutils import get_outfile_fullpath
+from mlconstants import MX_NS
 
 #from jgtutils.jgtconstants import *
-from jgtutils.jgtconstants import VECTOR_AO_FDBS, VECTOR_AO_FDBB, VECTOR_AO_FDBS_COUNT, VECTOR_AO_FDBB_COUNT, VECTOR_AO_FDB_COUNT,ML_DEFAULT_COLUMNS_TO_KEEP,FDB_TARGET 
+from jgtutils.jgtconstants import VECTOR_AO_FDBS, VECTOR_AO_FDBB, VECTOR_AO_FDBS_COUNT, VECTOR_AO_FDBB_COUNT, VECTOR_AO_FDB_COUNT,ML_DEFAULT_COLUMNS_TO_KEEP,FDB_TARGET ,FDBB,FDBS,AO,ZLCB,ZLCS,OPEN,LOW,CLOSE,HIGH
 
 # %% Functions
 __TARGET=FDB_TARGET
@@ -124,16 +126,16 @@ def pto_target_calculation(
     write_reporting=True,
     calc_col_to_drop_names=["tmax", "tmin", "p", "l"],
     sel_1_suffix="_sel",
-    sel_1_keeping_columns=["High","Low", "fdbs", "fdbb", "tmax", "tmin", "p", "l", __TARGET],
+    sel_1_keeping_columns=[HIGH,LOW, FDBS, FDBB, "tmax", "tmin", "p", "l", __TARGET],
     sel_2_suffix="_tnd",
-    sel_2_keeping_columns=["Open", "High", "Low", "Close", "fdbs", "fdbb", __TARGET],
-    pto_vec_fdb_ao_out_s_name="vaos",
-    pto_vec_fdb_ao_out_b_name="vaob",
-    pto_vec_fdb_ao_in_s_sig_name="fdbs",
-    pto_vec_fdb_ao_in_s_win_end_sig_name="zlcb",
-    pto_vec_fdb_ao_in_b_sig_name="fdbb",
-    pto_vec_fdb_ao_in_b_win_end_sig_name="zlcs",
-    pto_vec_fdb_ao_in_t_val_name="ao",
+    sel_2_keeping_columns=[OPEN, HIGH, LOW, CLOSE, FDBS, FDBB, __TARGET],
+    pto_vec_fdb_ao_out_s_name=VECTOR_AO_FDBS,#"vaos",
+    pto_vec_fdb_ao_out_b_name=VECTOR_AO_FDBB,#"vaob",
+    pto_vec_fdb_ao_in_s_sig_name=FDBS,#"fdbs",
+    pto_vec_fdb_ao_in_s_win_end_sig_name=ZLCB,#"zlcb",
+    pto_vec_fdb_ao_in_b_sig_name=FDBB,#"fdbb",
+    pto_vec_fdb_ao_in_b_win_end_sig_name=ZLCS,#"zlcs",
+    pto_vec_fdb_ao_in_t_val_name=AO,#"ao",
     additional_columns_to_drop=None,
     selected_columns_to_keep=None,
     save_outputs=True,
@@ -149,6 +151,8 @@ def pto_target_calculation(
     talligator_flag=False,
     talligator_period_jaws=377,
     use_ttf=True,
+    ttf_midfix="ttf",
+    drop_vector_ao_intermediate_array=True
 ):
     """
     Prototype Calculation of target based on the given POV parameters and output to file with report.
@@ -189,6 +193,9 @@ def pto_target_calculation(
         largest_fractal_period (int, optional): The period for the largest fractal. Defaults to 89.
         talligator_flag (bool, optional): If True, calculate the T-Alligator. Defaults to False.
         talligator_period_jaws (int, optional): The period for the T-Alligator jaws. Defaults to 377.
+        use_ttf (bool, optional): If True, use TTF. Defaults to True.
+        ttf_midfix (str, optional): The midfix for TTF. Defaults to "ttf".
+        drop_vector_ao_intermediate_array (bool, optional): If True, drop the vector AO intermediate array. Defaults to True. (we have the Counts vaosc,vaosb)
 
         
 
@@ -250,7 +257,9 @@ def pto_target_calculation(
         largest_fractal_period=largest_fractal_period,
         talligator_flag=talligator_flag,
         talligator_period_jaws=talligator_period_jaws, 
-        use_ttf=use_ttf
+        use_ttf=use_ttf,
+        ttf_midfix=ttf_midfix,
+        drop_vector_ao_intermediate_array=drop_vector_ao_intermediate_array
     )
     return df_result_tmx, sel1, sel2
 
@@ -271,26 +280,20 @@ def _pov_target_calculation_n_output240223(
     write_reporting=True,
     calc_col_to_drop_names=["tmax", "tmin", "p", "l"],
     sel_1_suffix="_sel",
-    sel_1_keeping_columns=[
-        "High",
-        "Low",
-        "fdbs",
-        "fdbb",
-        "tmax",
-        "tmin",
-        "p",
-        "l",
-        __TARGET,
-    ],
+    sel_1_keeping_columns=[HIGH,
+                           LOW,                    FDBS,                   FDBB,                   "tmax",                 "tmin",
+                           "p",
+                           "l", 
+                           __TARGET],
     sel_2_suffix="_tnd",
-    sel_2_keeping_columns=["Open", "High", "Low", "Close", "fdbs", "fdbb", __TARGET],
-    pto_vec_fdb_ao_out_s_name="vaos",
-    pto_vec_fdb_ao_out_b_name="vaob",
-    pto_vec_fdb_ao_in_s_sig_name="fdbs",
-    pto_vec_fdb_ao_in_s_win_end_sig_name="zlcb",
-    pto_vec_fdb_ao_in_b_sig_name="fdbb",
-    pto_vec_fdb_ao_in_b_win_end_sig_name="zlcs",
-    pto_vec_fdb_ao_in_t_val_name="ao",
+    sel_2_keeping_columns=[OPEN, HIGH, LOW, CLOSE, FDBS, FDBB, __TARGET],
+    pto_vec_fdb_ao_out_s_name=VECTOR_AO_FDBS,
+    pto_vec_fdb_ao_out_b_name=VECTOR_AO_FDBB,
+    pto_vec_fdb_ao_in_s_sig_name=FDBS,
+    pto_vec_fdb_ao_in_s_win_end_sig_name=ZLCB,
+    pto_vec_fdb_ao_in_b_sig_name=FDBB,
+    pto_vec_fdb_ao_in_b_win_end_sig_name=ZLCS,
+    pto_vec_fdb_ao_in_t_val_name=AO,
     additional_columns_to_drop=None,
     selected_columns_to_keep=None,
     save_outputs=True,
@@ -307,6 +310,8 @@ def _pov_target_calculation_n_output240223(
     talligator_flag=False,
     talligator_period_jaws=377,
     use_ttf=True,
+    ttf_midfix="ttf",
+    drop_vector_ao_intermediate_array=True,
 ):
     if tlid_tag is None:
         tlid_tag = tlid.get_minutes()
@@ -352,7 +357,7 @@ def _pov_target_calculation_n_output240223(
     if use_ttf:
         from ptottf import read_ttf_csv
         print("                                 jgtml is using ttf....")
-        df_cds_source = read_ttf_csv(i, t, use_full=True)
+        df_cds_source = read_ttf_csv(i, t, use_full=True,midfix=ttf_midfix)
         #print("JGTML::Debug len of df_cds_source:", len(df_cds_source))
     else:
         df_cds_source = pd.read_csv(
@@ -368,6 +373,7 @@ def _pov_target_calculation_n_output240223(
         WINDOW_MIN=WINDOW_MIN,
         WINDOW_MAX=WINDOW_MAX,
     )
+    #print("calculate_target_variable_min_max::",df_result_tmx.columns)
 
     if pto_vec_fdb_ao_vector_window_flag:
         df_result_tmx = get_fdb_ao_vector_window(
@@ -382,13 +388,21 @@ def _pov_target_calculation_n_output240223(
             only_if_target_exist_n_not_zero=only_if_target_exist_n_not_zero,
             
         )
+        #print("after : get_fdb_ao_vector_window::",df_result_tmx.columns)
+        # print(df_result_tmx.tail(14))
         #@STCGoal Count of the ao vector in the window
-        df_result_tmx.loc[:, VECTOR_AO_FDBS_COUNT] = df_result_tmx[VECTOR_AO_FDBS].apply(lambda x: len(x.split(',')))
-        df_result_tmx.loc[:, VECTOR_AO_FDBB_COUNT] = df_result_tmx[VECTOR_AO_FDBB].apply(lambda x: len(x.split(',')))
-        
+        df_result_tmx.loc[:, VECTOR_AO_FDBS_COUNT] = df_result_tmx[VECTOR_AO_FDBS].apply(lambda x: len(x.split(',')) if isinstance(x, str) else 0)
+        df_result_tmx.loc[:, VECTOR_AO_FDBB_COUNT] = df_result_tmx[VECTOR_AO_FDBB].apply(lambda x: len(x.split(',')) if isinstance(x, str) else 0)
+       
         df_result_tmx.loc[:, VECTOR_AO_FDBS_COUNT] = df_result_tmx.apply(lambda x: 0 if x[VECTOR_AO_FDBS_COUNT] == 1 else x[VECTOR_AO_FDBS_COUNT], axis=1)
         df_result_tmx.loc[:, VECTOR_AO_FDBB_COUNT] = df_result_tmx.apply(lambda x: 0 if x[VECTOR_AO_FDBB_COUNT] == 1 else x[VECTOR_AO_FDBB_COUNT], axis=1)
         
+        if drop_vector_ao_intermediate_array:
+            df_result_tmx.drop(columns=[VECTOR_AO_FDBS, VECTOR_AO_FDBB], inplace=True)
+    
+        
+        #df_result_tmx.to_csv("debug.csv",index=True)
+        #sys.exit(0)
         if keep_fdb_count_separated_columns:                
             sel_1_keeping_columns.append(VECTOR_AO_FDBS_COUNT)
             sel_2_keeping_columns.append(VECTOR_AO_FDBS_COUNT)
@@ -420,16 +434,16 @@ def _pov_target_calculation_n_output240223(
         
         #df_result_tmx[VECTOR_AO_FDB_COUNT] = df_result_tmx[VECTOR_AO_FDB_COUNT].fillna(0)
         
-        if pto_vec_fdb_ao_out_s_name  not in sel_1_keeping_columns:
+        if pto_vec_fdb_ao_out_s_name  not in sel_1_keeping_columns and not drop_vector_ao_intermediate_array:
             sel_1_keeping_columns.append(pto_vec_fdb_ao_out_s_name )
         
-        if pto_vec_fdb_ao_out_b_name not in sel_1_keeping_columns:
+        if pto_vec_fdb_ao_out_b_name not in sel_1_keeping_columns and not drop_vector_ao_intermediate_array:
             sel_1_keeping_columns.append(pto_vec_fdb_ao_out_b_name )
             
-        if pto_vec_fdb_ao_out_s_name  not in sel_2_keeping_columns:
+        if pto_vec_fdb_ao_out_s_name  not in sel_2_keeping_columns and not drop_vector_ao_intermediate_array:
             sel_2_keeping_columns.append(pto_vec_fdb_ao_out_s_name )
         
-        if pto_vec_fdb_ao_out_b_name not in sel_2_keeping_columns:
+        if pto_vec_fdb_ao_out_b_name not in sel_2_keeping_columns and not drop_vector_ao_intermediate_array:
             sel_2_keeping_columns.append(pto_vec_fdb_ao_out_b_name )      
         
         
@@ -453,7 +467,8 @@ def _pov_target_calculation_n_output240223(
 
     if save_outputs:
         print("INFO::Saving MX Target data to file...")
-        output_sel_cols_fn = f"{outdir_tmx}/{ifn}_{t}{sel_1_suffix}.csv"
+        output_sel_cols_fn = get_outfile_fullpath(i,t,use_full=True,ns=MX_NS,midfix=sel_1_suffix)
+        #output_sel_cols_fn = f"{outdir_tmx}/{ifn}_{t}{sel_1_suffix}.csv"
         try:
             sel1.to_csv(output_sel_cols_fn, index=True)
             print(f"Saved to {output_sel_cols_fn}")
@@ -464,7 +479,8 @@ def _pov_target_calculation_n_output240223(
     sel2[__TARGET] = sel2[__TARGET].round(rounder)
     sel2 = sel2[(sel2[__TARGET] != 0)]
 
-    output_tnd_targetNdata_fn = f"{outdir_tmx}/{ifn}_{t}{sel_2_suffix}.csv"
+    output_tnd_targetNdata_fn =get_outfile_fullpath(i,t,use_full=True,ns=MX_NS,midfix=sel_2_suffix)
+    #output_tnd_targetNdata_fn = f"{outdir_tmx}/{ifn}_{t}{sel_2_suffix}.csv"
     
     if save_outputs:
         try:
@@ -476,10 +492,14 @@ def _pov_target_calculation_n_output240223(
     if selected_columns_to_keep is not None:
         print("INFO::   Selected columns to keep:", selected_columns_to_keep)
 
-    if drop_calc_col and selected_columns_to_keep is None:
-        print("INFO::   Dropping calculated columns:", calc_col_to_drop_names)
-        df_result_tmx.drop(columns=calc_col_to_drop_names, inplace=True)
-    
+    # if drop_calc_col and selected_columns_to_keep is None:
+    #     print("INFO::   Dropping calculated columns:", calc_col_to_drop_names)
+    #     df_result_tmx.drop(columns=calc_col_to_drop_names, inplace=True)
+    for col in calc_col_to_drop_names:
+        if col in df_result_tmx.columns:
+            df_result_tmx.drop(columns=[col], inplace=True)
+    #print("calc_col_to_drop_names::",calc_col_to_drop_names)
+    #print("selected_columns_to_keep::",selected_columns_to_keep)
     
         
     if additional_columns_to_drop is not None and selected_columns_to_keep is not None:
@@ -501,7 +521,8 @@ def _pov_target_calculation_n_output240223(
     
     if save_outputs:
         # Save the result to a csv file
-        output_all_cols_fn = f"{outdir_tmx}/{ifn}_{t}.csv"
+        output_all_cols_fn = get_outfile_fullpath(i,t,use_full=True,ns=MX_NS)
+        #output_all_cols_fn = f"{outdir_tmx}/{ifn}_{t}.csv"
         try:
             df_result_tmx.to_csv(output_all_cols_fn, index=True)
             print(f"INFO::Saved to {output_all_cols_fn}")
@@ -546,6 +567,7 @@ def readMXFile(
     generate_if_not_exist=True,
     dropna=True,
     mx_targets_sub_path = "targets/mx",
+    ttf_midfix="",
 ):
     """
     Read a MX Target file and return a pandas DataFrame.
@@ -563,6 +585,8 @@ def readMXFile(
     also_read_selections (bool, optional): If True, also read the selections. Defaults to False.
     generate_if_not_exist (bool, optional): If True, generate the MX Target data if it does not exist. Default is True.
     dropna (bool, optional): If True, drop the NaN values. Default is True.
+    mx_targets_sub_path (str, optional): The sub-path for the MX Targets. Default is "targets/mx".
+    ttf_midfix (str, optional): The midfix for the file name. Default is "".  We might use variation of the TTF (peaks,aoac, or other and the MX Will be saved with that midfix)
 
     Returns:
     pandas.DataFrame: The DataFrame containing the MX Target data.
@@ -570,8 +594,9 @@ def readMXFile(
     tuple: A tuple containing the DataFrame and the selections DataFrames.
     """
     # Define the file path based on the environment variable or local path
-    data_path_cds = get_data_path(mx_targets_sub_path, use_full=use_full)
-    fpath = pds.mk_fullpath(instrument, timeframe, "csv", data_path_cds)
+    fpath=get_outfile_fullpath(instrument, timeframe,use_full=use_full,midfix=ttf_midfix,ns=mx_targets_sub_path)
+    #data_path_cds = get_data_path(mx_targets_sub_path, use_full=use_full,ttf_midfix=ttf_midfix)
+    #fpath = pds.mk_fullpath(instrument, timeframe, "csv", data_path_cds)
     
     try:
         mdf = pd.read_csv(fpath)
@@ -581,7 +606,8 @@ def readMXFile(
         try:
             pto_target_calculation(instrument,timeframe,pto_vec_fdb_ao_vector_window_flag=True,
                 drop_calc_col=False,
-                selected_columns_to_keep=ML_DEFAULT_COLUMNS_TO_KEEP)
+                selected_columns_to_keep=ML_DEFAULT_COLUMNS_TO_KEEP,
+                ttf_midfix=ttf_midfix)
         except:
             raise ValueError(f"ERROR:: generating file {fpath}")
         try:
@@ -620,13 +646,13 @@ def readMXFile(
 
 def get_fdb_ao_vector_window(
     df,
-    out_s_name="vaos",#VECTOR_AO_FDBS_COUNT
-    out_b_name="vaob",#VECTOR_AO_FDBB
-    in_s_sig_name="fdbs",
-    in_s_win_end_sig_name="zlcb",
-    in_b_sig_name="fdbb",
-    in_b_win_end_sig_name="zlcs",
-    in_t_val_name="ao",
+    out_s_name=VECTOR_AO_FDBS,#"vaos",#VECTOR_AO_FDBS_COUNT
+    out_b_name=VECTOR_AO_FDBB,#"vaob",#VECTOR_AO_FDBB
+    in_s_sig_name=FDBS,#"fdbs",
+    in_s_win_end_sig_name=ZLCB,#"zlcb",
+    in_b_sig_name=FDBB,#"fdbb",
+    in_b_win_end_sig_name=ZLCS,#"zlcs",
+    in_t_val_name=AO,#"ao",
     only_if_target_exist_n_not_zero=True,
 ):
 
@@ -681,9 +707,9 @@ def get_fdb_ao_vector_window(
         pass
 
     # for nan values, fill with empty string corresponding to an empty array
-    df[out_s_name].fillna("[]", inplace=True)
-    df[out_b_name].fillna("[]",inplace=True)
-
+    #df[out_s_name].fillna("[]", inplace=True)
+    #df[out_b_name].fillna("[]",inplace=True)
+    df.fillna({out_s_name: "[]", out_b_name: "[]"}, inplace=True)
     return df
 
 
