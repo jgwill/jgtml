@@ -62,6 +62,7 @@ jgtmlcli = "jgtml.jgtmlcli:main"
 
 ptojgtmltidealligator="jgtml.ptojgtmltidealligator:main"
 ptojgtmlttfprotocli="jgtml.ptojgtmlttfprotocli:main"
+jgtmlttfcli="jgtml.ptojgtmlttfprotocli:main"
 
 jgtapp="jgtml.jgtapp:main"
 
