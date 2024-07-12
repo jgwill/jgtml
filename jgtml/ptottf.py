@@ -29,7 +29,7 @@ def make_htf_created_columns_array(workset,t,columns_list_from_higher_tf=None):
             created_columns.append(new_col_name)
     return created_columns
 
-def read_ttf_csv(i, t, use_full=False,force_refresh=False,midfix="ttf"):
+def read_ttf_csv(i, t, use_full=False,force_refresh=False,midfix="ttf")->pd.DataFrame:
     if force_refresh:
         return create_ttf_csv(i, t, use_full,use_fresh=True,force_read=False)
     output_filename=get_ttf_outfile_fullpath(i,t,use_full,midfix=midfix)
