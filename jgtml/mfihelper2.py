@@ -1,7 +1,6 @@
 import pandas as pd
-from jgtutils.jgtconstants import MFI,MFI_SQUAT,MFI_GREEN,MFI_FADE,MFI_FAKE,MFI_SIGNAL,MFI_SQUAT_STR,MFI_FAKE_STR,MFI_FADE_STR,MFI_GREEN_STR,MFI_SQUAT_ID,MFI_FAKE_ID,MFI_FADE_ID,MFI_GREEN_ID
 
-from jgtutils.jgtconstants import MFI_VAL as MFI_DEFAULT_COLNAME
+from mlconstants import MFI_DEFAULT_COLNAME
 from jgtutils.colconverthelper import mfi_str_to_id,mfi_signal_to_str,get_mfi_features_column_list_by_timeframe
 
 

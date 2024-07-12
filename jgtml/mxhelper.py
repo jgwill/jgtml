@@ -3,20 +3,26 @@ import os
 import sys
 
 sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
-from jgtutils.jgtconstants import MFI_VAL,MFI_SIGNAL,VOLUME,FDB_TARGET as TARGET
+from jgtutils.jgtconstants import VOLUME
+from mlconstants import TARGET
+from mlconstants import MFI_DEFAULT_COLNAME,ZONE_DEFAULT_COLNAME
 from jgtml import mfihelper2 as mfihelper
 from jgtml.mfihelper2 import get_mfi_features_column_list_by_timeframe
 import anhelper
-import mxconstants
+from mxconstants import readmx_drop_columns_arr
 
 import jtc
 import pandas as pd
 
-def _read_mx_and_prep_02(i,t,drop_columns_arr = ['BidOpen', 'BidHigh', 'BidLow', 'BidClose', 'AskOpen', 'AskHigh','AskLow', 'AskClose', 'fh13', 'fl13', 'fh21', 'fl21', 'fh34', 'fl34', 'fh55','fl55','price_peak_above', 'price_peak_bellow', 'ao_peak_above','ao_peak_bellow'],dropna_volume=True):
-  df=jtc.readMXFile(instrument=i,timeframe=t)
-  try:  
-    df.drop(columns=drop_columns_arr,inplace=True)
+def _read_mx_and_prep_02(i,t,drop_columns_arr = None,dropna_volume=True):
+ 
     
+  df=jtc.readMXFile(instrument=i,timeframe=t)
+  try:
+    if drop_columns_arr is not None:
+      for col in drop_columns_arr:
+        if col in df.columns:
+          df.drop(columns=[col],inplace=True)    
   except:
     pass
   #drop rows with Volume=0
@@ -41,27 +47,27 @@ def mk_safename_namespace_path(i,t,x_fn_namespace,sub_namespace,suffix_base="",o
   return fn
 
 
-
-def _get_mfi_str_df(mxdf,t,common_columns = [TARGET, 'vaoc','fdb']):
+from mxconstants import mx_common_columns
+def _extract_mfi_structure_dataframe(mxdf,t,common_columns = mx_common_columns):
   
-  mfi_str_selected_columns = get_mfi_features_column_list_by_timeframe(t)
-  print(mfi_str_selected_columns)
-  combined_columns = mfi_str_selected_columns+common_columns
-  mfi_str_df=mxdf[combined_columns]
-  return mfi_str_df
+  mfi_feature_columns_list = get_mfi_features_column_list_by_timeframe(t)
+  print("Extracted MFI Features columns list:",mfi_feature_columns_list)
+  combined_columns = mfi_feature_columns_list+common_columns
+  df_with_features=mxdf[combined_columns]
+  return df_with_features
 
 #@STCIssue Location could move to a Common to MX and Reality analysis (mfihelper??)
-def _mfi_str_add_lag_as_int(df: pd.DataFrame, t, lag_period=1, total_lagging_periods=5,out_lag_midfix_str='_lag_',inplace=True):
+def _add_lag_features_to_dataframe(df: pd.DataFrame, t, lag_period=1, total_lagging_periods=5,out_lag_midfix_str='_lag_',inplace=True):
   if not inplace:
     df = df.copy()
-  columns_to_add_lags_to = get_mfi_features_column_list_by_timeframe(t)
-  columns_to_add_lags_to.append(MFI_VAL) #We want a lag for the current TF
+  columns_to_add_lags_to = get_mfi_features_column_list_by_timeframe(t, MFI_DEFAULT_COLNAME)
+  #columns_to_add_lags_to.append(MFI_DEFAULT_COLNAME) #We want a lag for the current TF
   
   anhelper.add_lagging_columns(df, columns_to_add_lags_to, lag_period, total_lagging_periods, out_lag_midfix_str)
   #convert columns_to_add_lags_to to type int
-  for col in columns_to_add_lags_to: #@STCIssue Isn't that done already ???  Or it thinks they are Double !!!!
-    for j in range(1, total_lagging_periods + 1):
-      df[f'{col}{out_lag_midfix_str}{j}']=df[f'{col}{out_lag_midfix_str}{j}'].astype(int)
+  # for col in columns_to_add_lags_to: #@STCIssue Isn't that done already ???  Or it thinks they are Double !!!!
+  #   for j in range(1, total_lagging_periods + 1):
+  #     df[f'{col}{out_lag_midfix_str}{j}']=df[f'{col}{out_lag_midfix_str}{j}'].astype(int)
   
   return df
 
@@ -69,14 +75,15 @@ def _mfi_str_add_lag_as_int(df: pd.DataFrame, t, lag_period=1, total_lagging_per
 
 
   
-def wf_get_mxdf_and_add_mfi_features_to_df(i,t,common_columns = [MFI_VAL,TARGET, 'vaoc','fdb'],drop_columns_arr = ['BidOpen', 'BidHigh', 'BidLow', 'BidClose', 'AskOpen', 'AskHigh',
-       'AskLow', 'AskClose', 'fh13', 'fl13', 'fh21', 'fl21', 'fh34', 'fl34', 'fh55',
-       'fl55','price_peak_above', 'price_peak_bellow', 'ao_peak_above','ao_peak_bellow'])->pd.DataFrame:
+def wf_get_mxdf_and_add_mfi_features_to_df(i,t,common_columns = [MFI_DEFAULT_COLNAME,TARGET, 'vaoc','fdb'],drop_columns_arr = None)->pd.DataFrame:
+  if drop_columns_arr is None:
+    drop_columns_arr = readmx_drop_columns_arr
+    
   df=_read_mx_and_prep_02(i,t,drop_columns_arr)
-  mfihelper.column_mfi_str_in_dataframe_to_id(df,t)
-  _get_mfi_str_df(df,t,common_columns)
+  mfihelper.column_mfi_str_in_dataframe_to_id(df,t) #@STCIssue WE WONT NEED THIS when using MFI_SIGNAL instead of MFI_VAL
+  _extract_mfi_structure_dataframe(df,t,common_columns)
   #add lag
-  _mfi_str_add_lag_as_int(df,t)
+  _add_lag_features_to_dataframe(df,t)
   return df
 
 

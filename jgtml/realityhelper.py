@@ -17,19 +17,19 @@ import pandas as pd
 #@STCGoal We Have TTF Data with Lags for the pattern 'ttf_mfis_ao_2407a'
 #@STCIssue How are created the TTF ?  How to create them with the lags and smaller Datasets (we dont need full)?
 
-from jgtml import ptottf 
+import ptottf 
 #from jgtml import anhelper
 
-from jgtml.mfihelper2 import column_mfi_str_in_dataframe_to_id as _convert_mfi_columns_from_str_to_id
+from mfihelper2 import column_mfi_str_in_dataframe_to_id as _convert_mfi_columns_from_str_to_id
 
-from jgtml.zonehelper import wf_mk_zone_ready_dataset__240708 as _prep_zone_features_in_dataframe
+from zonehelper import wf_mk_zone_ready_dataset__240708 as _prep_zone_features_in_dataframe
 #column_zone_str_in_dataframe_to_id as convert_zone_columns_from_str_to_id
 
-from jgtml.mxhelper import _mfi_str_add_lag_as_int as _add_mfi_lagging_feature_to_ttfdf
+from mxhelper import _add_lag_features_to_dataframe as _add_mfi_lagging_feature_to_ttfdf
 
 
 
-def _load_data(i, t, use_full,force_refresh=False,quiet=True):
+def _load_ttf_data(i, t, use_full,force_refresh=False,quiet=True):
   if force_refresh:
     try:
       print("RH::loaddata::Upgrading/Refreshing the Depending Data before creating the TTF")
@@ -44,7 +44,7 @@ def _load_data(i, t, use_full,force_refresh=False,quiet=True):
 
 
 #@STCIssue This should be Moved to mfihelper2.py
-def _prep_mfi_2407a_features_in_dataframe(t, lag_period, total_lagging_periods, dropna, columns_to_keep, columns_to_drop, df):
+def __prep_mfi_2407a_features_in_dataframe(t, lag_period, total_lagging_periods, dropna, columns_to_keep, columns_to_drop, df):
     df=_convert_mfi_columns_from_str_to_id(df,t, inplace=True)
   #add lags
     df=_add_mfi_lagging_feature_to_ttfdf(df,t,lag_period=lag_period, total_lagging_periods=total_lagging_periods,inplace=True)
@@ -59,11 +59,11 @@ def _prep_mfi_2407a_features_in_dataframe(t, lag_period, total_lagging_periods, 
     return df
 
 
-def _pto_get_dataset_we_need_in_here__2407060929(i,t,lag_period=1, total_lagging_periods=5,dropna=True, use_full=True,columns_to_keep=None,columns_to_drop=None,force_refresh=False,quiet=True):
+def _pto_get_dataset__with_mfi_ao__2407060929(i,t,lag_period=1, total_lagging_periods=5,dropna=True, use_full=True,columns_to_keep=None,columns_to_drop=None,force_refresh=False,quiet=True):
   #Read Data
-  df=_load_data(i, t, use_full,force_refresh=force_refresh,quiet=quiet)
+  df=_load_ttf_data(i, t, use_full,force_refresh=force_refresh,quiet=quiet)
   #Convert the MFI columns from str to id before we add lags
-  df = _prep_mfi_2407a_features_in_dataframe(t, lag_period, total_lagging_periods, dropna, columns_to_keep, columns_to_drop, df)
+  df = __prep_mfi_2407a_features_in_dataframe(t, lag_period, total_lagging_periods, dropna, columns_to_keep, columns_to_drop, df)
     #df.drop(columns=columns_to_drop,inplace=True)
   #columns_to_add_lags_to = mxhelper.get_mfi_features_column_list_by_timeframe(t)
   #ttfdf=anhelper.add_lagging_columns(ttfdf, columns_to_add_lags_to)
@@ -91,7 +91,7 @@ def get_mlf_outfile_fullpath(i,t,use_full,suffix="",ns="mlf"):
   
 def create_pattern_dataset__ttf_mfis_ao_2407a_pto_get_dataset_we_need_in_here__2407060929(i,t,lag_period=1, total_lagging_periods=5,dropna=True, use_full=True,columns_to_keep=None,columns_to_drop=None,force_refresh=False,quiet=True):
   print("INFO::Requires experimentation with training, testing prediction to select from this what we need in reality to make the model work and predict reality of a signal.")
-  df=_pto_get_dataset_we_need_in_here__2407060929(i,t,lag_period=lag_period, total_lagging_periods=total_lagging_periods,dropna=dropna, use_full=use_full,columns_to_keep=columns_to_keep,columns_to_drop=columns_to_drop,force_refresh=force_refresh,quiet=quiet)
+  df=_pto_get_dataset__with_mfi_ao__2407060929(i,t,lag_period=lag_period, total_lagging_periods=total_lagging_periods,dropna=dropna, use_full=use_full,columns_to_keep=columns_to_keep,columns_to_drop=columns_to_drop,force_refresh=force_refresh,quiet=quiet)
   output_filename=get_mlf_outfile_fullpath(i,t,use_full,"mfiao")
   try:
     df.to_csv(output_filename, index=True)
@@ -102,10 +102,13 @@ def create_pattern_dataset__ttf_mfis_ao_2407a_pto_get_dataset_we_need_in_here__2
 
 
 
-def get_mfis_ao_zone_2407b_feature(i,t,lag_period=1, total_lagging_periods=5,dropna=True, use_full=True,columns_to_keep=None,columns_to_drop=None,drop_bid_ask=False,force_refresh=False,quiet=True,zone_colname=""):
+def get_mfis_ao_zone_2407b_feature(i,t,lag_period=1, total_lagging_periods=5,dropna=True, use_full=True,columns_to_keep=None,columns_to_drop=None,drop_bid_ask=False,force_refresh=False,quiet=True,zone_colname="",mfi_colname=""):
   if zone_colname=="":
     zone_colname=ZONE_DEFAULT_COLNAME
-  df=_pto_get_dataset_we_need_in_here__2407060929(i,t,lag_period=lag_period, total_lagging_periods=total_lagging_periods,dropna=dropna, use_full=use_full,columns_to_keep=columns_to_keep,columns_to_drop=columns_to_drop,force_refresh=force_refresh,quiet=quiet)
+  if mfi_colname=="":
+    mfi_colname=MFI_DEFAULT_COLNAME
+    
+  df=_pto_get_dataset__with_mfi_ao__2407060929(i,t,lag_period=lag_period, total_lagging_periods=total_lagging_periods,dropna=dropna, use_full=use_full,columns_to_keep=columns_to_keep,columns_to_drop=columns_to_drop,force_refresh=force_refresh,quiet=quiet)
   
   df=_prep_zone_features_in_dataframe(df,t,lag_period=lag_period, total_lagging_periods=total_lagging_periods,inplace=True)
   if dropna:

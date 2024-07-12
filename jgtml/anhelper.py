@@ -15,4 +15,8 @@ def add_lagging_columns(dfsrc: pd.DataFrame, columns_to_add_lags_to, lag_period=
   # Drop rows where there are no lag values
   if dropna:
     dfsrc.dropna(inplace=True)
+    
+  for col in columns_to_add_lags_to: #@STCIssue Isn't that done already ???  Or it thinks they are Double !!!!
+    for j in range(1, total_lagging_periods + 1):
+      dfsrc[f'{col}{out_lag_midfix_str}{j}']=dfsrc[f'{col}{out_lag_midfix_str}{j}'].astype(int)
   return dfsrc
