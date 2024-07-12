@@ -52,7 +52,7 @@ def _upgrade_ttf_depending_data(i, t, use_full=False, use_fresh=True, quotescoun
     raise Exception("Error in _upgrade_ttf_depending_data")
 
 
-def create_ttf_csv(i, t, use_full=False, use_fresh=True, quotescount=-1,force_read=False,dropna=True,quiet=True,columns_list_from_higher_tf=None,not_needed_columns=None,dropna_volume=True,midfix="ttf"):
+def create_ttf_csv(i, t, use_full=False, use_fresh=True, quotescount=-1,force_read=False,dropna=True,quiet=True,columns_list_from_higher_tf=None,not_needed_columns=None,dropna_volume=True,midfix="ttf")->pd.DataFrame:
   if not_needed_columns is None:
     not_needed_columns = TTF_NOT_NEEDED_COLUMNS_LIST
   if columns_list_from_higher_tf is None:
