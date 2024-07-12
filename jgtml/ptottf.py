@@ -55,6 +55,23 @@ def _upgrade_ttf_depending_data(i, t, use_full=False, use_fresh=True, quotescoun
     print("Error in _upgrade_ttf_depending_data")
     raise Exception("Error in _upgrade_ttf_depending_data")
 
+def write_patternname_columns_list(i,t,use_full,columns_list_from_higher_tf=None,midfix="ttf"):
+  if columns_list_from_higher_tf is None:
+    columns_list_from_higher_tf = default_columns_to_get_from_higher_tf
+  output_filename=get_ttf_outfile_fullpath(i,t,use_full,suffix="_columns",midfix=midfix)
+  with open(output_filename, 'w') as f:
+    for item in columns_list_from_higher_tf:
+      f.write("%s\n" % item)
+  print(f"    TTF Output columns :'{output_filename}'")
+  return output_filename
+
+def read_patternname_columns_list(i,t,use_full,midfix="ttf"):
+  output_filename=get_ttf_outfile_fullpath(i,t,use_full,suffix="_columns",midfix=midfix)
+  with open(output_filename, 'r') as f:
+    columns_list_from_higher_tf = f.readlines()
+  columns_list_from_higher_tf = [x.strip() for x in columns_list_from_higher_tf]
+  return columns_list_from_higher_tf
+
 def create_ttf_csv(i, t, use_full=False, use_fresh=True, quotescount=-1,force_read=False,dropna=True,quiet=True,columns_list_from_higher_tf=None,not_needed_columns=None,dropna_volume=True,midfix="ttf"):
   if not_needed_columns is None:
     not_needed_columns = TTF_NOT_NEEDED_COLUMNS_LIST
@@ -75,6 +92,14 @@ def create_ttf_csv(i, t, use_full=False, use_fresh=True, quotescount=-1,force_re
   workset = svc.get_higher_cdf_datasets(i, t, use_full=use_full, use_fresh=use_fresh, quotescount=quotescount, quiet=True, force_read=force_read)
   ttf=workset[t]
   created_columns = make_htf_created_columns_array(workset, t, columns_list_from_higher_tf)
+  try:
+    print("Try to serialize our created columns from the TTF pattern:",midfix," for the instrument:",i," and timeframe:",t)
+    write_patternname_columns_list(i,t,use_full,columns_list_from_higher_tf,midfix=midfix)
+  except Exception as ex:
+    print("Error in write_ttf_midfix_patternname_columns_list")
+    print(ex)
+    raise Exception("Error in write_ttf_midfix_patternname_columns_list")
+    
   #print("Created Columns:",created_columns)
   
 
