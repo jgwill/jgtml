@@ -467,7 +467,7 @@ def _pov_target_calculation_n_output240223(
 
     if save_outputs:
         print("INFO::Saving MX Target data to file...")
-        output_sel_cols_fn = get_outfile_fullpath(i,t,use_full=True,ns=MX_NS,midfix=sel_1_suffix)
+        output_sel_cols_fn = get_outfile_fullpath(i,t,use_full=True,ns=MX_NS,midfix=ttf_midfix,suffix=sel_1_suffix)
         #output_sel_cols_fn = f"{outdir_tmx}/{ifn}_{t}{sel_1_suffix}.csv"
         try:
             sel1.to_csv(output_sel_cols_fn, index=True)
@@ -479,7 +479,7 @@ def _pov_target_calculation_n_output240223(
     sel2[__TARGET] = sel2[__TARGET].round(rounder)
     sel2 = sel2[(sel2[__TARGET] != 0)]
 
-    output_tnd_targetNdata_fn =get_outfile_fullpath(i,t,use_full=True,ns=MX_NS,midfix=sel_2_suffix)
+    output_tnd_targetNdata_fn =get_outfile_fullpath(i,t,use_full=True,ns=MX_NS,midfix=ttf_midfix,suffix=sel_2_suffix)
     #output_tnd_targetNdata_fn = f"{outdir_tmx}/{ifn}_{t}{sel_2_suffix}.csv"
     
     if save_outputs:
@@ -521,7 +521,7 @@ def _pov_target_calculation_n_output240223(
     
     if save_outputs:
         # Save the result to a csv file
-        output_all_cols_fn = get_outfile_fullpath(i,t,use_full=True,ns=MX_NS)
+        output_all_cols_fn = get_outfile_fullpath(i,t,use_full=True,ns=MX_NS,midfix=ttf_midfix)
         #output_all_cols_fn = f"{outdir_tmx}/{ifn}_{t}.csv"
         try:
             df_result_tmx.to_csv(output_all_cols_fn, index=True)
@@ -567,7 +567,7 @@ def readMXFile(
     generate_if_not_exist=True,
     dropna=True,
     mx_targets_sub_path = "targets/mx",
-    ttf_midfix="",
+    ttf_midfix="ttf",
 ):
     """
     Read a MX Target file and return a pandas DataFrame.

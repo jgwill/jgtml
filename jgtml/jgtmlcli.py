@@ -54,7 +54,9 @@ def parse_args():
 
     # dont drop calculated columns
     parser.add_argument('-ddcc', '--dont_drop_calc_col', action='store_true', help='Dont drop calculated columns')
-
+    
+    parser.add_argument("-pn", "--patternname", help="Pattern Name", default="ttf")
+  
     # jgtcommon.add_cds_argument(parser)
     args = parser.parse_args()
     return args
@@ -141,6 +143,7 @@ def main():
                     balligator_flag=args.balligator_flag,largest_fractal_period=args.largest_fractal_period,
                     mfi_flag=args.mfi_flag,
                     balligator_period_jaws=args.balligator_period_jaws,
+                    ttf_midfix=args.patternname
                     
                     )
 
