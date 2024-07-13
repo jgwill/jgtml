@@ -52,7 +52,7 @@ def _upgrade_ttf_depending_data(i, t, use_full=False, use_fresh=True, quotescoun
     raise Exception("Error in _upgrade_ttf_depending_data")
 
 
-def create_ttf_csv(i, t, use_full=False, use_fresh=True, quotescount=-1,force_read=False,dropna=True,quiet=True,columns_list_from_higher_tf=None,not_needed_columns=None,dropna_volume=True,midfix="ttf")->pd.DataFrame:
+def create_ttf_csv(i, t, use_full=False, use_fresh=True, quotescount=-1,force_read=False,dropna=True,quiet=True,columns_list_from_higher_tf=None,not_needed_columns=None,dropna_volume=True,midfix="ttf",also_output_sel_csv=False)->pd.DataFrame:
   if not_needed_columns is None:
     not_needed_columns = TTF_NOT_NEEDED_COLUMNS_LIST
   if columns_list_from_higher_tf is None:
@@ -77,6 +77,8 @@ def create_ttf_csv(i, t, use_full=False, use_fresh=True, quotescount=-1,force_re
   
   write_patternname_columns_list(i,t,use_full,created_columns,midfix=midfix)
   
+  if dropna_volume:
+    df=dropna_volume_in_dataframe(df)
   
   # for key_tf, v in workset.items():
   #   if key_tf != t:
@@ -94,41 +96,66 @@ def create_ttf_csv(i, t, use_full=False, use_fresh=True, quotescount=-1,force_re
         
   #       # Set the new column in 'df' with the merged values
   #       df[new_col_name] = merged_df[col]
-  count=0
-  for key_tf, v in workset.items():
-    if key_tf!=t:
+  # count=0
+  # for key_tf, v in workset.items():
+  #   if key_tf!=t:
       
-      for col in columns_list_from_higher_tf:
+  #     for col in columns_list_from_higher_tf:
       
-        new_col_name:str = col+"_"+key_tf
-        df[new_col_name]=None
+  #       new_col_name:str = col+"_"+key_tf
+  #       df[new_col_name]=None
 
-        for ii, row in df.iterrows():
-          count+=1
-          #get the date of the current row (the index)
+  #       for ii, row in df.iterrows():
+  #         count+=1
+  #         #get the date of the current row (the index)
+  #         date = ii
+  #         #print(k)
+  #         data:pd.DataFrame = v[v.index <= date]
+  #         if not data.empty:
+  #           data = data.iloc[-1]
+  #           #print(count,"::ii:",ii," ::data:",data[col]," ::new_col_name:",new_col_name)
+  #           df.at[ii,new_col_name]=data[col]
+  # Pre-allocate new columns with None (or np.nan for numerical data)
+  for col in columns_list_from_higher_tf:
+    for key_tf in workset:
+      if key_tf != t:
+        new_col_name = f"{col}_{key_tf}"
+        df[new_col_name] = None
+  count = 0
+  for key_tf, v in workset.items():
+    if key_tf != t:
+      v_sorted = v.sort_index()  # Ensure data is sorted for efficient access
+      for col in columns_list_from_higher_tf:
+        new_col_name = f"{col}_{key_tf}"
+        for ii in df.index:
+          count += 1
           date = ii
-          #print(k)
-          data:pd.DataFrame = v[v.index <= date]
+          # Limit the data to those less than or equal to the current date
+          data = v_sorted[v_sorted.index <= date]
           if not data.empty:
-            data = data.iloc[-1]
-            #print(count,"::ii:",ii," ::data:",data[col]," ::new_col_name:",new_col_name)
-            df.at[ii,new_col_name]=data[col]
-  
+              latest_data = data.iloc[-1]  # Get the latest data point
+              df.at[ii, new_col_name] = latest_data[col]
+
   print("Total count of operations:",count)
   columns_we_want_to_keep_to_view=created_columns
   
-  ttf_sel=df[columns_we_want_to_keep_to_view].copy()
+  if also_output_sel_csv:
+    ttf_sel=df[columns_we_want_to_keep_to_view].copy()
   
   #save basedir is $JGTPY_DATA/ttf is not use_full, if use_full save basedir is $JGTPY_DATA_FULL/ttf
   
   output_filename=get_ttf_outfile_fullpath(i,t,use_full,midfix=midfix)
-  output_filename_sel=get_ttf_outfile_fullpath(i,t,use_full,suffix="_sel",midfix=midfix)
+  if also_output_sel_csv:
+    output_filename_sel=get_ttf_outfile_fullpath(i,t,use_full,suffix="_sel",midfix=midfix)
   
   if dropna:
     df.dropna(inplace=True)
-  df.to_csv(output_filename, index=True)
-  ttf_sel.to_csv(output_filename_sel, index=True)
-  print(f"    TTF Output full:'{output_filename}'")
-  print(f"    TTF Output sel :'{output_filename_sel}'")
+  
   drop_columns_if_exists(df,not_needed_columns)
+  df.to_csv(output_filename, index=True)
+  
+  if also_output_sel_csv:
+    ttf_sel.to_csv(output_filename_sel, index=True)
+    print(f"    TTF Output sel :'{output_filename_sel}'")
+  print(f"    TTF Output full:'{output_filename}'")
   return df
