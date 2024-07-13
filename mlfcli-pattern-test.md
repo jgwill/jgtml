@@ -165,3 +165,11 @@ Date,BidOpen,BidHigh,BidLow,BidClose,AskOpen,AskHigh,AskLow,AskClose,Volume,Open
 
 # What is the next step ??
 
+>python jgtml/mlfcli.py -i $i -t $t -fr --full -pn  >> /a/src/_jgt/jgtml/mlfcli-pattern-test.md
+
+```sh
+i=SPX500;t=D1
+python jgtml/ptojgtmlttfprotocli.py -i $i -t $t --full -fr -clh fh fl fh3 fl3 fh5 fl5 fh8 fl8 fh13 fl13 -pn frac013
+```
+
+
