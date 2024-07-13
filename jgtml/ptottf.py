@@ -78,40 +78,43 @@ def create_ttf_csv(i, t, use_full=False, use_fresh=True, quotescount=-1,force_re
   write_patternname_columns_list(i,t,use_full,created_columns,midfix=midfix)
   
   
-  for key_tf, v in workset.items():
-    if key_tf != t:
-      # Ensure 'v' is sorted by index to use merge_asof
-      v_sorted = v.sort_index()
-      for col in columns_list_from_higher_tf:
-        new_col_name = f"{col}_{key_tf}"
-        
-        # Prepare a temporary DataFrame with just the index and the column of interest
-        temp_df = pd.DataFrame(v_sorted[col])
-        temp_df.reset_index(inplace=True)
-        
-        # Use merge_asof to merge 'df' with 'temp_df' based on the closest index values
-        merged_df = pd.merge_asof(df.reset_index(), temp_df, on='index', direction='backward')
-        
-        # Set the new column in 'df' with the merged values
-        df[new_col_name] = merged_df[col]
-  # for key_tf in workset:  
-  #   if key_tf!=t:
-  #     v:pd.DataFrame=workset[key_tf]
+  # for key_tf, v in workset.items():
+  #   if key_tf != t:
+  #     # Ensure 'v' is sorted by index to use merge_asof
+  #     #v_sorted = v.sort_index()
   #     for col in columns_list_from_higher_tf:
+  #       new_col_name = f"{col}_{key_tf}"
+        
+  #       # Prepare a temporary DataFrame with just the index and the column of interest
+  #       temp_df = pd.DataFrame(v[col])
+  #       #temp_df.reset_index(inplace=True)
+        
+  #       # Use merge_asof to merge 'df' with 'temp_df' based on the closest index values
+  #       merged_df = pd.merge_asof(df, temp_df, on='index', direction='backward')
+        
+  #       # Set the new column in 'df' with the merged values
+  #       df[new_col_name] = merged_df[col]
+  count=0
+  for key_tf, v in workset.items():
+    if key_tf!=t:
       
-  #       new_col_name:str = col+"_"+key_tf
-  #       df[new_col_name]=None
+      for col in columns_list_from_higher_tf:
+      
+        new_col_name:str = col+"_"+key_tf
+        df[new_col_name]=None
 
-  #       for ii, row in df.iterrows():
-  #         #get the date of the current row (the index)
-  #         date = ii
-  #         #print(k)
-  #         data = v[v.index <= date]
-  #         if not data.empty:
-  #           data = data.iloc[-1]
-  #           df.at[ii,new_col_name]=data[col]
+        for ii, row in df.iterrows():
+          count+=1
+          #get the date of the current row (the index)
+          date = ii
+          #print(k)
+          data:pd.DataFrame = v[v.index <= date]
+          if not data.empty:
+            data = data.iloc[-1]
+            #print(count,"::ii:",ii," ::data:",data[col]," ::new_col_name:",new_col_name)
+            df.at[ii,new_col_name]=data[col]
   
-  
+  print("Total count of operations:",count)
   columns_we_want_to_keep_to_view=created_columns
   
   ttf_sel=df[columns_we_want_to_keep_to_view].copy()
