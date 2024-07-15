@@ -12,28 +12,20 @@ sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
 
 import realityhelper
 
-
-
-def main():
-  parser = argparse.ArgumentParser(description="Create mlf alpha CSV file")
-  parser.add_argument("-i", "--instrument", required=True, help="Instrument name")
-  parser.add_argument("-t", "--timeframe", required=True, help="Timeframe (e.g., D1, H4)")
-  parser.add_argument("-uf", "--full", action="store_true", help="Use full dataset")
-  parser.add_argument("-new", "--fresh", action="store_true", help="Use fresh data")
-  parser.add_argument("-fr", "--force_read", action="store_true", help="Force to read CDS (should increase speed but relies on existing data)")
-  parser.add_argument("-c", "--quotescount", type=int, default=-1, help="Number of quotes to retrieve (default: 333)")
+def create_app_arguments()->argparse.Namespace:
+  from jgtutils import jgtcommon
+  parser:argparse.ArgumentParser=jgtcommon.new_parser("Create mlf alpha CSV file")
+  #parser = argparse.ArgumentParser(description="Create mlf alpha CSV file")
+  
   #lag_period
   parser.add_argument("-lp", "--lag_period", type=int, default=1, help="Lag period")
   #total_lagging_periods
   parser.add_argument("-tlp", "--total_lagging_periods", type=int, default=5, help="Total lagging periods")
-  #dont_dropna
-  parser.add_argument("-ddna", "--dont_dropna", action="store_true", help="Dont dropna")
   #columns_to_keep
   parser.add_argument("-ctk", "--columns_to_keep", nargs='+', help="List of selected columns to keep", default=None)
   #columns_to_drop
   parser.add_argument("-ctd", "--columns_to_drop", nargs='+', help="List of selected columns to drop", default=None)
-  #verbose
-  parser.add_argument("-v", "--verbose", action="store_true", help="Verbose")
+
   #force_refresh
   parser.add_argument("-f", "--force_refresh", action="store_true", help="Force refresh")
   #flag mfiao
@@ -42,9 +34,23 @@ def main():
   parser.add_argument("-dba", "--drop_bidask", action="store_true", help="Drop bidask")
   
   parser.add_argument("-pn", "--patternname", help="Pattern Name", default="ttf")
+  parser=jgtcommon.add_instrument_timeframe_arguments(parser)
+  parser=jgtcommon.add_bars_amount_V2_arguments(parser)
+  parser=jgtcommon.add_use_fresh_argument(parser)
+  parser=jgtcommon.add_dropna_volume_argument(parser)
   
-  args = parser.parse_args()
-  force_refresh=args.force_refresh if args.force_refresh else True if args.fresh else False
+  parser.add_argument("-fr", "--force_read", action="store_true", help="Force to read CDS (should increase speed but relies on existing data)")
+  
+  args:argparse.Namespace=parser.parse_args()
+  return args
+  
+
+
+def main():
+  
+  args = create_app_arguments()
+  
+  force_refresh=args.fresh
   
   #get_mfis_ao_zone_2407b_feature
   if args.mfiao:
