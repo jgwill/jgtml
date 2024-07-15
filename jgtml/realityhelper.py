@@ -86,8 +86,8 @@ def get_mlf_basedir(use_full,ns="mlf"):
 def get_mlf_outfile_fullpath(i,t,use_full,suffix="",ns="mlf"):
     save_basedir=get_mlf_basedir(use_full,ns)
     ifn=i.replace("/","-")
-    output_filename = f"{ifn}_{t}{suffix}.csv"
-    return os.path.join(save_basedir,output_filename)
+    output_filename = f"{ifn}_{t}_{suffix}.csv"
+    return os.path.join(save_basedir,output_filename.replace("__","_"))
   
 def create_pattern_dataset__ttf_mfis_ao_2407a_pto_get_dataset_we_need_in_here__2407060929(i,t,lag_period=1, total_lagging_periods=5,dropna=True, use_full=True,columns_to_keep=None,columns_to_drop=None,force_refresh=False,quiet=True):
   print("INFO::Requires experimentation with training, testing prediction to select from this what we need in reality to make the model work and predict reality of a signal.")
@@ -109,7 +109,7 @@ def _read_adequate_pattern_dataset(i,t,use_full,patternname):
   return df
   #raise Exception("Not Implemented Yet::",patternname)
 
-def get_mlf_feature_pattern(i,t,lag_period=1, total_lagging_periods=5,dropna=True, use_full=True,columns_to_keep=None,columns_to_drop=None,drop_bid_ask=False,force_refresh=False,quiet=True,patternname="ttf"):
+def get_mlf_feature_pattern(i,t,lag_period=1, total_lagging_periods=5,dropna=True, use_full=True,columns_to_keep=None,columns_to_drop=None,drop_bid_ask=False,force_refresh=False,quiet=True,patternname="ttf",out_lag_midfix_str='_lag_'):
   #@STCGoal Pattern Name -> We have the Columns list serialized
   from mldatahelper import read_patternname_columns_list
   columns_list_from_higher_tf = read_patternname_columns_list(i,t,use_full,midfix=patternname,ns="ttf")
@@ -119,16 +119,18 @@ def get_mlf_feature_pattern(i,t,lag_period=1, total_lagging_periods=5,dropna=Tru
   
   df:pd.DataFrame=_read_adequate_pattern_dataset(i,t,use_full,patternname)
   
-  __clean_dataframe(dropna, columns_to_keep, columns_to_drop, drop_bid_ask, df)
-  sys.exit(0)
+  df=__clean_dataframe(df, columns_to_keep, columns_to_drop, drop_bid_ask,dropna)
+  from mldatahelper import read_patternname_columns_list
+  columns_to_add_lags_to=read_patternname_columns_list(i,t,use_full,midfix=patternname,ns="ttf")
   import anhelper
-  anhelper.add_lagging_columns(df, columns_to_add_lags_to, lag_period, total_lagging_periods, out_lag_midfix_str)
-  for col in columns_to_add_lags_to:#@STCIssue Isn't that done already ???  Or it thinks they are Double !!!!
-      for j in range(1, total_lagging_periods + 1):
-          df[f'{col}{out_lag_midfix_str}{j}']=df[f'{col}{out_lag_midfix_str}{j}'].astype(int)
-  
-  
-  raise Exception("Not Implemented Yet::",patternname)
+  df=anhelper.add_lagging_columns(df, columns_to_add_lags_to, lag_period, total_lagging_periods, out_lag_midfix_str)
+  print(df.columns)
+  #save the mlf df to_csv
+  output_filename=get_mlf_outfile_fullpath(i,t,use_full,patternname)
+  df.to_csv(output_filename, index=True)
+  print("INFO::MLF Saved to : ", output_filename)
+  #sys.exit(0)
+  return df
 
 
 def get_mfis_ao_zone_2407b_feature(i,t,lag_period=1, total_lagging_periods=5,dropna=True, use_full=True,columns_to_keep=None,columns_to_drop=None,drop_bid_ask=False,force_refresh=False,quiet=True,zone_colname="",mfi_colname="",patternname="ttf"):
@@ -153,7 +155,7 @@ def get_mfis_ao_zone_2407b_feature(i,t,lag_period=1, total_lagging_periods=5,dro
   return df
 
 from jgtutils.jgtconstants import BIDOPEN,BIDHIGH,BIDLOW,BIDCLOSE,ASKOPEN,ASKHIGH,ASKLOW,ASKCLOSE
-def __clean_dataframe(df:pd.DataFrame, columns_to_keep=None, columns_to_drop=None, drop_bid_ask=False,dropna=True )->None:
+def __clean_dataframe(df:pd.DataFrame, columns_to_keep=None, columns_to_drop=None, drop_bid_ask=False,dropna=True )->pd.DataFrame:
     """
     Common cleanup for the dataframe we are creating with various patterns
     
@@ -173,4 +175,5 @@ def __clean_dataframe(df:pd.DataFrame, columns_to_keep=None, columns_to_drop=Non
       for col in bid_ask_columns:
         if col in df.columns:
           df.drop(columns=[col],inplace=True)
+    return df
   

@@ -8,7 +8,7 @@ warnings.filterwarnings("ignore", category=pd.errors.PerformanceWarning)
 
 import pandas as pd
 
-def add_lagging_columns(dfsrc: pd.DataFrame, columns_to_add_lags_to, lag_period=1, total_lagging_periods=5, out_lag_midfix_str='_lag_', dropna=True):
+def add_lagging_columns(dfsrc: pd.DataFrame, columns_to_add_lags_to, lag_period=1, total_lagging_periods=5, out_lag_midfix_str='_lag_', dropna=True)->pd.DataFrame:
     new_cols = []  # List to hold new lagging columns
     for col in columns_to_add_lags_to:
         if col not in dfsrc.columns:

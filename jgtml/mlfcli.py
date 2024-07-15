@@ -53,39 +53,39 @@ def main():
   force_refresh=args.fresh
   
   #get_mfis_ao_zone_2407b_feature
-  if args.mfiao:
-    realityhelper.create_pattern_dataset__ttf_mfis_ao_2407a_pto_get_dataset_we_need_in_here__2407060929(                 args.instrument,
-                            args.timeframe,
-                            use_full=args.full if args.full else False,
-                            force_refresh=force_refresh,
-                            lag_period=args.lag_period,
-                            total_lagging_periods=args.total_lagging_periods,
-                            dropna=True if args.dont_dropna else False,
-                            columns_to_keep=args.columns_to_keep,
-                            columns_to_drop=args.columns_to_drop)
-  else:
-    if args.patternname == "ttf":
-      realityhelper.get_mfis_ao_zone_2407b_feature(
+  # if args.mfiao:
+  #   realityhelper.create_pattern_dataset__ttf_mfis_ao_2407a_pto_get_dataset_we_need_in_here__2407060929(                 args.instrument,
+  #                           args.timeframe,
+  #                           use_full=args.full if args.full else False,
+  #                           force_refresh=force_refresh,
+  #                           lag_period=args.lag_period,
+  #                           total_lagging_periods=args.total_lagging_periods,
+  #                           dropna=True if args.dont_dropna else False,
+  #                           columns_to_keep=args.columns_to_keep,
+  #                           columns_to_drop=args.columns_to_drop)
+  # else:
+  #   if args.patternname == "ttf":
+  #     realityhelper.get_mfis_ao_zone_2407b_feature(
+  #                           args.instrument,
+  #                           args.timeframe,
+  #                           use_full=args.full if args.full else False,
+  #                           force_refresh=force_refresh,
+  #                           lag_period=args.lag_period,
+  #                           total_lagging_periods=args.total_lagging_periods,
+  #                           dropna=True,
+  #                           columns_to_keep=args.columns_to_keep,
+  #                           columns_to_drop=args.columns_to_drop,
+  #                           drop_bid_ask=True if args.drop_bidask else False,
+  #                           patternname=args.patternname)
+  #   else:
+  realityhelper.get_mlf_feature_pattern(
                             args.instrument,
                             args.timeframe,
                             use_full=args.full if args.full else False,
                             force_refresh=force_refresh,
                             lag_period=args.lag_period,
                             total_lagging_periods=args.total_lagging_periods,
-                            dropna=True if args.dont_dropna else False,
-                            columns_to_keep=args.columns_to_keep,
-                            columns_to_drop=args.columns_to_drop,
-                            drop_bid_ask=True if args.drop_bidask else False,
-                            patternname=args.patternname)
-    else:
-      realityhelper.get_mlf_feature_pattern(
-                            args.instrument,
-                            args.timeframe,
-                            use_full=args.full if args.full else False,
-                            force_refresh=force_refresh,
-                            lag_period=args.lag_period,
-                            total_lagging_periods=args.total_lagging_periods,
-                            dropna=True if args.dont_dropna else False,
+                            dropna=True,
                             columns_to_keep=args.columns_to_keep,
                             columns_to_drop=args.columns_to_drop,
                             drop_bid_ask=True if args.drop_bidask else False,
