@@ -27,7 +27,7 @@ import pandas as pd
 
 
 def parse_args():
-    parser = argparse.ArgumentParser(description="Process command parameters.")
+    parser = jgtcommon.new("Process command parameters.")
     # jgtfxcommon.add_main_arguments(parser)
     jgtcommon.add_instrument_timeframe_arguments(parser)
     
@@ -46,6 +46,7 @@ def parse_args():
     jgtcommon.add_ids_balligator_argument(parser)
     jgtcommon.add_ids_talligator_argument(parser)
     jgtcommon.add_ids_fractal_largest_period_argument(parser)
+    jgtcommon.add_dropna_volume_argument(parser)
     
     #add argument to regenerate the cds
     parser.add_argument('-rcds', '--regenerate_cds', action='store_true', help='Regenerate the CDS')
