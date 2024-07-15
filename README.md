@@ -8,9 +8,7 @@ JGTML
 ----
 
 
-## See [DEV](DEV.md)
 
-
-HELPS
+CLI's HELP
 _____
 
