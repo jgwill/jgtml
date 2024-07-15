@@ -27,7 +27,7 @@ import pandas as pd
 
 
 def parse_args():
-    parser = jgtcommon.new("Process command parameters.")
+    parser = jgtcommon.new_parser("Process command parameters.")
     # jgtfxcommon.add_main_arguments(parser)
     jgtcommon.add_instrument_timeframe_arguments(parser)
     
