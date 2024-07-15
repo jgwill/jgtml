@@ -60,7 +60,6 @@ classifiers = [
 [project.scripts]
 jgtmlcli = "jgtml.jgtmlcli:main"
 
-ptojgtmltidealligator="jgtml.ptojgtmltidealligator:main"
 ptojgtmlttfprotocli="jgtml.ptojgtmlttfprotocli:main"
 jgtmlttfcli="jgtml.ptojgtmlttfprotocli:main"
 
@@ -68,3 +67,7 @@ jgtapp="jgtml.jgtapp:main"
 
 
 jgtmlfcli="jgtml.mlfcli:main"
+
+#ptojgtmltidealligator="jgtml.ptojgtmltidealligator:main"
+#jgtml_obsds_240515_TIDE_SIGNALS="jgtml.jgtml_obsds_240515_TIDE_SIGNALS:main"
+#ptojgtmlbigalligator="jgtml.ptojgtmlbigalligator:main"
