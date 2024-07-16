@@ -1,4 +1,25 @@
 
+## 24071615
+
+```
+@STCIssue MLFCLI cleanup and Update
+
+* All patterns are dealt with : realityhelper.generate_mlf_feature_patter
+
+Usage:
+-pn PATTERNNAME (Must have been created in TTF before)
+>jgtttfcli ... -pn PATTERNNAME -clm COLUMN1 COLUMN2 COLUMN3
+
+Future action :   
+
+* Extend to support the creation of Patterns :  
+>--create_pattern PATTERNNAME COLUMN1 COLUMN2 COLUMN3
+ - That would run jgtmlfcli to create data
+ - Patterns and their corresponding Columns data could be centralized  (or maybe deal with managing pattern with different CLI  (jgtmlpatternmanagercli.py !!)
+
+```
+
+
 ## 2406171357
 
 ### acronyms and meaning of columns
