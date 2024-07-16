@@ -121,14 +121,14 @@ def create_ttf_csv(i, t, use_full=False, use_fresh=True, quotescount=-1,force_re
       if key_tf != t:
         new_col_name = f"{col}_{key_tf}"
         df[new_col_name] = None
-  count = 0
+  #count = 0
   for key_tf, v in workset.items():
     if key_tf != t:
       v_sorted = v.sort_index()  # Ensure data is sorted for efficient access
       for col in columns_list_from_higher_tf:
         new_col_name = f"{col}_{key_tf}"
         for ii in df.index:
-          count += 1
+          #count += 1
           date = ii
           # Limit the data to those less than or equal to the current date
           data = v_sorted[v_sorted.index <= date]
@@ -136,7 +136,7 @@ def create_ttf_csv(i, t, use_full=False, use_fresh=True, quotescount=-1,force_re
               latest_data = data.iloc[-1]  # Get the latest data point
               df.at[ii, new_col_name] = latest_data[col]
 
-  print("Total count of operations:",count)
+  #print("Total count of operations:",count)
   columns_we_want_to_keep_to_view=created_columns
   
   if also_output_sel_csv:
