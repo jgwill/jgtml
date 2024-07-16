@@ -14,26 +14,33 @@ import realityhelper
 
 def create_app_arguments()->argparse.Namespace:
   from jgtutils import jgtcommon
-  parser:argparse.ArgumentParser=jgtcommon.new_parser("Create mlf alpha CSV file")
+  parser:argparse.ArgumentParser=jgtcommon.new_parser("Create MLF Data (alpha)","jgtmlfcli","Create MLF Data (alpha) for a given instrument and timeframe with patterns")
   #parser = argparse.ArgumentParser(description="Create mlf alpha CSV file")
   
+  lagging_group=parser.add_argument_group("Lagging")
   #lag_period
-  parser.add_argument("-lp", "--lag_period", type=int, default=1, help="Lag period")
+  lagging_group.add_argument("-lp", "--lag_period", type=int, default=1, help="Lag period")
   #total_lagging_periods
-  parser.add_argument("-tlp", "--total_lagging_periods", type=int, default=5, help="Total lagging periods")
+  lagging_group.add_argument("-tlp", "--total_lagging_periods", type=int, default=5, help="Total lagging periods")
+  
+  col_group=parser.add_argument_group("Columns Filtering")
   #columns_to_keep
-  parser.add_argument("-ctk", "--columns_to_keep", nargs='+', help="List of selected columns to keep", default=None)
+  col_group.add_argument("-ctk", "--columns_to_keep", nargs='+', help="List of selected columns to keep", default=None)
   #columns_to_drop
-  parser.add_argument("-ctd", "--columns_to_drop", nargs='+', help="List of selected columns to drop", default=None)
+  col_group.add_argument("-ctd", "--columns_to_drop", nargs='+', help="List of selected columns to drop", default=None)
 
   #force_refresh
   parser.add_argument("-f", "--force_refresh", action="store_true", help="Force refresh")
   #flag mfiao
-  parser.add_argument("-mfiao", "--mfiao", action="store_true", help="Use mfiao")
+  #parser.add_argument("-mfiao", "--mfiao", action="store_true", help="Use mfiao")
   #drop_bidask
-  parser.add_argument("-dba", "--drop_bidask", action="store_true", help="Drop bidask")
+  #parser.add_argument("-dba", "--drop_bidask", action="store_true", help="Drop bidask")
   
-  parser.add_argument("-pn", "--patternname", help="Pattern Name", default="ttf")
+  
+  pn_group=parser.add_argument_group("Patterns")
+  pn_group.add_argument("-pn", "--patternname", help="Pattern Name", default="ttf")
+  
+  parser=jgtcommon.add_keepbidask_argument(parser)
   parser=jgtcommon.add_instrument_timeframe_arguments(parser)
   parser=jgtcommon.add_bars_amount_V2_arguments(parser)
   parser=jgtcommon.add_use_fresh_argument(parser)
@@ -78,7 +85,8 @@ def main():
   #                           drop_bid_ask=True if args.drop_bidask else False,
   #                           patternname=args.patternname)
   #   else:
-  realityhelper.get_mlf_feature_pattern(
+  try:
+    realityhelper.generate_mlf_feature_pattern(
                             args.instrument,
                             args.timeframe,
                             use_full=args.full if args.full else False,
@@ -88,8 +96,11 @@ def main():
                             dropna=True,
                             columns_to_keep=args.columns_to_keep,
                             columns_to_drop=args.columns_to_drop,
-                            drop_bid_ask=True if args.drop_bidask else False,
-                            patternname=args.patternname)
+                            drop_bid_ask=args.rmbidask,
+                            pn=args.patternname)
+  except:
+    print("Error in generate_mlf_feature_pattern")
+    print("patternname:", args.patternname, " might just not have its prerequisite TTF/Pattern data.  we would be running: jgtmlttfcli -i {instrument} -t {timeframe} -new")
   #create_ttf_csv(args.instrument, args.timeframe, args.full if args.full else False, args.fresh, args.quotescount, args.force_read)
 
 if __name__ == "__main__":

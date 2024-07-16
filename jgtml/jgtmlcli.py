@@ -144,7 +144,7 @@ def main():
                     balligator_flag=args.balligator_flag,largest_fractal_period=args.largest_fractal_period,
                     mfi_flag=args.mfi_flag,
                     balligator_period_jaws=args.balligator_period_jaws,
-                    ttf_midfix=args.patternname
+                    pn=args.patternname
                     
                     )
 

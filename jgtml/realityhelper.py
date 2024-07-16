@@ -101,36 +101,47 @@ def create_pattern_dataset__ttf_mfis_ao_2407a_pto_get_dataset_we_need_in_here__2
   return df
 
 
-def _read_adequate_pattern_dataset(i,t,use_full,patternname):
+def _read_adequate_pattern_dataset(i,t,use_full,pn,quiet=True,force_refresh=False):
   #@STCGoal Read ttf pattern
   from ptottf import read_ttf_csv
-  df=read_ttf_csv(i, t, use_full=use_full,midfix=patternname)
-  print(df.columns)
+  df=read_ttf_csv(i, t, use_full=use_full,pn=pn,force_refresh=force_refresh)
+  if not quiet:
+    print(df.columns)
   return df
   #raise Exception("Not Implemented Yet::",patternname)
 
-def get_mlf_feature_pattern(i,t,lag_period=1, total_lagging_periods=5,dropna=True, use_full=True,columns_to_keep=None,columns_to_drop=None,drop_bid_ask=False,force_refresh=False,quiet=True,patternname="ttf",out_lag_midfix_str='_lag_'):
+from mldatahelper import write_mlf_pattern_lagging_columns_list
+
+def generate_mlf_feature_pattern(i,t,lag_period=1, total_lagging_periods=5,dropna=True, use_full=True,columns_to_keep=None,columns_to_drop=None,drop_bid_ask=False,force_refresh=False,quiet=True,pn="ttf",out_lag_midfix_str='_lag_'):
   #@STCGoal Pattern Name -> We have the Columns list serialized
   from mldatahelper import read_patternname_columns_list
-  columns_list_from_higher_tf = read_patternname_columns_list(i,t,use_full,midfix=patternname,ns="ttf")
-  print("INFO::Columns List from Higher TF to prep laggings using MLF:",columns_list_from_higher_tf)
-  print("-------------------------------------------------","Not Implemented Yet::",patternname)
+  columns_list_from_higher_tf = read_patternname_columns_list(i,t,use_full,pn=pn,ns="ttf")
+  if not quiet:
+    print("INFO::Columns List from Higher TF to prep laggings using MLF:",columns_list_from_higher_tf) #@STCGoal We Know which columns were in the TTF Pattern when created.
+  #print("-------------------------------------------------","Not Implemented Yet::",patternname)
   
   
-  df:pd.DataFrame=_read_adequate_pattern_dataset(i,t,use_full,patternname)
+  df:pd.DataFrame=_read_adequate_pattern_dataset(i,t,use_full,pn,force_refresh=force_refresh)
   
   df=__clean_dataframe(df, columns_to_keep, columns_to_drop, drop_bid_ask,dropna)
   from mldatahelper import read_patternname_columns_list
-  columns_to_add_lags_to=read_patternname_columns_list(i,t,use_full,midfix=patternname,ns="ttf")
+  columns_to_add_lags_to=read_patternname_columns_list(i,t,use_full,pn=pn,ns="ttf")
   import anhelper
   df=anhelper.add_lagging_columns(df, columns_to_add_lags_to, lag_period, total_lagging_periods, out_lag_midfix_str)
-  print(df.columns)
+  lagging_columns=anhelper.get_lagging_columns_list(columns_to_add_lags_to, lag_period, total_lagging_periods, out_lag_midfix_str)
+  #write_patternname_columns_list
+  write_mlf_pattern_lagging_columns_list(i, t, use_full, pn, lagging_columns)
+  if not quiet:
+    print("INFO::Columns List with Lags using MLF:",lagging_columns)
+  #print(df.columns)
   #save the mlf df to_csv
-  output_filename=get_mlf_outfile_fullpath(i,t,use_full,patternname)
+  output_filename=get_mlf_outfile_fullpath(i,t,use_full,pn)
   df.to_csv(output_filename, index=True)
+  #if not quiet:
   print("INFO::MLF Saved to : ", output_filename)
   #sys.exit(0)
   return df
+
 
 
 def get_mfis_ao_zone_2407b_feature(i,t,lag_period=1, total_lagging_periods=5,dropna=True, use_full=True,columns_to_keep=None,columns_to_drop=None,drop_bid_ask=False,force_refresh=False,quiet=True,zone_colname="",mfi_colname="",patternname="ttf"):

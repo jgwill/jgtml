@@ -15,10 +15,11 @@ from mlutils import get_outfile_fullpath
 from mlconstants import MX_NS
 
 #from jgtutils.jgtconstants import *
-from jgtutils.jgtconstants import (VECTOR_AO_FDBS, VECTOR_AO_FDBB, VECTOR_AO_FDBS_COUNT, VECTOR_AO_FDBB_COUNT, VECTOR_AO_FDB_COUNT,ML_DEFAULT_COLUMNS_TO_KEEP,FDB_TARGET ,FDBB,FDBS,AO,ZLCB,ZLCS,OPEN,LOW,CLOSE,HIGH,DATE,
+from jgtutils.jgtconstants import (VECTOR_AO_FDBS, VECTOR_AO_FDBB, VECTOR_AO_FDBS_COUNT, VECTOR_AO_FDBB_COUNT, VECTOR_AO_FDB_COUNT,ML_DEFAULT_COLUMNS_TO_KEEP ,FDBB,FDBS,AO,ZLCB,ZLCS,OPEN,LOW,CLOSE,HIGH,DATE,
                                    FDBB as SIGNAL_BUY_COLN,
                                    FDBS as SIGNAL_SELL_COLN,
-                                   FDB_TARGET as __TARGET
+                                   FDB_TARGET as __TARGET,
+                                   FDB as SIGNAL_COLN
                                    )
 
 
@@ -133,7 +134,7 @@ def pto_target_calculation(
     sel_1_suffix="_sel",
     sel_1_keeping_columns=[HIGH,LOW, FDBS, FDBB, "tmax", "tmin", "p", "l", __TARGET],
     sel_2_suffix="_tnd",
-    sel_2_keeping_columns=[OPEN, HIGH, LOW, CLOSE, FDBS, FDBB, __TARGET],
+    sel_2_keeping_columns=[SIGNAL_COLN, __TARGET],
     pto_vec_fdb_ao_out_s_name=VECTOR_AO_FDBS,#"vaos",
     pto_vec_fdb_ao_out_b_name=VECTOR_AO_FDBB,#"vaob",
     pto_vec_fdb_ao_in_s_sig_name=FDBS,#"fdbs",
@@ -156,7 +157,7 @@ def pto_target_calculation(
     talligator_flag=False,
     talligator_period_jaws=377,
     use_ttf=True,
-    ttf_midfix="ttf",
+    pn="ttf",
     drop_vector_ao_intermediate_array=True
 ):
     """
@@ -199,7 +200,7 @@ def pto_target_calculation(
         talligator_flag (bool, optional): If True, calculate the T-Alligator. Defaults to False.
         talligator_period_jaws (int, optional): The period for the T-Alligator jaws. Defaults to 377.
         use_ttf (bool, optional): If True, use TTF. Defaults to True.
-        ttf_midfix (str, optional): The midfix for TTF. Defaults to "ttf".
+        pn (str, optional): The midfix for TTF. Defaults to "ttf".
         drop_vector_ao_intermediate_array (bool, optional): If True, drop the vector AO intermediate array. Defaults to True. (we have the Counts vaosc,vaosb)
 
         
@@ -263,7 +264,7 @@ def pto_target_calculation(
         talligator_flag=talligator_flag,
         talligator_period_jaws=talligator_period_jaws, 
         use_ttf=use_ttf,
-        ttf_midfix=ttf_midfix,
+        pn=pn,
         drop_vector_ao_intermediate_array=drop_vector_ao_intermediate_array
     )
     return df_result_tmx, sel1, sel2
@@ -286,12 +287,16 @@ def _pov_target_calculation_n_output240223(
     calc_col_to_drop_names=["tmax", "tmin", "p", "l"],
     sel_1_suffix="_sel",
     sel_1_keeping_columns=[HIGH,
-                           LOW,                    FDBS,                   FDBB,                   "tmax",                 "tmin",
+                           LOW,                    
+                           FDBS,                   
+                           FDBB,                   
+                           "tmax",                 
+                           "tmin",
                            "p",
                            "l", 
                            __TARGET],
     sel_2_suffix="_tnd",
-    sel_2_keeping_columns=[OPEN, HIGH, LOW, CLOSE, FDBS, FDBB, __TARGET],
+    sel_2_keeping_columns=[ SIGNAL_COLN, __TARGET],
     pto_vec_fdb_ao_out_s_name=VECTOR_AO_FDBS,
     pto_vec_fdb_ao_out_b_name=VECTOR_AO_FDBB,
     pto_vec_fdb_ao_in_s_sig_name=FDBS,
@@ -315,7 +320,7 @@ def _pov_target_calculation_n_output240223(
     talligator_flag=False,
     talligator_period_jaws=377,
     use_ttf=True,
-    ttf_midfix="ttf",
+    pn="ttf",
     drop_vector_ao_intermediate_array=True,
 ):
     if tlid_tag is None:
@@ -329,6 +334,7 @@ def _pov_target_calculation_n_output240223(
         len(str(pipsize).split(".")[1]) if "." in str(pipsize) else len(str(pipsize))
     )
     rounder = nb_decimal
+    pn=pn
 
     # Possible crop of the dataframe to a specific date range
 
@@ -344,6 +350,15 @@ def _pov_target_calculation_n_output240223(
         msg = msg + " use fresh flag active" if use_fresh else msg
 
         print(msg)
+        print("EXITING - RUN PREREQ SCRIPTS BEFORE RUNNING THIS SCRIPT")
+        print("")
+        sys.exit(1)
+        from realityhelper import generate_mlf_feature_pattern
+        generate_mlf_feature_pattern(i, t, use_full=True, force_refresh=True, pn=pn) #@STCIssue WE DONT HAVE A GENERIC LIST OF COLUMNS BY PATTERNS TO LOAD
+        
+        
+        
+        
         use_full = True
         #@STCIssue UPGRADE to use JGTCDSSvc
         from jgtpy import JGTCDSSvc as svc
@@ -361,15 +376,19 @@ def _pov_target_calculation_n_output240223(
         #                                talligator_period_jaws=talligator_period_jaws)#@STCGoal Use Fresh
     if use_ttf:
         from ptottf import read_ttf_csv
+        from mldatahelper import read_mlf_for_pattern
+        
         print("                                 jgtml is using ttf....")
-        df_cds_source:pd.DataFrame = read_ttf_csv(i, t, use_full=True,midfix=ttf_midfix)
+        #df_cds_source:pd.DataFrame = read_ttf_csv(i, t, use_full=True,pn=pn)
+        df_cds_source:pd.DataFrame = read_mlf_for_pattern(i, t, use_full=True,pn=pn)
         #@STCGoal Pattern Name -> We have the Columns list serialized
-        from mldatahelper import read_patternname_columns_list
-        patternname=ttf_midfix
-        columns_list_from_higher_tf = read_patternname_columns_list(i,t,use_full=True,midfix=patternname,ns="ttf")
-        print("INFO::Columns list from higher TF:",columns_list_from_higher_tf)
+        from mldatahelper import read_patternname_columns_list,read_mlf_pattern_lagging_columns_list
+        laggingFeatureColumns = read_mlf_pattern_lagging_columns_list(i,t,use_full=True,pn=pn)
+        
+        sel_2_keeping_columns = sel_2_keeping_columns+laggingFeatureColumns
+        print("INFO::Lagging Columns list from higher TF:",laggingFeatureColumns)
         print(">   We would use that to filter the columns and get our training data out of this refactored module (JTC.py)  -or shall I say from prototype to production/new module.  -> OUTPUT:  Training Data and Reality Data with which we would predict using our model.")
-        print(f"Does these columns read from the source we would use to create the MXTarget data align with the input pattern {patternname}:",df_cds_source.columns)
+        #print(f"Does these columns read from the source we would use to create the MXTarget data align with the input pattern {pn}:",df_cds_source.columns)
         #sys.exit(0)
         #print("JGTML::Debug len of df_cds_source:", len(df_cds_source))
     else:
@@ -480,27 +499,27 @@ def _pov_target_calculation_n_output240223(
 
     if save_outputs:
         print("INFO::Saving MX Target data to file...")
-        output_sel_cols_fn = get_outfile_fullpath(i,t,use_full=True,ns=MX_NS,midfix=ttf_midfix,suffix=sel_1_suffix)
+        output_sel1_cols_fn = get_outfile_fullpath(i,t,use_full=True,ns=MX_NS,pn=pn,suffix=sel_1_suffix)
         #output_sel_cols_fn = f"{outdir_tmx}/{ifn}_{t}{sel_1_suffix}.csv"
         try:
-            sel1.to_csv(output_sel_cols_fn, index=True)
-            print(f"Saved to {output_sel_cols_fn}")
+            sel1.to_csv(output_sel1_cols_fn, index=True)
+            print(f"INFO::Saved to {output_sel1_cols_fn}")
         except Exception as e:
-            print(f"Error occurred while saving to {output_sel_cols_fn}: {str(e)}")
+            print(f"Error occurred while saving to {output_sel1_cols_fn}: {str(e)}")
     
     sel2 = df_result_tmx[sel_2_keeping_columns].copy()
     sel2[__TARGET] = sel2[__TARGET].round(rounder)
     sel2 = sel2[(sel2[__TARGET] != 0)]
 
-    output_tnd_targetNdata_fn =get_outfile_fullpath(i,t,use_full=True,ns=MX_NS,midfix=ttf_midfix,suffix=sel_2_suffix)
+    output_tnd_sel2_targetNdata_fn =get_outfile_fullpath(i,t,use_full=True,ns=MX_NS,pn=pn,suffix=sel_2_suffix)
     #output_tnd_targetNdata_fn = f"{outdir_tmx}/{ifn}_{t}{sel_2_suffix}.csv"
     
     if save_outputs:
         try:
-            sel2.to_csv(output_tnd_targetNdata_fn, index=True)
-            print(f"INFO::Saved to {output_tnd_targetNdata_fn}")
+            sel2.to_csv(output_tnd_sel2_targetNdata_fn, index=True)
+            print(f"INFO::Saved to {output_tnd_sel2_targetNdata_fn}")
         except Exception as e:
-            print(f"ERROR::occurred while saving to {output_tnd_targetNdata_fn}: {str(e)}")
+            print(f"ERROR::occurred while saving to {output_tnd_sel2_targetNdata_fn}: {str(e)}")
 
     if selected_columns_to_keep is not None:
         print("INFO::   Selected columns to keep:", selected_columns_to_keep)
@@ -534,7 +553,7 @@ def _pov_target_calculation_n_output240223(
     
     if save_outputs:
         # Save the result to a csv file
-        output_all_cols_fn = get_outfile_fullpath(i,t,use_full=True,ns=MX_NS,midfix=ttf_midfix)
+        output_all_cols_fn = get_outfile_fullpath(i,t,use_full=True,ns=MX_NS,pn=pn)
         #output_all_cols_fn = f"{outdir_tmx}/{ifn}_{t}.csv"
         try:
             df_result_tmx.to_csv(output_all_cols_fn, index=True)
@@ -580,7 +599,7 @@ def readMXFile(
     generate_if_not_exist=True,
     dropna=True,
     mx_targets_sub_path = "targets/mx",
-    ttf_midfix="ttf",
+    pn="ttf",
 ):
     """
     Read a MX Target file and return a pandas DataFrame.
@@ -599,7 +618,7 @@ def readMXFile(
     generate_if_not_exist (bool, optional): If True, generate the MX Target data if it does not exist. Default is True.
     dropna (bool, optional): If True, drop the NaN values. Default is True.
     mx_targets_sub_path (str, optional): The sub-path for the MX Targets. Default is "targets/mx".
-    ttf_midfix (str, optional): The midfix for the file name. Default is "".  We might use variation of the TTF (peaks,aoac, or other and the MX Will be saved with that midfix)
+    pn (str, optional): The midfix for the file name. Default is "".  We might use variation of the TTF (peaks,aoac, or other and the MX Will be saved with that midfix)
 
     Returns:
     pandas.DataFrame: The DataFrame containing the MX Target data.
@@ -607,8 +626,8 @@ def readMXFile(
     tuple: A tuple containing the DataFrame and the selections DataFrames.
     """
     # Define the file path based on the environment variable or local path
-    fpath=get_outfile_fullpath(instrument, timeframe,use_full=use_full,midfix=ttf_midfix,ns=mx_targets_sub_path)
-    #data_path_cds = get_data_path(mx_targets_sub_path, use_full=use_full,ttf_midfix=ttf_midfix)
+    fpath=get_outfile_fullpath(instrument, timeframe,use_full=use_full,pn=pn,ns=mx_targets_sub_path)
+    #data_path_cds = get_data_path(mx_targets_sub_path, use_full=use_full,pn=pn)
     #fpath = pds.mk_fullpath(instrument, timeframe, "csv", data_path_cds)
     
     try:
@@ -620,7 +639,7 @@ def readMXFile(
             pto_target_calculation(instrument,timeframe,pto_vec_fdb_ao_vector_window_flag=True,
                 drop_calc_col=False,
                 selected_columns_to_keep=ML_DEFAULT_COLUMNS_TO_KEEP,
-                ttf_midfix=ttf_midfix)
+                pn=pn)
         except:
             raise ValueError(f"ERROR:: generating file {fpath}")
         try:
@@ -645,11 +664,16 @@ def readMXFile(
         mdf = mdf[-quote_count:]
 
     if also_read_selections:
+        output_sel1_cols_fn = get_outfile_fullpath(instrument,timeframe,use_full=True,ns=MX_NS,pn=pn,suffix=sel_1_suffix)
         sel1 = pd.read_csv(
-            fpath.replace(".csv", f"{sel_1_suffix}.csv"), index_col=0, parse_dates=True
+            output_sel1_cols_fn,
+            index_col=0,
+            parse_dates=True
         )
+        output_tnd_sel2_targetNdata_fn =get_outfile_fullpath(instrument,timeframe,use_full=True,ns=MX_NS,pn=pn,suffix=sel_2_suffix)
         sel2 = pd.read_csv(
-            fpath.replace(".csv", f"{sel_2_suffix}.csv"), index_col=0, parse_dates=True
+            output_tnd_sel2_targetNdata_fn,
+                           index_col=0, parse_dates=True
         )
         return mdf, sel1, sel2
     return mdf

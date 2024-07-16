@@ -50,8 +50,8 @@ def get_basedir(use_full,ns):
     os.makedirs(fulldir, exist_ok=True)
     return fulldir
 
-def get_outfile_fullpath(i,t,use_full,ns,midfix="",suffix="",ext="csv"):
+def get_outfile_fullpath(i,t,use_full,ns,pn="",suffix="",ext="csv"):
   save_basedir=get_basedir(use_full,ns)
   ifn=i.replace("/","-")
-  output_filename = f"{ifn}_{t}_{midfix}{suffix}.{ext}"
+  output_filename = f"{ifn}_{t}_{pn}{suffix}.{ext}"
   return os.path.join(save_basedir,output_filename.replace("__","_").replace("_.","."))

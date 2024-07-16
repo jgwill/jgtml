@@ -17,7 +17,7 @@ def add_lagging_columns(dfsrc: pd.DataFrame, columns_to_add_lags_to, lag_period=
         else:
             for j in range(1, total_lagging_periods + 1):
                 # Create new lagging column without modifying the original DataFrame
-                lag_col_name = f'{col}{out_lag_midfix_str}{j}'
+                lag_col_name = _create_lag_column_name(out_lag_midfix_str, col, j)
                 lag_col = dfsrc[col].shift(j * lag_period).rename(lag_col_name)
                 new_cols.append(lag_col)
 
@@ -31,10 +31,20 @@ def add_lagging_columns(dfsrc: pd.DataFrame, columns_to_add_lags_to, lag_period=
     # Convert lagging columns to integer
     for col in columns_to_add_lags_to:
         for j in range(1, total_lagging_periods + 1):
-            lag_col_name = f'{col}{out_lag_midfix_str}{j}'
+            lag_col_name = _create_lag_column_name(out_lag_midfix_str, col, j)
             dfsrc[lag_col_name] = dfsrc[lag_col_name].astype(int)
 
     return dfsrc
+
+def _create_lag_column_name(out_lag_midfix_str, col, j):
+    return f'{col}{out_lag_midfix_str}{j}'
+def get_lagging_columns_list(columns_to_add_lags_to, lag_period=1, total_lagging_periods=5, out_lag_midfix_str='_lag_'):
+    new_cols = []  # List to hold new lagging columns
+    for col in columns_to_add_lags_to:
+        for j in range(1, total_lagging_periods + 1):
+            lag_col_name = _create_lag_column_name(out_lag_midfix_str, col, j)
+            new_cols.append(lag_col_name)
+    return new_cols
   
 def add_lagging_columns_V1(dfsrc: pd.DataFrame, columns_to_add_lags_to, lag_period=1, total_lagging_periods=5, out_lag_midfix_str='_lag_',dropna=True):
   for col in columns_to_add_lags_to:

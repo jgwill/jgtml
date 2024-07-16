@@ -25,10 +25,10 @@ def make_htf_created_columns_array(workset,t,columns_list_from_higher_tf=None):
             created_columns.append(new_col_name)
     return created_columns
 
-def read_ttf_csv(i, t, use_full=False,force_refresh=False,midfix="ttf")->pd.DataFrame:
+def read_ttf_csv(i, t, use_full=False,force_refresh=False,pn="ttf")->pd.DataFrame:
     if force_refresh:
-        return create_ttf_csv(i, t, use_full,use_fresh=True,force_read=False)
-    output_filename=get_ttf_outfile_fullpath(i,t,use_full,midfix=midfix)
+        return create_ttf_csv(i, t, use_full,use_fresh=True,force_read=False,pn=pn)
+    output_filename=get_ttf_outfile_fullpath(i,t,use_full,pn=pn)
     if not os.path.exists(output_filename):
         print("   Non existent, Creating TTF: ", output_filename)
         print("WARN::#@STCIssue In case of Specific pattern, it wont be able to read it, we could extend get data defining the PATTERNNAME and the COLUMNS it contains, therefore it could create the TTF patterns and read it.... ")
@@ -38,8 +38,8 @@ def read_ttf_csv(i, t, use_full=False,force_refresh=False,midfix="ttf")->pd.Data
         
         return pd.read_csv(output_filename, index_col=0,dtype=TTF_DTYPE_DEFINITION)
   
-def read_ttf_csv_selection(i, t, use_full=False,suffix="_sel",midfix="ttf"):
-    output_filename_sel=get_ttf_outfile_fullpath(i,t,use_full,suffix=suffix,midfix=midfix)
+def read_ttf_csv_selection(i, t, use_full=False,suffix="_sel",pn="ttf"):
+    output_filename_sel=get_ttf_outfile_fullpath(i,t,use_full,suffix=suffix,pn=pn)
     return pd.read_csv(output_filename_sel, index_col=0)
 
 def _upgrade_ttf_depending_data(i, t, use_full=False, use_fresh=True, quotescount=-1,dropna=True,quiet=True):
@@ -52,7 +52,7 @@ def _upgrade_ttf_depending_data(i, t, use_full=False, use_fresh=True, quotescoun
     raise Exception("Error in _upgrade_ttf_depending_data")
 
 
-def create_ttf_csv(i, t, use_full=False, use_fresh=True, quotescount=-1,force_read=False,dropna=True,quiet=True,columns_list_from_higher_tf=None,not_needed_columns=None,dropna_volume=True,midfix="ttf",also_output_sel_csv=False)->pd.DataFrame:
+def create_ttf_csv(i, t, use_full=False, use_fresh=True, quotescount=-1,force_read=False,dropna=True,quiet=True,columns_list_from_higher_tf=None,not_needed_columns=None,dropna_volume=True,pn="ttf",also_output_sel_csv=False)->pd.DataFrame:
   if not_needed_columns is None:
     not_needed_columns = TTF_NOT_NEEDED_COLUMNS_LIST
   if columns_list_from_higher_tf is None:
@@ -75,7 +75,7 @@ def create_ttf_csv(i, t, use_full=False, use_fresh=True, quotescount=-1,force_re
   
   created_columns = make_htf_created_columns_array(workset, t, columns_list_from_higher_tf)
   
-  write_patternname_columns_list(i,t,use_full,created_columns,midfix=midfix)
+  write_patternname_columns_list(i,t,use_full,created_columns,pn=pn)
   
   if dropna_volume:
     df=dropna_volume_in_dataframe(df)
@@ -144,9 +144,9 @@ def create_ttf_csv(i, t, use_full=False, use_fresh=True, quotescount=-1,force_re
   
   #save basedir is $JGTPY_DATA/ttf is not use_full, if use_full save basedir is $JGTPY_DATA_FULL/ttf
   
-  output_filename=get_ttf_outfile_fullpath(i,t,use_full,midfix=midfix)
+  output_filename=get_ttf_outfile_fullpath(i,t,use_full,pn=pn)
   if also_output_sel_csv:
-    output_filename_sel=get_ttf_outfile_fullpath(i,t,use_full,suffix="_sel",midfix=midfix)
+    output_filename_sel=get_ttf_outfile_fullpath(i,t,use_full,suffix="_sel",pn=pn)
   
   if dropna:
     df.dropna(inplace=True)
