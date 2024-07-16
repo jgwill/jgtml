@@ -68,6 +68,6 @@ jgtapp="jgtml.jgtapp:main"
 
 jgtmlfcli="jgtml.mlfcli:main"
 
-#ptojgtmltidealligator="jgtml.ptojgtmltidealligator:main"
-#jgtml_obsds_240515_TIDE_SIGNALS="jgtml.jgtml_obsds_240515_TIDE_SIGNALS:main"
-#ptojgtmlbigalligator="jgtml.ptojgtmlbigalligator:main"
+ptojgtmltidealligator="jgtml.ptojgtmltidealligator:main"
+jgtml_obsds_240515_TIDE_SIGNALS="jgtml.jgtml_obsds_240515_TIDE_SIGNALS:main"
+ptojgtmlbigalligator="jgtml.ptojgtmlbigalligator:main"
