@@ -15,10 +15,15 @@ from mlutils import get_outfile_fullpath
 from mlconstants import MX_NS
 
 #from jgtutils.jgtconstants import *
-from jgtutils.jgtconstants import VECTOR_AO_FDBS, VECTOR_AO_FDBB, VECTOR_AO_FDBS_COUNT, VECTOR_AO_FDBB_COUNT, VECTOR_AO_FDB_COUNT,ML_DEFAULT_COLUMNS_TO_KEEP,FDB_TARGET ,FDBB,FDBS,AO,ZLCB,ZLCS,OPEN,LOW,CLOSE,HIGH
+from jgtutils.jgtconstants import (VECTOR_AO_FDBS, VECTOR_AO_FDBB, VECTOR_AO_FDBS_COUNT, VECTOR_AO_FDBB_COUNT, VECTOR_AO_FDB_COUNT,ML_DEFAULT_COLUMNS_TO_KEEP,FDB_TARGET ,FDBB,FDBS,AO,ZLCB,ZLCS,OPEN,LOW,CLOSE,HIGH,DATE,
+                                   FDBB as SIGNAL_BUY_COLN,
+                                   FDBS as SIGNAL_SELL_COLN,
+                                   FDB_TARGET as __TARGET
+                                   )
+
 
 # %% Functions
-__TARGET=FDB_TARGET
+
 def set_target_variable_name(target_name):
     global __TARGET
     __TARGET = target_name
@@ -63,34 +68,34 @@ def calculate_target_variable_min_max(
     # Calculate the maximum and minimum Close value in the window range for each row
     for i in range(WINDOW_MIN, len(df) - WINDOW_MAX):
         # FDBS
-        if df.loc[i, "fdbs"] == 1.0:
-            df.loc[i, "tmax"] = df.loc[i : i + WINDOW_MAX, "Close"].min()
-            df.loc[i, "tmin"] = df.loc[i : i + WINDOW_MAX, "Close"].max()
+        if df.loc[i, SIGNAL_SELL_COLN] == 1.0:
+            df.loc[i, "tmax"] = df.loc[i : i + WINDOW_MAX, CLOSE].min()
+            df.loc[i, "tmin"] = df.loc[i : i + WINDOW_MAX, CLOSE].max()
 
-            if df.loc[i, "High"] < df.loc[i, "tmin"]:
-                df.loc[i, "l"] = round(df.loc[i, "High"] - df.loc[i, "Low"], rounder)
+            if df.loc[i, HIGH] < df.loc[i, "tmin"]:
+                df.loc[i, "l"] = round(df.loc[i, HIGH] - df.loc[i, LOW], rounder)
                 df.loc[i, __TARGET] = round(
-                    -1 * (df.loc[i, "High"] - df.loc[i, "Low"]), rounder
+                    -1 * (df.loc[i, HIGH] - df.loc[i, LOW]), rounder
                 )
             else:
-                df.loc[i, "p"] = round(df.loc[i, "Low"] - df.loc[i, "tmax"], rounder)
+                df.loc[i, "p"] = round(df.loc[i, LOW] - df.loc[i, "tmax"], rounder)
                 df.loc[i, __TARGET] = round(
-                    df.loc[i, "Low"] - df.loc[i, "tmax"], rounder
+                    df.loc[i, LOW] - df.loc[i, "tmax"], rounder
                 )
         # FDBB
-        if df.loc[i, "fdbb"] == 1.0:
-            df.loc[i, "tmax"] = df.loc[i : i + WINDOW_MAX, "Close"].max()
-            df.loc[i, "tmin"] = df.loc[i : i + WINDOW_MAX, "Close"].min()
+        if df.loc[i, SIGNAL_BUY_COLN] == 1.0:
+            df.loc[i, "tmax"] = df.loc[i : i + WINDOW_MAX, CLOSE].max()
+            df.loc[i, "tmin"] = df.loc[i : i + WINDOW_MAX, CLOSE].min()
 
-            if df.loc[i, "Low"] > df.loc[i, "tmin"]:
-                df.loc[i, "l"] = round(df.loc[i, "High"] - df.loc[i, "Low"], rounder)
+            if df.loc[i, LOW] > df.loc[i, "tmin"]:
+                df.loc[i, "l"] = round(df.loc[i, HIGH] - df.loc[i, LOW], rounder)
                 df.loc[i, __TARGET] = round(
-                    -1 * (df.loc[i, "High"] - df.loc[i, "Low"]), rounder
+                    -1 * (df.loc[i, HIGH] - df.loc[i, LOW]), rounder
                 )
             else:
-                df.loc[i, "p"] = round(df.loc[i, "tmax"] - df.loc[i, "High"], rounder)
+                df.loc[i, "p"] = round(df.loc[i, "tmax"] - df.loc[i, HIGH], rounder)
                 df.loc[i, __TARGET] = round(
-                    df.loc[i, "tmax"] - df.loc[i, "High"], rounder
+                    df.loc[i, "tmax"] - df.loc[i, HIGH], rounder
                 )
 
     # Fill NaN with zero for columns tmax and tmin
@@ -106,8 +111,8 @@ def calculate_target_variable_min_max(
     # @q Maybe set backnthe index !??
     if set_index:
         #parse Date as datetime
-        df['Date'] = pd.to_datetime(df['Date'])
-        df.set_index("Date", inplace=True)
+        df[DATE] = pd.to_datetime(df[DATE])
+        df.set_index(DATE, inplace=True)
         
     return df
 
@@ -169,9 +174,9 @@ def pto_target_calculation(
         write_reporting (bool, optional): If True, write the reporting. Defaults to True.
         calc_col_to_drop_names (list, optional): The list of column names to drop. Defaults to ["tmax", "tmin", "p", "l"].
         sel_1_suffix (str, optional): The suffix for the first selection. Defaults to "_sel".
-        sel_1_keeping_columns (list, optional): The list of columns to keep for the first selection. Defaults to ["Low", "fdbs", "fdbb", "tmax", "tmin", "p", "l", __TARGET].
+        sel_1_keeping_columns (list, optional): The list of columns to keep for the first selection. Defaults to [LOW, "fdbs", "fdbb", "tmax", "tmin", "p", "l", __TARGET].
         sel_2_suffix (str, optional): The suffix for the second selection. Defaults to "_tnd".
-        sel_2_keeping_columns (list, optional): The list of columns to keep for the second selection. Defaults to ["Open", "High", "Low", "Close", "fdbs", "fdbb", __TARGET].  
+        sel_2_keeping_columns (list, optional): The list of columns to keep for the second selection. Defaults to ["Open", HIGH, LOW, CLOSE, "fdbs", "fdbb", __TARGET].  
         pto_vec_fdb_ao_out_s_name (str, optional): The name of the output for fdb_ao_vector_window. Defaults to "vaos".
         pto_vec_fdb_ao_out_b_name (str, optional): The name of the output for fdb_ao_vector_window. Defaults to "vaob".
         pto_vec_fdb_ao_in_s_sig_name (str, optional): The name of the input for fdb_ao_vector_window. Defaults to "fdbs".
@@ -624,9 +629,9 @@ def readMXFile(
             raise ValueError(f"Error reading file {fpath}")
     
 
-    # Set 'Date' as the index and convert it to datetime
-    mdf["Date"] = pd.to_datetime(mdf["Date"])
-    mdf.set_index("Date", inplace=True)
+    # Set DATE as the index and convert it to datetime
+    mdf[DATE] = pd.to_datetime(mdf[DATE])
+    mdf.set_index(DATE, inplace=True)
 
     if dropna:
         mdf.dropna(inplace=True)
@@ -710,7 +715,7 @@ def get_fdb_ao_vector_window(
             df.at[index, out_b_name] = str(window.astype(float).tolist())
     # restore index
     try:
-        df.set_index("Date", inplace=True)
+        df.set_index(DATE, inplace=True)
     except:
         pass
 
@@ -786,7 +791,7 @@ def get_fdb_ao_vector_window_v2(
             df.at[index, out_b_name] = str(window.astype(float).tolist())
     # restore index
     try:
-        df.set_index("Date", inplace=True)
+        df.set_index(DATE, inplace=True)
     except:
         pass
 
