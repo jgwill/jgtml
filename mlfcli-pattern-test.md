@@ -169,7 +169,7 @@ Date,BidOpen,BidHigh,BidLow,BidClose,AskOpen,AskHigh,AskLow,AskClose,Volume,Open
 
 ```sh
 i=SPX500;t=D1
-python jgtml/ptojgtmlttfprotocli.py -i $i -t $t --full -fr -clh fh fl fh3 fl3 fh5 fl5 fh8 fl8 fh13 fl13 -pn frac013
+python jgtml/ttfcli.py -i $i -t $t --full -fr -clh fh fl fh3 fl3 fh5 fl5 fh8 fl8 fh13 fl13 -pn frac013
 ```
 
 # Refactorization of the JTC.py toward receiving an input Dataset with lags and all that is required to create the FDB_TARGETS

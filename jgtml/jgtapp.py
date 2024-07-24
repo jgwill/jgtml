@@ -20,7 +20,7 @@ def ocds(instrument, timeframe):
   subprocess.run(['jgtcli', '-i', instrument, '-t', timeframe, '--full', '-mfi', '-ba', '-ta', '-old'])
 
 def ttf(instrument, timeframe):
-  subprocess.run(['ptojgtmlttfprotocli', '-i', instrument, '-t', timeframe, '--full', '-fr'])
+  subprocess.run(['ttfcli', '-i', instrument, '-t', timeframe, '--full', '-fr'])
 
 def mx(instrument, timeframe, use_fresh=False):
   old_or_fresh = '-old' if not use_fresh else '--fresh'
