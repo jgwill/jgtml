@@ -10,6 +10,7 @@ import sys
 
 sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
 
+from mlclicommon import __deprecate_force_read
 import realityhelper
 
 def create_app_arguments()->argparse.Namespace:
@@ -52,16 +53,12 @@ def create_app_arguments()->argparse.Namespace:
   return args
   
 
-def __deprecate_force_read():
-  print("force_read is deprecated.  Use --fresh instead")
-  
 
 def main():
   
   args = create_app_arguments()
   
-  if args.force_read and args.force_read is True:
-    __deprecate_force_read()
+  __deprecate_force_read(args)
   
   force_refresh=args.fresh
   
