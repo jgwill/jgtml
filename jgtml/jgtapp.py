@@ -20,11 +20,11 @@ def ocds(instrument, timeframe):
   subprocess.run(['jgtcli', '-i', instrument, '-t', timeframe, '--full', '-mfi', '-ba', '-ta', '-old'])
 
 def ttf(instrument, timeframe):
-  subprocess.run(['ptojgtmlttfprotocli', '-i', instrument, '-t', timeframe, '--full', '-fr'])
+  subprocess.run(['ttfcli', '-i', instrument, '-t', timeframe, '--full', '-fr'])
 
 def mx(instrument, timeframe, use_fresh=False):
   old_or_fresh = '-old' if not use_fresh else '--fresh'
-  subprocess.run(['jgtmlcli', '-i', instrument, '-t', timeframe, '-ba', '-ta', old_or_fresh])
+  subprocess.run(['mxcli', '-i', instrument, '-t', timeframe, '-ba', '-ta', old_or_fresh])
 
 def ttfmxwf(instrument, use_fresh=False):
   for t in ["M1", "W1", "D1", "H4"]:
