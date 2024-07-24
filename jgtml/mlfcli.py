@@ -52,10 +52,16 @@ def create_app_arguments()->argparse.Namespace:
   return args
   
 
+def __deprecate_force_read():
+  print("force_read is deprecated.  Use --fresh instead")
+  
 
 def main():
   
   args = create_app_arguments()
+  
+  if args.force_read and args.force_read is True:
+    __deprecate_force_read()
   
   force_refresh=args.fresh
   
@@ -63,7 +69,7 @@ def main():
     realityhelper.generate_mlf_feature_pattern(
                             args.instrument,
                             args.timeframe,
-                            use_full=args.full if args.full else False,
+                            use_full=args.full,
                             force_refresh=force_refresh,
                             lag_period=args.lag_period,
                             total_lagging_periods=args.total_lagging_periods,
