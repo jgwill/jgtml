@@ -24,10 +24,11 @@
 
 
 
-# Wed 24 Jul 2024 05:14:41 PM EDT
+# Wed 24 Jul 2024 05:19:57 PM EDT
 # SOURCE NAME: /b/Dropbox/jgt/drop/fnml.py
 ########################
  
+
 import argparse
 import subprocess
 
@@ -44,8 +45,17 @@ def cds(instrument, timeframe, use_fresh=False):
 def ocds(instrument, timeframe):
   subprocess.run(['jgtcli', '-i', instrument, '-t', timeframe, '--full', '-mfi', '-ba', '-ta', '-old'])
 
-def ttf(instrument, timeframe):
-  subprocess.run(['ptojgtmlttfprotocli', '-i', instrument, '-t', timeframe, '--full', '-fr'])
+  
+def ttf(instrument, timeframe,pn="ttf",clh="mfi_sig zone_sig ao",use_fresh=False):
+  use_fresh_arg = '-old' if not use_fresh else '--fresh'
+  subprocess.run(['ttfcli', '-i', instrument, '-t', timeframe, '--full', use_fresh_arg, '-pn', pn, '-clh', clh])
+
+
+def mlf(instrument, timeframe,pn="ttf",clh="mfi_sig zone_sig ao",total_lagging_periods=5,use_fresh=False):
+  use_fresh_arg = '-old' if not use_fresh else '--fresh'
+  subprocess.run(['mlfcli', '-i', instrument, '-t', timeframe, '--full', use_fresh_arg, '-pn', pn, '-clh', clh,'--total_lagging_periods',total_lagging_periods])
+
+  
 
 def mx(instrument, timeframe, use_fresh=False):
   old_or_fresh = '-old' if not use_fresh else '--fresh'
@@ -99,6 +109,20 @@ def main():
   parser_prep_ttf_10 = subparsers.add_parser('ttf', help='Refresh the TTF for an instrument and timeframe')
   parser_prep_ttf_10.add_argument('-i','--instrument', help='Instrument symbol')
   parser_prep_ttf_10.add_argument('-t','--timeframe', help='Timeframe')
+  parser_prep_ttf_10.add_argument('-pn','--patternname', help='Pattern Name')
+  parser_prep_ttf_10.add_argument('-clh','--columns_list_from_higher_tf', help='Columns List')
+  parser_prep_ttf_10.add_argument('-new','--fresh', action='store_true', help='Use the fresh data')
+
+
+  
+  parser_prep_mlf_22 = subparsers.add_parser('ttf', help='Refresh the MLF for an instrument and timeframe')
+  parser_prep_mlf_22.add_argument('-i','--instrument', help='Instrument symbol')
+  parser_prep_mlf_22.add_argument('-t','--timeframe', help='Timeframe')
+  parser_prep_mlf_22.add_argument('-pn','--patternname', help='Pattern Name')
+  parser_prep_mlf_22.add_argument('-clh','--columns_list_from_higher_tf', help='Columns List')
+  parser_prep_mlf_22.add_argument('-tlp','--total_lagging_periods', help='Total Lagging Periods')
+  parser_prep_mlf_22.add_argument('-new','--fresh', action='store_true', help='Use the fresh data')
+  
   
   #ttfmxwf
   parser_post_ttfmxwf_14 = subparsers.add_parser('ttfmxwf', help='Refresh the TTF, MX and CDS for an instrument')
@@ -128,7 +152,9 @@ def main():
   elif args.command == 'ocds':
     ocds(args.instrument, args.timeframe)
   elif args.command == 'ttf':
-    ttf(args.instrument, args.timeframe)
+    ttf(args.instrument, args.timeframe,args.patternname,args.columns_list_from_higher_tf,args.fresh)
+  elif args.command == 'mlf':
+    mlf(args.instrument, args.timeframe,args.patternname,args.columns_list_from_higher_tf,args.total_lagging_periods,args.fresh)
   elif args.command == 'ttfmxwf':
     ttfmxwf(args.instrument, args.fresh)
   elif args.command == 'mx':
