@@ -24,7 +24,7 @@
 
 
 
-# Wed 24 Jul 2024 05:29:34 PM EDT
+# Wed 24 Jul 2024 05:40:30 PM EDT
 # SOURCE NAME: /b/Dropbox/jgt/drop/fnml.py
 ########################
  
@@ -115,7 +115,7 @@ def main():
 
 
   
-  parser_prep_mlf_22 = subparsers.add_parser('ttf', help='Refresh the MLF for an instrument and timeframe')
+  parser_prep_mlf_22 = subparsers.add_parser('mlf', help='Refresh the MLF for an instrument and timeframe')
   parser_prep_mlf_22.add_argument('-i','--instrument', help='Instrument symbol')
   parser_prep_mlf_22.add_argument('-t','--timeframe', help='Timeframe')
   parser_prep_mlf_22.add_argument('-pn','--patternname', help='Pattern Name')
