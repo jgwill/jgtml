@@ -4,17 +4,24 @@ jgtml
 """
 
 from setuptools import find_packages, setup
+import re
 
 #from jgtml import __version__ as version
 def read_version():
     with open("jgtml/__init__.py") as f:
-        for line in f:
-            if line.startswith("__version__"):
-                return line.strip().split()[-1][1:-1]
+        content=f.read()
+        version_match = re.search(r"version=['\"]([^'\"]*)['\"]", content)
+        return version_match.group(1)
+        # for line in f:
+        #     #print(line)
+        #     if line.startswith("version="):
+        #         version_match = re.search(r"version=['\"]([^'\"]*)['\"]", line)
+        #         return version_match
+                #return line.strip().split()[-1][1:-1]
 
 version = read_version()
 
-
+#print(f"Version: {version}")
 setup(
     name="jgtml",
     version=version,

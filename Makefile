@@ -1,4 +1,4 @@
-version := $(shell python3 -c 'from jgtml import __version__; print(__version__)')
+version := $(shell python3 -c 'from jgtml import version; print(version)')
 
 .PHONY: venv
 venv:
@@ -68,6 +68,17 @@ disto:
 pypi-release:
 	twine --version
 	twine upload -s dist/*
+
+.PHONY: dev-pypi-release
+dev-pypi-release:
+	twine --version
+	twine upload --repository pypi-dev dist/*
+
+.PHONY: dev-release
+dev-release:
+	python bump_version.py
+	make dist
+	make dev-pypi-release
 
 .PHONY: release
 release:
