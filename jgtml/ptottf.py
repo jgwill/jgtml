@@ -13,7 +13,9 @@ from mldatahelper import get_ttf_outfile_fullpath,write_patternname_columns_list
 
 def make_htf_created_columns_array(workset,t,columns_list_from_higher_tf=None):
     if columns_list_from_higher_tf is None:
-      columns_list_from_higher_tf = default_columns_to_get_from_higher_tf
+      #@STCIssue We will not want to use default anymore
+      raise Exception("columns_list_from_higher_tf is None, we need to define it")
+      #columns_list_from_higher_tf = default_columns_to_get_from_higher_tf
     created_columns=[]
     for c in columns_list_from_higher_tf:
       for k in workset:
@@ -36,7 +38,8 @@ def read_ttf_csv(i, t, use_full=False,force_refresh=False,pn="ttf")->pd.DataFram
     else:
         print("   Read TTF: ", output_filename)
         
-        return pd.read_csv(output_filename, index_col=0,dtype=TTF_DTYPE_DEFINITION)
+        df = pd.read_csv(output_filename, index_col=0,dtype=TTF_DTYPE_DEFINITION)
+        return df
   
 def read_ttf_csv_selection(i, t, use_full=False,suffix="_sel",pn="ttf"):
     output_filename_sel=get_ttf_outfile_fullpath(i,t,use_full,suffix=suffix,pn=pn)
@@ -55,9 +58,14 @@ def _upgrade_ttf_depending_data(i, t, use_full=False, use_fresh=True, quotescoun
 def create_ttf_csv(i, t, use_full=False, use_fresh=True, quotescount=-1,force_read=False,dropna=True,quiet=True,columns_list_from_higher_tf=None,not_needed_columns=None,dropna_volume=True,pn="ttf",also_output_sel_csv=False)->pd.DataFrame:
   if not_needed_columns is None:
     not_needed_columns = TTF_NOT_NEEDED_COLUMNS_LIST
+    #remove from this not needed list the columns we want if they are in columns_list_from_higher_tf
+    not_needed_columns = [x for x in not_needed_columns if x not in columns_list_from_higher_tf]
+  
+  #@STCIssue We will not want to use default
   if columns_list_from_higher_tf is None:
-    columns_list_from_higher_tf = default_columns_to_get_from_higher_tf
-  #print("Columns List from Higher TF:",columns_list_from_higher_tf)
+    raise Exception("columns_list_from_higher_tf is None, we need to define it")
+  #  columns_list_from_higher_tf = default_columns_to_get_from_higher_tf
+  print("Columns List from Higher TF:",columns_list_from_higher_tf)
   
   povs = jpov.get_higher_tf_array(t)
   if not quiet:

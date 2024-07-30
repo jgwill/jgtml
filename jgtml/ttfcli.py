@@ -6,15 +6,15 @@ import sys
 sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
 
 
-from mlclicommon import (__deprecate_force_read,
-                         add_patterns_arguments)
+from mlclicommon import (add_patterns_arguments,
+                         check_arguments)
 
 from mlcliconstants import TTFCLI_DESCRIPTION, TTFCLI_EPILOG, TTFCLI_PROG_NAME
 from ptottf import create_ttf_csv # type: ignore
 from jgtutils import jgtcommon
 
 def _parse_args():
-    parser:argparse.ArgumentParser=jgtcommon.new_parser(TTFCLI_DESCRIPTION,TTFCLI_PROG_NAME,TTFCLI_EPILOG)
+    parser:argparse.ArgumentParser=jgtcommon.new_parser(TTFCLI_DESCRIPTION,TTFCLI_EPILOG,TTFCLI_PROG_NAME)
     parser=jgtcommon.add_instrument_timeframe_arguments(parser)
     parser=jgtcommon.add_use_fresh_argument(parser)
     parser=jgtcommon.add_bars_amount_V2_arguments(parser)
@@ -29,14 +29,16 @@ def _parse_args():
     # #patternname
     # pn_group.add_argument("-pn", "--patternname", help="Pattern Name", default="ttf")
     parser=add_patterns_arguments(parser)
-  
+
     args = jgtcommon.parse_args(parser)
+    
+    args =check_arguments(args)
+    
     return args
 
 
 def main():
   args = _parse_args()
-  __deprecate_force_read(args)
   
   columns_list_from_higher_tf = args.columns_list_from_higher_tf if args.columns_list_from_higher_tf else None
   

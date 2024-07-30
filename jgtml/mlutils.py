@@ -50,8 +50,16 @@ def get_basedir(use_full,ns):
     os.makedirs(fulldir, exist_ok=True)
     return fulldir
 
+def get_list_of_files_in_ns(use_full,ns):
+  basedir=get_basedir(use_full,ns)
+  files = [f for f in os.listdir(basedir) if os.path.isfile(os.path.join(basedir, f))]
+  return files
+
 def get_outfile_fullpath(i,t,use_full,ns,pn="",suffix="",ext="csv"):
   save_basedir=get_basedir(use_full,ns)
-  ifn=i.replace("/","-")
+  ifn=i.replace("/","-") if i is not None else "--"
   output_filename = f"{ifn}_{t}_{pn}{suffix}.{ext}"
-  return os.path.join(save_basedir,output_filename.replace("__","_").replace("_.","."))
+  if i=="-" and t=="-":
+    output_filename = f"{pn}{suffix}.{ext}"
+  result_path = os.path.join(save_basedir,output_filename.replace("__","_").replace("_.","."))
+  return result_path

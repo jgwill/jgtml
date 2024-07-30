@@ -10,12 +10,15 @@ import sys
 
 sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
 
-from mlclicommon import __deprecate_force_read
+from mlcliconstants import MLFCLI_DESCRIPTION,MLFCLI_EPILOG,MLFCLI_PROG_NAME
+from mlclicommon import (add_patterns_arguments,
+                         check_arguments)
 import realityhelper
 
 def create_app_arguments()->argparse.Namespace:
   from jgtutils import jgtcommon
-  parser:argparse.ArgumentParser=jgtcommon.new_parser("Create MLF Data (alpha)","jgtmlfcli","Create MLF Data (alpha) for a given instrument and timeframe with patterns")
+  
+  parser:argparse.ArgumentParser=jgtcommon.new_parser(MLFCLI_DESCRIPTION,MLFCLI_EPILOG,MLFCLI_PROG_NAME)
   #parser = argparse.ArgumentParser(description="Create mlf alpha CSV file")
   
   lagging_group=parser.add_argument_group("Lagging")
@@ -30,16 +33,12 @@ def create_app_arguments()->argparse.Namespace:
   #columns_to_drop
   col_group.add_argument("-ctd", "--columns_to_drop", nargs='+', help="List of selected columns to drop", default=None)
 
-  #force_refresh
-  parser.add_argument("-f", "--force_refresh", action="store_true", help="Force refresh")
+  
   #flag mfiao
   #parser.add_argument("-mfiao", "--mfiao", action="store_true", help="Use mfiao")
   #drop_bidask
   #parser.add_argument("-dba", "--drop_bidask", action="store_true", help="Drop bidask")
   
-  
-  pn_group=parser.add_argument_group("Patterns")
-  pn_group.add_argument("-pn", "--patternname", help="Pattern Name", default="ttf")
   
   parser=jgtcommon.add_keepbidask_argument(parser)
   parser=jgtcommon.add_instrument_timeframe_arguments(parser)
@@ -49,7 +48,11 @@ def create_app_arguments()->argparse.Namespace:
   
   parser.add_argument("-fr", "--force_read", action="store_true", help="Force to read CDS (should increase speed but relies on existing data)")
   
+  parser=add_patterns_arguments(parser)
   args:argparse.Namespace=parser.parse_args()
+  
+  args =check_arguments(args)
+  
   return args
   
 
@@ -57,13 +60,28 @@ def create_app_arguments()->argparse.Namespace:
 def main():
   
   args = create_app_arguments()
-  
-  __deprecate_force_read(args)
-  
+  print(args)
+
   force_refresh=args.fresh
+  clh=args.columns_list_from_higher_tf
+  print("clh:", clh)
   
   try:
-    realityhelper.generate_mlf_feature_pattern(
+    df=run_mlf_wrapper(args, force_refresh)
+  except:
+    print("Error in generate_mlf_feature_pattern")
+    #print("patternname:", args.patternname, " might just not have its prerequisite TTF/Pattern data.  we would be running: jgtmlttfcli -i {instrument} -t {timeframe} -new")
+    print("----WE ARE TRYING IT USING jgtapp---------")
+    from jgtapp import ttf
+    try:
+      ttf(args.instrument, args.timeframe, pn=args.patternname, clh=args.columns_list_from_higher_tf,use_fresh=args.fresh)
+      print("---Running MLF now that we should have the desired pattern.")
+      df=run_mlf_wrapper(args, force_refresh)
+    except:
+      print("Error while running ttf.")
+
+def run_mlf_wrapper(args, force_refresh):
+    df=realityhelper.generate_mlf_feature_pattern(
                             args.instrument,
                             args.timeframe,
                             use_full=args.full,
@@ -75,9 +93,7 @@ def main():
                             columns_to_drop=args.columns_to_drop,
                             drop_bid_ask=args.rmbidask,
                             pn=args.patternname)
-  except:
-    print("Error in generate_mlf_feature_pattern")
-    print("patternname:", args.patternname, " might just not have its prerequisite TTF/Pattern data.  we would be running: jgtmlttfcli -i {instrument} -t {timeframe} -new")
+    return df
   #create_ttf_csv(args.instrument, args.timeframe, args.full if args.full else False, args.fresh, args.quotescount, args.force_read)
 
 if __name__ == "__main__":

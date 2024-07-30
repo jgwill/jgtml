@@ -1,0 +1,80 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "PNCLI_add_mfi",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "jgtml/pncli.py",
+      "console": "integratedTerminal",
+      "args": "-pn mfi -clh mfi_sq,mfi_green,mfi_fade,mfi_fake",
+    },
+    {
+      "name": "PNCLI_list",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "jgtml/pncli.py",
+      "console": "integratedTerminal",
+      "args": "-ls -md",
+    },
+    {
+      "name": "PNCLI_view_HTF_D1",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "jgtml/pncli.py",
+      "console": "integratedTerminal",
+      "args": "-pn mfi -t D1",
+    },
+    {
+      "name": "PNCLI_view_HTF_H4",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "jgtml/pncli.py",
+      "console": "integratedTerminal",
+      "args": "-pn mfi -t H4",
+    },
+    {
+      "name": "TTFCLI_mfi_D1_NZDCAD",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "jgtml/ttfcli.py",
+      "console": "integratedTerminal",
+      "args": "-i NZD/CAD -t D1 --full -pn mfi ",
+    },
+    {
+      "name": "MLFCLI_mfi_D1_NZDCAD",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "jgtml/mlfcli.py",
+      "console": "integratedTerminal",
+      "args": "-i NZD/CAD -t D1 --full -pn mfi ",
+    },
+    {
+      "name": "MLFCLI_mfi_D1",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "jgtml/mlfcli.py",
+      "console": "integratedTerminal",
+      "args": "-i SPX500 -t D1 --full -pn mfi ",
+    },
+    {
+      "name": "TTFCLI",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "jgtml/ttfcli.py",
+      "console": "integratedTerminal",
+      "args": "-i SPX500 -t D1 --full -pn mfi -clh mfi_sq mfi_green mfi_fade mfi_fake",
+    },
+    {
+      "name": "TTFCLI_pn",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "jgtml/ttfcli.py",
+      "console": "integratedTerminal",
+      "args": "-i SPX500 -t D1 --full -pn mfi",
+    }
+  ]
+}
