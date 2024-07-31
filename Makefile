@@ -80,6 +80,11 @@ dev-release:
 	make dist
 	make dev-pypi-release
 
+.PHONY: bump_version
+bump_version:
+	python bump_version.py
+	git commit . -m "Bump version"
+
 .PHONY: release
 release:
 	python bump_version.py
