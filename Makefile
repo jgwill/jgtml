@@ -83,6 +83,7 @@ dev-release:
 .PHONY: release
 release:
 	python bump_version.py
+	version := $(shell python3 -c 'from jgtml import version; print(version)'
 	git commit pyproject.toml package.json jgtml/__init__.py -m "Bump version to $(version)"
 	make dist
 	git tag  $(version)
