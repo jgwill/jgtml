@@ -87,10 +87,8 @@ bump_version:
 
 .PHONY: release
 release:
-	make bump_version
 	make dist
 	git tag  $(version)
 	git push origin $(version)
 	git push
 	make pypi-release
-
