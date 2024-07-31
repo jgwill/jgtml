@@ -113,7 +113,7 @@ def _read_adequate_pattern_dataset(i,t,use_full,pn,quiet=True,force_refresh=Fals
 from mldatahelper import write_mlf_pattern_lagging_columns_list,read_patternname_columns_list
 import anhelper
 
-def generate_mlf_feature_pattern(i,t,lag_period=1, total_lagging_periods=5,dropna=True, use_full=True,columns_to_keep=None,columns_to_drop=None,drop_bid_ask=False,force_refresh=False,quiet=True,pn="ttf",out_lag_midfix_str='_lag_'):
+def generate_mlf_feature_pattern(i,t,lag_period=1, total_lagging_periods=5,dropna=True, use_full=True,columns_to_keep=None,columns_to_drop=None,drop_bid_ask=False,force_refresh=False,quiet=True,pn="ttf",out_lag_midfix_str='_lag_',just_keep_lagging_columns=False,save_to_csv=True):
   #@STCGoal Pattern Name -> We have the Columns list serialized
   columns_list_from_higher_tf = read_patternname_columns_list(i,t,use_full,pn=pn,ns="ttf")
   print("INFO::Columns List from Higher TF to prep laggings using MLF:",columns_list_from_higher_tf, " for patternname:",pn, " --- WE WILL Want to Create this pattern columns with a Global Pattern columns reading that would use the PN and the Timeframes.") 
@@ -129,16 +129,18 @@ def generate_mlf_feature_pattern(i,t,lag_period=1, total_lagging_periods=5,dropn
   df=anhelper.add_lagging_columns(df, columns_list_from_higher_tf, lag_period, total_lagging_periods, out_lag_midfix_str)
   lagging_columns=anhelper.get_lagging_columns_list(columns_list_from_higher_tf, lag_period, total_lagging_periods, out_lag_midfix_str)
   #write_patternname_columns_list
-  write_mlf_pattern_lagging_columns_list(i, t, use_full, pn, lagging_columns)
-  if not quiet:
-    print("INFO::Columns List with Lags using MLF:",lagging_columns)
+  if just_keep_lagging_columns:
+    df=df[lagging_columns]
+  
   #print(df.columns)
-  #save the mlf df to_csv
-  output_filename=get_mlf_outfile_fullpath(i,t,use_full,pn)
-  df.to_csv(output_filename, index=True)
-  #if not quiet:
-  print("INFO::MLF Saved to : ", output_filename)
-  #sys.exit(0)
+  if save_to_csv:      
+    write_mlf_pattern_lagging_columns_list(i, t, use_full, pn, lagging_columns)
+    #save the mlf df to_csv
+    output_filename=get_mlf_outfile_fullpath(i,t,use_full,pn)
+    df.to_csv(output_filename, index=True)
+    print("INFO::MLF Saved to : ", output_filename) 
+
+  
   return df
 
 

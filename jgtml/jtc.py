@@ -46,9 +46,14 @@ def calculate_target_variable_min_max(
     set_index=True,
     rounder=4,
     pipsize=-1,
+    target_colname="",
+    set_target_globally=True,
 ):
     df = dfsrc.copy()
-    
+    if target_colname=="":
+        target_colname=__TARGET
+        if set_target_globally:
+            set_target_variable_name(target_colname)
     
     if crop_last_dt is not None or crop_start_dt is not None:
         df = _crop_dataframe(df, crop_last_dt, crop_start_dt)
@@ -64,7 +69,7 @@ def calculate_target_variable_min_max(
     df["tmin"] = float("nan")
     df["p"] = float("nan")
     df["l"] = float("nan")
-    df[__TARGET] = float("nan")
+    df[target_colname] = float("nan")
 
     # Calculate the maximum and minimum Close value in the window range for each row
     for i in range(WINDOW_MIN, len(df) - WINDOW_MAX):
@@ -75,12 +80,12 @@ def calculate_target_variable_min_max(
 
             if df.loc[i, HIGH] < df.loc[i, "tmin"]:
                 df.loc[i, "l"] = round(df.loc[i, HIGH] - df.loc[i, LOW], rounder)
-                df.loc[i, __TARGET] = round(
+                df.loc[i, target_colname] = round(
                     -1 * (df.loc[i, HIGH] - df.loc[i, LOW]), rounder
                 )
             else:
                 df.loc[i, "p"] = round(df.loc[i, LOW] - df.loc[i, "tmax"], rounder)
-                df.loc[i, __TARGET] = round(
+                df.loc[i, target_colname] = round(
                     df.loc[i, LOW] - df.loc[i, "tmax"], rounder
                 )
         # FDBB
@@ -90,12 +95,12 @@ def calculate_target_variable_min_max(
 
             if df.loc[i, LOW] > df.loc[i, "tmin"]:
                 df.loc[i, "l"] = round(df.loc[i, HIGH] - df.loc[i, LOW], rounder)
-                df.loc[i, __TARGET] = round(
+                df.loc[i, target_colname] = round(
                     -1 * (df.loc[i, HIGH] - df.loc[i, LOW]), rounder
                 )
             else:
                 df.loc[i, "p"] = round(df.loc[i, "tmax"] - df.loc[i, HIGH], rounder)
-                df.loc[i, __TARGET] = round(
+                df.loc[i, target_colname] = round(
                     df.loc[i, "tmax"] - df.loc[i, HIGH], rounder
                 )
 
@@ -104,10 +109,10 @@ def calculate_target_variable_min_max(
     df["tmin"] = df["tmin"].fillna(0)
     df["p"] = df["p"].fillna(0)
     df["l"] = df["l"].fillna(0)
-    df[__TARGET] = df[__TARGET].fillna(0)
+    df[target_colname] = df[target_colname].fillna(0)
     # After calculating the 'target' column
     if pipsize != -1:
-        df[__TARGET] = df[__TARGET] / pipsize
+        df[target_colname] = df[target_colname] / pipsize
 
     # @q Maybe set backnthe index !??
     if set_index:
@@ -423,14 +428,8 @@ def _pov_target_calculation_n_output240223(
         #print("after : get_fdb_ao_vector_window::",df_result_tmx.columns)
         # print(df_result_tmx.tail(14))
         #@STCGoal Count of the ao vector in the window
-        df_result_tmx.loc[:, VECTOR_AO_FDBS_COUNT] = df_result_tmx[VECTOR_AO_FDBS].apply(lambda x: len(x.split(',')) if isinstance(x, str) else 0)
-        df_result_tmx.loc[:, VECTOR_AO_FDBB_COUNT] = df_result_tmx[VECTOR_AO_FDBB].apply(lambda x: len(x.split(',')) if isinstance(x, str) else 0)
-       
-        df_result_tmx.loc[:, VECTOR_AO_FDBS_COUNT] = df_result_tmx.apply(lambda x: 0 if x[VECTOR_AO_FDBS_COUNT] == 1 else x[VECTOR_AO_FDBS_COUNT], axis=1)
-        df_result_tmx.loc[:, VECTOR_AO_FDBB_COUNT] = df_result_tmx.apply(lambda x: 0 if x[VECTOR_AO_FDBB_COUNT] == 1 else x[VECTOR_AO_FDBB_COUNT], axis=1)
-        
-        if drop_vector_ao_intermediate_array:
-            df_result_tmx.drop(columns=[VECTOR_AO_FDBS, VECTOR_AO_FDBB], inplace=True)
+        # NOW INCLUDUD IN get_fdb_ao_vector_window
+        #df_result_tmx=calculate_vector_ao_counts(df_result_tmx,drop_vector_ao_intermediate_array)
     
         
         #df_result_tmx.to_csv("debug.csv",index=True)
@@ -566,6 +565,17 @@ def _pov_target_calculation_n_output240223(
 
     return df_result_tmx, sel1, sel2
 
+def _calculate_vector_ao_counts(df_result_tmx,drop_vector_ao_intermediate_array=True,inplace=True):
+    df_result_tmx.loc[:, VECTOR_AO_FDBS_COUNT] = df_result_tmx[VECTOR_AO_FDBS].apply(lambda x: len(x.split(',')) if isinstance(x, str) else 0)
+    df_result_tmx.loc[:, VECTOR_AO_FDBB_COUNT] = df_result_tmx[VECTOR_AO_FDBB].apply(lambda x: len(x.split(',')) if isinstance(x, str) else 0)
+       
+    df_result_tmx.loc[:, VECTOR_AO_FDBS_COUNT] = df_result_tmx.apply(lambda x: 0 if x[VECTOR_AO_FDBS_COUNT] == 1 else x[VECTOR_AO_FDBS_COUNT], axis=1)
+    df_result_tmx.loc[:, VECTOR_AO_FDBB_COUNT] = df_result_tmx.apply(lambda x: 0 if x[VECTOR_AO_FDBB_COUNT] == 1 else x[VECTOR_AO_FDBB_COUNT], axis=1)
+        
+    if drop_vector_ao_intermediate_array:
+        df_result_tmx.drop(columns=[VECTOR_AO_FDBS, VECTOR_AO_FDBB], inplace=inplace)
+    return df_result_tmx
+
 
 def _reporting(df_selection2, ifn, t, pipsize, tlid_tag, output_report_dir=None):
 
@@ -691,6 +701,7 @@ def get_fdb_ao_vector_window(
     in_b_win_end_sig_name=ZLCS,#"zlcs",
     in_t_val_name=AO,#"ao",
     only_if_target_exist_n_not_zero=True,
+    drop_vector_ao_intermediate_array=True
 ):
 
     # reset index before we iterate
@@ -747,6 +758,8 @@ def get_fdb_ao_vector_window(
     #df[out_s_name].fillna("[]", inplace=True)
     #df[out_b_name].fillna("[]",inplace=True)
     df.fillna({out_s_name: "[]", out_b_name: "[]"}, inplace=True)
+    
+    df=_calculate_vector_ao_counts(df,drop_vector_ao_intermediate_array)
     return df
 
 

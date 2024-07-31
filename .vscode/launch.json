@@ -53,6 +53,22 @@
       "args": "-i NZD/CAD -t D1 --full -pn mfi ",
     },
     {
+      "name": "MXCLI_mfi_D1_NZDCAD",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "jgtml/jgtmlcli.py",
+      "console": "integratedTerminal",
+      "args": "-i NZD/CAD -t D1 --full -pn mfi ",
+    },
+    {
+      "name": "MXCLI_mfi_D1_NZDCAD_old",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "jgtml/jgtmlcli.py",
+      "console": "integratedTerminal",
+      "args": "-i NZD/CAD -t D1 --full -pn mfi -old",
+    },
+    {
       "name": "MLFCLI_mfi_D1",
       "type": "debugpy",
       "request": "launch",
