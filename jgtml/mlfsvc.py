@@ -21,6 +21,8 @@ import realityhelper
 
 
 class MLFService:
+    def __init__(self):
+        pass
     def generate_features(self, request: MLFRequest):
         try:
             return realityhelper.generate_mlf_feature_pattern(
@@ -39,3 +41,6 @@ class MLFService:
         except Exception as e:
             print(f"Error in generate_mlf_feature_pattern: {e}")
             print(f"patternname: {request.patternname} might just not have its prerequisite TTF/Pattern data. We would be running: jgtmlttfcli -i {request.instrument} -t {request.timeframe} -new")
+    
+    def create_request(self,instrument,timeframe,pn,lag_period=1,total_lagging_periods=5,use_full=True,force_refresh=False,dropna=True,columns_to_keep=None,columns_to_drop=None,drop_bid_ask=True):
+        return MLFRequest(instrument,timeframe,pn,lag_period,total_lagging_periods,use_full,force_refresh,dropna,columns_to_keep,columns_to_drop,drop_bid_ask)
