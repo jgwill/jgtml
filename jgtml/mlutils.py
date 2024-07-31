@@ -9,7 +9,7 @@ from jgtutils.jgtconstants import VOLUME
 # warnings.filterwarnings("ignore", category=pd.errors.PerformanceWarning)
 # warnings.filterwarnings("ignore", category=pd.errors.SettingWithCopyWarning)
 
-def drop_columns_if_exists(df:pd.DataFrame, columns_to_drop=None, inplace=True):
+def drop_columns_if_exists(df:pd.DataFrame, columns_to_drop=None, inplace=True)->pd.DataFrame:
   if columns_to_drop is not None:
     if not inplace:
       df = df.copy()
@@ -18,7 +18,7 @@ def drop_columns_if_exists(df:pd.DataFrame, columns_to_drop=None, inplace=True):
         df.drop(columns=[col], inplace=True)
   return df
 
-def dropna_volume_in_dataframe(df:pd.DataFrame, volume_colname="", inplace=True):
+def dropna_volume_in_dataframe(df:pd.DataFrame, volume_colname="", inplace=True)->pd.DataFrame:
   if volume_colname == "":
     volume_colname = VOLUME
   if not inplace:
@@ -28,7 +28,7 @@ def dropna_volume_in_dataframe(df:pd.DataFrame, volume_colname="", inplace=True)
   return df
 
 
-def convert_col_to_int(df:pd.DataFrame, colname, inplace=True):
+def convert_col_to_int(df:pd.DataFrame, colname, inplace=True)->pd.DataFrame:
   if not inplace:
     df = df.copy()
   if colname in df.columns:
@@ -36,7 +36,7 @@ def convert_col_to_int(df:pd.DataFrame, colname, inplace=True):
   return df
 
 
-def get_basedir(use_full,ns):
+def get_basedir(use_full:bool,ns:str)->str:
     if use_full:
         bd=os.getenv("JGTPY_DATA_FULL")
         if bd is None:
@@ -50,12 +50,12 @@ def get_basedir(use_full,ns):
     os.makedirs(fulldir, exist_ok=True)
     return fulldir
 
-def get_list_of_files_in_ns(use_full,ns):
+def get_list_of_files_in_ns(use_full:bool,ns:str)->list[str]:
   basedir=get_basedir(use_full,ns)
   files = [f for f in os.listdir(basedir) if os.path.isfile(os.path.join(basedir, f))]
   return files
 
-def get_outfile_fullpath(i,t,use_full,ns,pn="",suffix="",ext="csv"):
+def get_outfile_fullpath(i:str,t:str,use_full:bool,ns,pn="",suffix="",ext="csv"):
   save_basedir=get_basedir(use_full,ns)
   ifn=i.replace("/","-") if i is not None else "--"
   output_filename = f"{ifn}_{t}_{pn}{suffix}.{ext}"
