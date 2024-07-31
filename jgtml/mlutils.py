@@ -55,7 +55,7 @@ def get_list_of_files_in_ns(use_full:bool,ns:str)->list[str]:
   files = [f for f in os.listdir(basedir) if os.path.isfile(os.path.join(basedir, f))]
   return files
 
-def get_outfile_fullpath(i:str,t:str,use_full:bool,ns,pn="",suffix="",ext="csv"):
+def get_outfile_fullpath(i:str,t:str,use_full:bool,ns:str,pn:str="",suffix:str="",ext="csv"):
   save_basedir=get_basedir(use_full,ns)
   ifn=i.replace("/","-") if i is not None else "--"
   output_filename = f"{ifn}_{t}_{pn}{suffix}.{ext}"
