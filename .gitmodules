@@ -1,0 +1,12 @@
+[submodule "jgtpy"]
+	path = jgtpy
+	url = git@github.com:jgwill/jgtpy.git
+[submodule "jgtfxcon"]
+	path = jgtfxcon
+	url = git@github.com:jgwill/jgtfxcon.git
+[submodule "jgtutils"]
+	path = jgtutils
+	url = git@github.com:jgwill/jgtutils.git
+[submodule "jgtfx2console"]
+	path = jgtfx2console
+	url = git@github.com:jgwill/jgtfx2console.git
