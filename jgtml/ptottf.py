@@ -38,12 +38,12 @@ def read_ttf_csv(i, t, use_full=False,force_refresh=False,pn="ttf")->pd.DataFram
     else:
         print("   Read TTF: ", output_filename)
         
-        df = pd.read_csv(output_filename, index_col=0,dtype=TTF_DTYPE_DEFINITION)
+        df = pd.read_csv(output_filename, index_col=0,dtype=TTF_DTYPE_DEFINITION,parse_dates=True)
         return df
   
 def read_ttf_csv_selection(i, t, use_full=False,suffix="_sel",pn="ttf"):
     output_filename_sel=get_ttf_outfile_fullpath(i,t,use_full,suffix=suffix,pn=pn)
-    return pd.read_csv(output_filename_sel, index_col=0)
+    return pd.read_csv(output_filename_sel, index_col=0,parse_dates=True)
 
 def _upgrade_ttf_depending_data(i, t, use_full=False, use_fresh=True, quotescount=-1,dropna=True,quiet=True):
   try:

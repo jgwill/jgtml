@@ -45,7 +45,7 @@ def add_patterns_arguments(parser:argparse.ArgumentParser)->argparse.ArgumentPar
   
   pn_group.add_argument("-pn", "--patternname", help="Pattern Name")
   
-  pn_group.add_argument("-ls", "--list-patterns", help="List Patterns", action="store_true")
+  pn_group.add_argument("-pls", "--list-patterns", help="List Patterns", action="store_true")
   
   #Add the format outputs
   parser=add_format_outputs_arguments(parser)

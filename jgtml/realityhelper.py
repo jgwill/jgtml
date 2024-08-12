@@ -128,13 +128,14 @@ def generate_mlf_feature_pattern(i,t,lag_period=1, total_lagging_periods=5,dropn
   
   df=anhelper.add_lagging_columns(df, columns_list_from_higher_tf, lag_period, total_lagging_periods, out_lag_midfix_str)
   lagging_columns=anhelper.get_lagging_columns_list(columns_list_from_higher_tf, lag_period, total_lagging_periods, out_lag_midfix_str)
+  fixed_columns_to_keep=columns_list_from_higher_tf+lagging_columns
   #write_patternname_columns_list
   if just_keep_lagging_columns:
-    df=df[lagging_columns]
+    df=df[fixed_columns_to_keep]
   
   #print(df.columns)
   if save_to_csv:      
-    write_mlf_pattern_lagging_columns_list(i, t, use_full, pn, lagging_columns)
+    write_mlf_pattern_lagging_columns_list(i, t, use_full, pn, fixed_columns_to_keep)
     #save the mlf df to_csv
     output_filename=get_mlf_outfile_fullpath(i,t,use_full,pn)
     df.to_csv(output_filename, index=True)
