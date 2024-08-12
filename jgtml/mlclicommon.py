@@ -21,9 +21,10 @@ import argparse
 from jgtutils import jgtcommon
 from jgtutils.jgtcommon import _get_group_by_title
 
+
 from mlcliconstants import TTF_DEFAULT_PATTERN_NAME
-
-
+from jgtutils.jgtcommon import add_patterns_arguments,add_timeframe_standalone_argument,new_parser,add_format_outputs_arguments
+  
 def __deprecate_force_read(args:argparse.Namespace):
   try:
     if args.force_read and args.force_read is True:
@@ -31,25 +32,33 @@ def __deprecate_force_read(args:argparse.Namespace):
   except:
     pass
 
-def add_format_outputs_arguments(parser:argparse.ArgumentParser)->argparse.ArgumentParser:
-  out_group=_get_group_by_title(parser,"Outputs")
-  f_exclusive=out_group.add_mutually_exclusive_group()
-  f_exclusive.add_argument("-json", "--json_output", help="Output in JSON format", action="store_true")
-  #Markdown
-  f_exclusive.add_argument("-md", "--markdown_output", help="Output in Markdown format", action="store_true")
-  return parser
+# def add_format_outputs_arguments(parser:argparse.ArgumentParser=None)->argparse.ArgumentParser:
+#   global default_parser
+#   if parser is None:
+#     parser=default_parser
+  
+#   out_group=_get_group_by_title(parser,"Outputs")
+#   f_exclusive=out_group.add_mutually_exclusive_group()
+#   f_exclusive.add_argument("-json", "--json_output", help="Output in JSON format", action="store_true")
+#   #Markdown
+#   f_exclusive.add_argument("-md", "--markdown_output", help="Output in Markdown format", action="store_true")
+#   return parser
 
-def add_patterns_arguments(parser:argparse.ArgumentParser)->argparse.ArgumentParser:
-  pn_group=_get_group_by_title(parser,"Patterns")
-  pn_group.add_argument("-clh", "--columns_list_from_higher_tf", nargs='+', help="List of columns to get from higher TF.  Default is mfi_sig,zone_sig,ao", default=None)
+# def add_patterns_arguments(parser:argparse.ArgumentParser=None)->argparse.ArgumentParser:
+#   global default_parser
+#   if parser is None:
+#     parser=default_parser
   
-  pn_group.add_argument("-pn", "--patternname", help="Pattern Name")
+#   pn_group=_get_group_by_title(parser,"Patterns")
+#   pn_group.add_argument("-clh", "--columns_list_from_higher_tf", nargs='+', help="List of columns to get from higher TF.  Default is mfi_sig,zone_sig,ao", default=None)
   
-  pn_group.add_argument("-pls", "--list-patterns", help="List Patterns", action="store_true")
+#   pn_group.add_argument("-pn", "--patternname", help="Pattern Name")
   
-  #Add the format outputs
-  parser=add_format_outputs_arguments(parser)
-  return parser
+#   pn_group.add_argument("-pls", "--list-patterns", help="List Patterns", action="store_true")
+  
+#   #Add the format outputs
+#   parser=add_format_outputs_arguments(parser)
+#   return parser
 
 def check_arguments(args:argparse.Namespace)->argparse.Namespace:
   __deprecate_force_read(args)

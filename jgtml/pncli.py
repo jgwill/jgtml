@@ -5,15 +5,18 @@ import pandas as pd
 
 sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
 
-from mlclicommon import __deprecate_force_read, add_patterns_arguments, check_arguments,add_format_outputs_arguments
+from jgtutils import jgtcommon
+from mlclicommon import add_patterns_arguments,add_timeframe_standalone_argument
+from mlclicommon import __deprecate_force_read, check_arguments,add_format_outputs_arguments
 from mlcliconstants import PATTERNCLI_DESCRIPTION, PATTERNCLI_EPILOG, PATTERNCLI_PROG_NAME
 from mldatahelper import pndata__write_new_pattern_columns_list,pndata__read_new_pattern_columns_list,pndata__read_new_pattern_columns_list_with_htf,pndata__get_all_patterns
 
 def _parse_args():
-    parser = argparse.ArgumentParser(description=PATTERNCLI_DESCRIPTION, epilog=PATTERNCLI_EPILOG, prog=PATTERNCLI_PROG_NAME)
+    parser=jgtcommon.new_parser(PATTERNCLI_DESCRIPTION, PATTERNCLI_EPILOG, PATTERNCLI_PROG_NAME)
+
     parser=add_patterns_arguments(parser)
-    #parser=add_format_outputs_arguments(parser) #NOW Included in add_patterns_arguments
-    parser.add_argument("-t","--timeframe", help="Timeframe", default="D1")
+    parser=add_timeframe_standalone_argument(parser)
+
     args = parser.parse_args()
     args=check_arguments(args)
     return args
