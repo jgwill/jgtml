@@ -1,0 +1,54 @@
+{
+  "balligator_flag" : true,
+  "ta": false,
+  "go": true,
+  "keepbidask": true,
+  "i": "EUR/USD",
+  "t": "H4",
+  "pn": "zonesq",
+  "clh": [
+    "zone_sig",
+    "mfi_sq"
+  ],
+  "patterns":
+    {
+      "zonesq": {
+        "columns": [
+          "zone_sig",
+          "mfi_sq"
+        ]
+      },
+      "aoabz": {
+        "columns": [
+          "aoaz",
+          "aobz"
+        ]
+      },
+      "aoac": {
+      "columns": [
+        "ao",
+        "ac"
+      ]
+    },
+    "ttf": {
+      "columns": [
+        "mfi_sig",
+        "zone_sig"
+      ]
+    },
+    "mfi": {
+      "columns": [
+        "mfi_sq",
+        "mfi_green",
+        "mfi_fade",
+        "mfi_fake"
+      ]
+    },
+    "mfizone": {
+      "columns": [
+        "mfi_sig",
+        "zone_sig"
+      ]
+    }
+  }
+}
