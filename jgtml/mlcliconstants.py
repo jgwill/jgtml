@@ -12,7 +12,7 @@ MLFCLI_EPILOG="MLF Is used to create lagging features.  It uses the TTF data and
 MLFCLI_PROG_NAME="mlfcli"
 
 PATTERNCLI_DESCRIPTION = "Create or read pattern columns."
-PATTERNCLI_PROG_NAME = "patterncli"
+PATTERNCLI_PROG_NAME = "pncli"
 PATTERNCLI_EPILOG = "This tool is used to create patterns with their corresponding columns or read existing patterns from disk."
 
 
