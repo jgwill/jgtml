@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "jgtml"
-version = "0.0.140"
+version = "0.0.141"
 authors = [
   { name="Guillaume Isabelle", email="jgi@jgwill.com" },
 ]
@@ -16,7 +16,7 @@ requires-python = ">=3.7"
 dependencies = [
   'pandas>=0.25.1',
   'python-dotenv>=0.19.2',
-  'jgtpy>=0.5.15',
+  'jgtpy>=0.5.17',
   'matplotlib>=3.3.1',
   'plotly>=5.18.0',
   'mplfinance>=0.12.10b0',
