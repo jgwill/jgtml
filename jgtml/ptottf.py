@@ -68,6 +68,11 @@ def create_ttf_csv(i, t, use_full=False, use_fresh=True, quotescount=-1,force_re
       columns_to_remove = _settings['columns_to_remove']
       not_needed_columns = not_needed_columns + columns_to_remove
     
+    if columns_list_from_higher_tf is None:
+      from mldatahelper import pndata__read_new_pattern_columns_list_with_htf,pndata__read_new_pattern_columns_list
+      
+      columns_list_from_higher_tf = pndata__read_new_pattern_columns_list(pn=pn,args=args)
+      #columns_list_from_higher_tf = pndata__read_new_pattern_columns_list_with_htf(t,pn=pn,args=args)
     #remove from this not needed list the columns we want if they are in columns_list_from_higher_tf
     not_needed_columns = [x for x in not_needed_columns if x not in columns_list_from_higher_tf]
   
@@ -82,7 +87,7 @@ def create_ttf_csv(i, t, use_full=False, use_fresh=True, quotescount=-1,force_re
     print(f"Povs:",povs)
   
   if use_fresh:
-    print("create_ttf_csv::Calling ::_upgrade_ttf_depending_data")
+    print("ttf is refreshing the data")
     _upgrade_ttf_depending_data(i, t, use_full=use_full, use_fresh=True,quiet=quiet)
     use_fresh=False
     force_read=True #@STCissue Unclear if that force read the CDS or the TTF (ITS the CDS)
