@@ -32,6 +32,7 @@ def read_ttf_csv(i, t, use_full=False,force_refresh=False,pn="ttf")->pd.DataFram
         return create_ttf_csv(i, t, use_full,use_fresh=True,force_read=False,pn=pn)
     output_filename=get_ttf_outfile_fullpath(i,t,use_full,pn=pn)
     if not os.path.exists(output_filename):
+        print("   Creating TTF: ", output_filename)
         return create_ttf_csv(i, t, use_full,force_read=True,pn=pn)
     else:
         print("   Read TTF: ", output_filename)
