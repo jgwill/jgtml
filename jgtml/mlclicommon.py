@@ -27,7 +27,7 @@ from jgtutils.jgtcommon import add_patterns_arguments,add_timeframe_standalone_a
   
 def __deprecate_force_read(args:argparse.Namespace):
   try:
-    if args.force_read and args.force_read is True:
+    if hasattr(args,'force_read') and args.force_read is True:
       print("force_read is deprecated.  Use --fresh instead")
   except:
     pass
@@ -61,6 +61,7 @@ def __deprecate_force_read(args:argparse.Namespace):
 #   return parser
 
 def check_arguments(args:argparse.Namespace)->argparse.Namespace:
+  
   __deprecate_force_read(args)
   
   #If we are listing patterns, then we do that, print results and exit

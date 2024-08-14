@@ -46,7 +46,6 @@ def create_app_arguments()->argparse.Namespace:
   parser=jgtcommon.add_use_fresh_argument(parser)
   parser=jgtcommon.add_dropna_volume_argument(parser)
   
-  parser.add_argument("-fr", "--force_read", action="store_true", help="Force to read CDS (should increase speed but relies on existing data)")
   
   parser=add_patterns_arguments(parser)
   args:argparse.Namespace=jgtcommon.parse_args(parser)
