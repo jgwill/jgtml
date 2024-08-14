@@ -165,3 +165,10 @@ ref_*
 *.bak
 
 arch
+jgtml/*.ipynb
+
+jgtml/ptodata2406b.py
+jgtml/ptodata2406cConfig.py
+jgtml/ptodata2406cRequest.py
+jgtml/ptodata2406dConfNRequest.py
+jgtml/ptoJGTML240615DataSelector.py
