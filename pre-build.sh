@@ -39,6 +39,8 @@ for l in $(cat $pto_package_csv_list);do
   #Unlock the file if exist
   if [ -f $package_name/$dst_file ]; then
     chmod 644 $package_name/$dst_file
+    git add $package_name/$dst_file &>/dev/null
+    git commit $package_name/$dst_file -m "pto:Aucas $dst_file" &>/dev/null
   fi
   dst_namespace=${dst_file%.*}
   echo "Copying $src_file to $package_name/$dst_file"
