@@ -19,6 +19,7 @@ default_columns_to_get_from_higher_tf = [MFI_DEFAULT_COLNAME, ZONE_DEFAULT_COLNA
 
 TTF_NOT_NEEDED_COLUMNS_LIST=[ 'mfi_str','zcol','price_peak_above', 'price_peak_bellow','ao_peak_above','ao_peak_bellow'] #Migrate to settings ??
 
+TTF2RUN_DEFAULT=["mfi"]
 
 
 

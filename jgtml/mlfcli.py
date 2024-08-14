@@ -62,8 +62,6 @@ def main():
   print(args)
 
   force_refresh=args.fresh
-  clh=args.columns_list_from_higher_tf
-  print("clh:", clh)
   
   try:
     df=run_mlf_wrapper(args, force_refresh)
@@ -73,7 +71,7 @@ def main():
     print("----WE ARE TRYING IT USING jgtapp---------")
     from jgtapp import ttf
     try:
-      ttf(args.instrument, args.timeframe, pn=args.patternname, clh=args.columns_list_from_higher_tf,use_fresh=args.fresh)
+      ttf(args.instrument, args.timeframe, pn=args.patternname,use_fresh=args.fresh,use_full=args.full)
       print("---Running MLF now that we should have the desired pattern.")
       df=run_mlf_wrapper(args, force_refresh)
     except:
