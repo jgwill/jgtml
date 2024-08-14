@@ -59,7 +59,6 @@ def create_app_arguments()->argparse.Namespace:
 def main():
   
   args = create_app_arguments()
-  print(args)
 
   force_refresh=args.fresh
   
