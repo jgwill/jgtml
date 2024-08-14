@@ -51,7 +51,8 @@ def parse_args():
     #add argument to regenerate the cds
     parser.add_argument('-rcds', '--regenerate_cds', action='store_true', help='Regenerate the CDS')
 
-    parser.add_argument('-sc', '--selected-columns', nargs='+', help='List of selected columns to keep', default=['High','Low','ao','ac','jaw','teeth','lips','fh','fl','fdbb','fdbs','zlcb','zlcs','target','vaos','vaob'])
+    jgtcommon.add_selected_columns_arguments(parser)
+    #parser.add_argument('-sc', '--selected-columns', nargs='+', help='List of selected columns to keep', default=['High','Low','ao','ac','jaw','teeth','lips','fh','fl','fdbb','fdbs','zlcb','zlcs','target','vaosc','vaobc'])
 
     # dont drop calculated columns
     parser.add_argument('-ddcc', '--dont_drop_calc_col', action='store_true', help='Dont drop calculated columns')

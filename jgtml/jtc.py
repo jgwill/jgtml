@@ -228,6 +228,9 @@ def pto_target_calculation(
     #make the outdir_tmx if not exist
     os.makedirs(outdir_tmx, exist_ok=True)
     
+    if selected_columns_to_keep is None:
+        selected_columns_to_keep = ML_DEFAULT_COLUMNS_TO_KEEP
+    
     df_result_tmx, sel1, sel2 = _pov_target_calculation_n_output240223(
         indir_cds=indir_cds,
         outdir_tmx=outdir_tmx,
@@ -546,7 +549,9 @@ def _pov_target_calculation_n_output240223(
     
     if selected_columns_to_keep is not None:
         try:
-            df_result_tmx = df_result_tmx[selected_columns_to_keep].copy()
+            cols_df_result_tmx=df_result_tmx.columns
+            existing_columns_to_keep = [col for col in selected_columns_to_keep if col in df_result_tmx.columns]
+            df_result_tmx = df_result_tmx[existing_columns_to_keep].copy()
         except:
             pass
     
