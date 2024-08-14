@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "jgtml"
-version = "0.0.143"
+version = "0.0.145"
 authors = [
   { name="Guillaume Isabelle", email="jgi@jgwill.com" },
 ]
