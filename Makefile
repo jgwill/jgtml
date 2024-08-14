@@ -76,9 +76,15 @@ dev-pypi-release:
 
 .PHONY: dev-release
 dev-release:
+	pip install -U jgtpy
 	python bump_version.py
 	make dist
 	make dev-pypi-release
+
+.PHONY: dev-release-plus
+dev-release-plus:
+	make dev-release
+	twine upload dist/*
 
 .PHONY: bump_version
 bump_version:
