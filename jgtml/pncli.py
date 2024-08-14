@@ -17,7 +17,7 @@ def _parse_args():
     parser=add_patterns_arguments(parser)
     parser=add_timeframe_standalone_argument(parser)
 
-    args = parser.parse_args()
+    args = jgtcommon.parse_args(parser)
     args=check_arguments(args)
     return args
 

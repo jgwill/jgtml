@@ -49,7 +49,7 @@ def create_app_arguments()->argparse.Namespace:
   parser.add_argument("-fr", "--force_read", action="store_true", help="Force to read CDS (should increase speed but relies on existing data)")
   
   parser=add_patterns_arguments(parser)
-  args:argparse.Namespace=parser.parse_args()
+  args:argparse.Namespace=jgtcommon.parse_args(parser)
   
   args =check_arguments(args)
   
@@ -92,7 +92,8 @@ def run_mlf_wrapper(args, force_refresh):
                             columns_to_keep=args.columns_to_keep,
                             columns_to_drop=args.columns_to_drop,
                             drop_bid_ask=args.rmbidask,
-                            pn=args.patternname)
+                            pn=args.patternname,
+                            args=args)
     return df
   #create_ttf_csv(args.instrument, args.timeframe, args.full if args.full else False, args.fresh, args.quotescount, args.force_read)
 

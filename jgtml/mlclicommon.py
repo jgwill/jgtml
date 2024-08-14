@@ -80,7 +80,7 @@ def _check_pattern_arguments(args:argparse.Namespace,quiet=True)->argparse.Names
   #if the patternname is not the default, then columns_list_from_higher_tf should be set
   try:
     pn = args.patternname
-    columns_list = pndata__read_new_pattern_columns_list(pn=pn)
+    columns_list = pndata__read_new_pattern_columns_list(pn=pn,args=args)
   except:
     columns_list = None
   if columns_list is None and not args.columns_list_from_higher_tf:
@@ -99,7 +99,7 @@ def cli_output_patterns_list_then_exit(args:argparse.Namespace):
           output_type="json" if json_output else "md" if md_output else "object"
         except:
           pass
-        patterns_list_results=pndata__get_all_patterns(output_type=output_type)
+        patterns_list_results=pndata__get_all_patterns(output_type=output_type,args=args)
         print(patterns_list_results)
         exit(0)
 
@@ -109,7 +109,7 @@ from mldatahelper import pndata__get_all_patterns, pndata__read_new_pattern_colu
 def set_columns_list_from_pattern(args:argparse.Namespace):
   args.flag_columns_were_read=False
   if args.patternname and not args.columns_list_from_higher_tf:
-    args.columns_list_from_higher_tf = pndata__read_new_pattern_columns_list(pn=args.patternname)
+    args.columns_list_from_higher_tf = pndata__read_new_pattern_columns_list(pn=args.patternname,args=args)
     args.flag_columns_were_read=True
   return args
 

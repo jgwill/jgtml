@@ -387,8 +387,8 @@ def _pov_target_calculation_n_output240223(
         #df_cds_source:pd.DataFrame = read_ttf_csv(i, t, use_full=True,pn=pn)
         df_cds_source:pd.DataFrame = read_mlf_for_pattern(i, t, use_full=True,pn=pn)
         #@STCGoal Pattern Name -> We have the Columns list serialized
-        from mldatahelper import read_patternname_columns_list,read_mlf_pattern_lagging_columns_list
-        laggingFeatureColumns = read_mlf_pattern_lagging_columns_list(i,t,use_full=True,pn=pn)
+        from mldatahelper import pndata__read_new_pattern_columns_list_with_htf_and_lags_using_settings
+        laggingFeatureColumns=pndata__read_new_pattern_columns_list_with_htf_and_lags_using_settings(t,pn=pn)
         
         sel_2_keeping_columns = sel_2_keeping_columns+laggingFeatureColumns
         print("INFO::Lagging Columns list from higher TF:",laggingFeatureColumns)

@@ -8,7 +8,7 @@ from mlconstants import TTF_NOT_NEEDED_COLUMNS_LIST, default_columns_to_get_from
 
 import os
 from mlutils import get_basedir,get_outfile_fullpath
-from mldatahelper import get_ttf_outfile_fullpath,write_patternname_columns_list,read_patternname_columns_list
+from mldatahelper import get_settings, get_ttf_outfile_fullpath,write_patternname_columns_list,load_settings
 
 
 def make_htf_created_columns_array(workset,t,columns_list_from_higher_tf=None):
@@ -55,9 +55,20 @@ def _upgrade_ttf_depending_data(i, t, use_full=False, use_fresh=True, quotescoun
     raise Exception("Error in _upgrade_ttf_depending_data")
 
 
-def create_ttf_csv(i, t, use_full=False, use_fresh=True, quotescount=-1,force_read=False,dropna=True,quiet=True,columns_list_from_higher_tf=None,not_needed_columns=None,dropna_volume=True,pn="ttf",also_output_sel_csv=False)->pd.DataFrame:
+def create_ttf_csv(i, t, use_full=False, use_fresh=True, quotescount=-1,force_read=False,dropna=True,quiet=True,columns_list_from_higher_tf=None,not_needed_columns=None,dropna_volume=True,pn="ttf",also_output_sel_csv=False,args=None)->pd.DataFrame:
+  if args is not None:
+    load_settings(args=args)
   if not_needed_columns is None:
-    not_needed_columns = TTF_NOT_NEEDED_COLUMNS_LIST
+    _settings=get_settings()
+    if 'ttf_columns_to_remove' in _settings:
+      not_needed_columns = _settings['ttf_columns_to_remove']
+    else:
+      not_needed_columns = TTF_NOT_NEEDED_COLUMNS_LIST
+    
+    if 'columns_to_remove' in _settings:
+      columns_to_remove = _settings['columns_to_remove']
+      not_needed_columns = not_needed_columns + columns_to_remove
+    
     #remove from this not needed list the columns we want if they are in columns_list_from_higher_tf
     not_needed_columns = [x for x in not_needed_columns if x not in columns_list_from_higher_tf]
   
@@ -65,7 +76,7 @@ def create_ttf_csv(i, t, use_full=False, use_fresh=True, quotescount=-1,force_re
   if columns_list_from_higher_tf is None:
     raise Exception("columns_list_from_higher_tf is None, we need to define it")
   #  columns_list_from_higher_tf = default_columns_to_get_from_higher_tf
-  print("Columns List from Higher TF:",columns_list_from_higher_tf)
+  print("TTF Columns :",columns_list_from_higher_tf)
   
   povs = jpov.get_higher_tf_array(t)
   if not quiet:

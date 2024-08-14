@@ -10,6 +10,31 @@ import pandas as pd
 from mlutils import get_basedir,get_outfile_fullpath,get_list_of_files_in_ns
 from mlconstants import PATTERN_NS, TTF_NOT_NEEDED_COLUMNS_LIST, default_columns_to_get_from_higher_tf,TTF_DTYPE_DEFINITION
 
+
+
+settings:dict = {}
+
+def load_settings(custom_path=None,args=None):
+  global settings
+  if args is not None:
+    if hasattr(args,"jgtcommon_settings"):
+      _settings=getattr(args,"jgtcommon_settings")
+      settings.update(_settings)
+  if settings is None or len(settings)==0:
+    from jgtutils.jgtcommon import load_settings as jgtcommon_load_settings
+    settings = jgtcommon_load_settings(custom_path)
+  return settings
+
+def get_settings():
+  global settings
+  if settings is None or len(settings)==0:
+    settings=load_settings()
+  return settings
+
+if __name__ != "__main__": 
+  load_settings()
+
+
 #ttf
 
 
@@ -76,10 +101,13 @@ def read_ttf_feature_columns_only_from_pattern(i, t, use_full=True,pn="ttf",ns="
 MLF_NS = "mlf"
 
 def write_mlf_pattern_lagging_columns_list(i, t, use_full=True, pn="ttf", lagging_columns=None):
+  print("WARN::write_mlf_pattern_lagging_columns_list::WILL BE DEPRECATED")
   write_patternname_columns_list(i,t,use_full,lagging_columns,pn=pn,ns=MLF_NS)
 
 def read_mlf_pattern_lagging_columns_list(i, t, use_full=True, pn="ttf"):
-  lagging_columns=read_patternname_columns_list(i,t,use_full,pn=pn,ns=MLF_NS)
+  #@STCIssue UPGRADE TO USE THE PATTERNNAME / Settings - REPLACE by : pndata__read_new_pattern_columns_list_with_htf_and_lags_using_settings
+  #lagging_columns=read_patternname_columns_list(i,t,use_full,pn=pn,ns=MLF_NS)
+  lagging_columns=pndata__read_new_pattern_columns_list_with_htf_and_lags_using_settings(t,pn,lag_period=1, total_lagging_periods=5, out_lag_midfix_str='_lag_')
   return lagging_columns
 
 def read_mlf_pattern_raw(i, t, use_full=True,pn="ttf"):
@@ -117,18 +145,32 @@ def pndata__write_new_pattern_columns_list(columns_list_from_higher_tf, pn, suff
     print(f"Pattern: {pn} Output columns: '{pattern_filename}'")
     return pattern_filename
 
+def pndata__get_all_patterns_from_settings(args=None):
+  global settings
+  if settings is None or len(settings)==0:
+    settings=load_settings(args=args)
+  if "patterns" in settings:
+    patterns_data = settings["patterns"]
+    return patterns_data
+  return {}
+
 #get_list_of_files_in_ns
-def pndata__get_all_patterns(use_full=True,output_type="object"):
+#@DeprecationWarning("Use of JGT Settings to Define patterns")
+def pndata__get_all_patterns(use_full=True,output_type="object",args=None):
   list_of_files=get_list_of_files_in_ns(use_full,PATTERN_NS)
   #read all files in the directory and make a dictionary of the pattern names and their columns
   o={}
   for f in list_of_files:
     pn=f.split(".")[0]
     #print(f"Pattern: {pn}")
-    columns_of_the_pattern=pndata__read_new_pattern_columns_list(pn=pn)
+    columns_of_the_pattern=pndata__read_new_pattern_columns_list(pn=pn,args=args)
     #print(f"Columns: {columns_of_the_pattern}")
     p={"columns":columns_of_the_pattern}
     o[pn]=p
+  
+  patterns_in_settings=pndata__get_all_patterns_from_settings(args=args)
+  o.update(patterns_in_settings)
+  
   if output_type=="json":
     import json
     return json.dumps(o, indent=4)
@@ -152,10 +194,27 @@ def _patterns_dictionary_to_markdown(patterns_dictionary):
         _out_string += "\n"+_line
     return _out_string 
 
-def pndata__read_new_pattern_columns_list(pn, suffix="")->list[str]:
+
+def pndata__read_new_pattern_columns_list(pn, suffix="",args=None)->list[str]:
+    global settings
+    if settings is None or len(settings)==0:
+        settings=load_settings(args=args)
+
+    
     pattern_filename=get_outfile_fullpath("-","-",True,PATTERN_NS,pn=pn,suffix=suffix)
+    #Support reading from the args if not none
+    if args is not None:
+      if hasattr(args,"columns_list_from_higher_tf") and args.columns_list_from_higher_tf is not None:
+        return args.columns_list_from_higher_tf
+    
+    if "patterns" in settings and pn in settings["patterns"]:
+      patterns=settings["patterns"]
+      if pn in patterns:
+        pattern_columns_values = patterns[pn]["columns"]
+        return pattern_columns_values
+    
     if not os.path.exists(pattern_filename):
-        raise FileNotFoundError(f"File {pattern_filename} does not exist.  Use -clh <col1 col2 ...> to create it.")
+      raise FileNotFoundError(f"File {pattern_filename} does not exist.  Use -clh <col1 col2 ...> to create it.")
     
     with open(pattern_filename, 'r') as f:
         columns_list = [line.strip() for line in f]
@@ -176,9 +235,29 @@ def _ptottf__make_htf_created_columns_array(workset,t,columns_list_from_higher_t
           created_columns.append(new_col_name)
   return created_columns
 
-def pndata__read_new_pattern_columns_list_with_htf(t:str,pn:str, suffix=""):
+def pndata__read_new_pattern_columns_list_with_htf(t:str,pn:str, suffix="",args=None):
   #Pattern and its columns without the Higher Timeframe features
-  raw_pattern_column_list:list[str]=pndata__read_new_pattern_columns_list(pn=pn,suffix=suffix)
+  raw_pattern_column_list:list[str]=pndata__read_new_pattern_columns_list(pn=pn,suffix=suffix,args=args)
   povs = jpov.get_higher_tf_array(t)
-  created_columns=_ptottf__make_htf_created_columns_array(raw_pattern_column_list,t)
+  created_columns=_ptottf__make_htf_created_columns_array(povs,t,raw_pattern_column_list)
   return created_columns
+
+def pndata__read_new_pattern_columns_list_with_htf_and_lags_using_settings(t,pn, lag_period=1, total_lagging_periods=5, out_lag_midfix_str='_lag_',args=None):
+  columns_to_add_lags_to=pndata__read_new_pattern_columns_list_with_htf(t,pn,args=args)
+  
+  new_cols = _get_lagging_columns_list(columns_to_add_lags_to, lag_period=lag_period, total_lagging_periods=total_lagging_periods, out_lag_midfix_str=out_lag_midfix_str)
+  
+  extended_columns_list = columns_to_add_lags_to+new_cols
+  return extended_columns_list
+
+
+def _get_lagging_columns_list(columns_to_add_lags_to, lag_period=1, total_lagging_periods=5, out_lag_midfix_str='_lag_'):
+    new_cols = []  # List to hold new lagging columns
+    for col in columns_to_add_lags_to:
+        for j in range(1, total_lagging_periods + 1):
+            lag_col_name = _create_lag_column_name(out_lag_midfix_str, col, j)
+            new_cols.append(lag_col_name)
+    return new_cols
+  
+def _create_lag_column_name(out_lag_midfix_str, col, j):
+    return f'{col}{out_lag_midfix_str}{j}'
