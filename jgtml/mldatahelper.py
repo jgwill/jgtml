@@ -164,9 +164,7 @@ def pndata__read_new_pattern_columns_list(pn, suffix="")->list[str]:
 
 from jgtutils import jgtpov as jpov
 def _ptottf__make_htf_created_columns_array(workset,t,columns_list_from_higher_tf):
-  #if columns_list_from_higher_tf is None:
-  #  columns_list_from_higher_tf = default_columns_to_get_from_higher_tf
-  
+
   created_columns=[]
   for c in columns_list_from_higher_tf:
     for k in workset:
