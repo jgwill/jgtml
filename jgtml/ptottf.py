@@ -32,9 +32,7 @@ def read_ttf_csv(i, t, use_full=False,force_refresh=False,pn="ttf")->pd.DataFram
         return create_ttf_csv(i, t, use_full,use_fresh=True,force_read=False,pn=pn)
     output_filename=get_ttf_outfile_fullpath(i,t,use_full,pn=pn)
     if not os.path.exists(output_filename):
-        print("   Non existent, Creating TTF: ", output_filename)
-        print("WARN::#@STCIssue In case of Specific pattern, it wont be able to read it, we could extend get data defining the PATTERNNAME and the COLUMNS it contains, therefore it could create the TTF patterns and read it.... ")
-        return create_ttf_csv(i, t, use_full,force_read=True)
+        return create_ttf_csv(i, t, use_full,force_read=True,pn=pn)
     else:
         print("   Read TTF: ", output_filename)
         
