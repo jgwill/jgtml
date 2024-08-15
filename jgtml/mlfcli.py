@@ -20,18 +20,8 @@ def create_app_arguments()->argparse.Namespace:
   
   parser:argparse.ArgumentParser=jgtcommon.new_parser(MLFCLI_DESCRIPTION,MLFCLI_EPILOG,MLFCLI_PROG_NAME)
   #parser = argparse.ArgumentParser(description="Create mlf alpha CSV file")
+  parser=jgtcommon.add_patterns_arguments(parser)
   
-  lagging_group=parser.add_argument_group("Lagging")
-  #lag_period
-  lagging_group.add_argument("-lp", "--lag_period", type=int, default=1, help="Lag period")
-  #total_lagging_periods
-  lagging_group.add_argument("-tlp", "--total_lagging_periods", type=int, default=5, help="Total lagging periods")
-  
-  col_group=parser.add_argument_group("Columns Filtering")
-  #columns_to_keep
-  col_group.add_argument("-ctk", "--columns_to_keep", nargs='+', help="List of selected columns to keep", default=None)
-  #columns_to_drop
-  col_group.add_argument("-ctd", "--columns_to_drop", nargs='+', help="List of selected columns to drop", default=None)
 
   
   #flag mfiao
@@ -46,8 +36,19 @@ def create_app_arguments()->argparse.Namespace:
   parser=jgtcommon.add_use_fresh_argument(parser)
   parser=jgtcommon.add_dropna_volume_argument(parser)
   
+  lagging_group=parser.add_argument_group("Lagging")
+  #lag_period
+  lagging_group.add_argument("-lp", "--lag_period", type=int, default=1, help="Lag period")
+  #total_lagging_periods
+  lagging_group.add_argument("-tlp", "--total_lagging_periods", type=int, default=5, help="Total lagging periods")
   
-  parser=add_patterns_arguments(parser)
+  col_group=parser.add_argument_group("Columns Filtering")
+  #columns_to_keep
+  col_group.add_argument("-ctk", "--columns_to_keep", nargs='+', help="List of selected columns to keep", default=None)
+  #columns_to_drop
+  col_group.add_argument("-ctd", "--columns_to_drop", nargs='+', help="List of selected columns to drop", default=None)
+  
+  
   args:argparse.Namespace=jgtcommon.parse_args(parser)
   
   args =check_arguments(args)
