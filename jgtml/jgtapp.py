@@ -24,7 +24,7 @@
 
 
 
-# Thu 15 Aug 2024 07:03:01 AM EDT
+# Thu 15 Aug 2024 07:19:41 AM EDT
 # SOURCE NAME: /b/Dropbox/jgt/drop/fnml.py
 ########################
  
@@ -70,7 +70,10 @@ def fxtr(tradeid=None,orderid=None, demo=False,save_flag=True):
 def fxmvstop(tradeid,stop,flag_pips=False, demo=False):
   pips_arg = '--pips' if flag_pips else ''
   demo_arg = '--demo' if demo else '--real'
-  subprocess.run([CLI_FXMVSTOP_PROG_NAME, '-tid', tradeid, '-x', stop, demo_arg, pips_arg])
+  cli_args = [CLI_FXMVSTOP_PROG_NAME, '-tid', tradeid, '-x', stop, demo_arg]
+  if pips_arg != '':
+    cli_args.append(pips_arg)
+  subprocess.run(cli_args)
 
 def ids(instrument, timeframe,use_full=False,use_fresh=True):
   use_fresh_arg = '-old' if not use_fresh else '--fresh'
@@ -92,11 +95,11 @@ def fxmvstopgator(i,t,tradeid,lips=True,teeth=False,jaw=False,demo=False):
   last_bar=df.iloc[-1]
   #get the stop from choosen indicator line (by flag)
   if lips:
-    stop=last_bar[LIPS]
+    stop=str(last_bar[LIPS])
   elif teeth:
-    stop=last_bar[TEETH]
+    stop=str(last_bar[TEETH])
   elif jaw:
-    stop=last_bar[JAW]
+    stop=str(last_bar[JAW])
   else:
     raise ValueError("No indicator line selected")
   #Then move the stop
@@ -222,7 +225,7 @@ def main():
   parser_fxmvstopgator.add_argument('-i','--instrument', help='Instrument')
   parser_fxmvstopgator.add_argument('-t','--timeframe', help='Timeframe')
   parser_fxmvstopgator.add_argument('-tid','--tradeid', help='Trade ID')
-  parser_fxmvstopgator.add_argument('--lips', action='store_true', help='Use lips', default=True)
+  parser_fxmvstopgator.add_argument('--lips', action='store_true', help='Use lips')
   parser_fxmvstopgator.add_argument('--teeth', action='store_true', help='Use teeth')
   parser_fxmvstopgator.add_argument('--jaw', action='store_true', help='Use jaw')
   parser_fxmvstopgator.add_argument('--demo', action='store_true', help='Use the demo account')
@@ -304,7 +307,8 @@ def main():
   elif args.command == 'ids':
     ids(args.instrument, args.timeframe,args.full,args.fresh)
   elif args.command == 'fxmvstopgator':
-    fxmvstopgator(args.instrument, args.timeframe, args.tradeid, args.lips,args.teeth,args.jaw,args.demo)
+    lips_value = True if not args.lips and not args.teeth and not args.jaw else False
+    fxmvstopgator(args.instrument, args.timeframe, args.tradeid, lips_value,args.teeth,args.jaw,args.demo)
   elif args.command == 'pds':
     pds(args.instrument, args.timeframe,)
   elif args.command == 'cds':
