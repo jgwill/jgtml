@@ -24,7 +24,7 @@
 
 
 
-# Thu 15 Aug 2024 04:18:06 AM EDT
+# Thu 15 Aug 2024 07:03:01 AM EDT
 # SOURCE NAME: /b/Dropbox/jgt/drop/fnml.py
 ########################
  
@@ -32,30 +32,99 @@
 import argparse
 import subprocess
 
-JGTFXCLI_PROGNAME = 'jgtfxcli'
+from jgtutils.jgtcliconstants import (CLI_FXADDORDER_PROG_NAME,CLI_FXMVSTOP_PROG_NAME,CLI_FXRMORDER_PROG_NAME,CLI_FXRMTRADE_PROG_NAME,CLI_FXTR_PROG_NAME,PDSCLI_PROG_NAME)
 
+from jgtutils.jgtconstants import (LIPS,TEETH,JAW)
+
+from jgtpy.jgtpyconstants import (IDSCLI_PROG_NAME,CDSCLI_PROG_NAME,ADSCLI_PROG_NAME,MKSCLI_PROG_NAME,JGTCLI_PROG_NAME)
+
+try:
+  from jgtml.mlcliconstants import (MLFCLI_PROG_NAME,TTFCLI_PROG_NAME,PNCLI_PROG_NAME,MXCLI_PROG_NAME)
+except:
+  from mlcliconstants import (MLFCLI_PROG_NAME,TTFCLI_PROG_NAME,PNCLI_PROG_NAME,MXCLI_PROG_NAME) # type: ignore
+
+
+def fxaddorder( instrument, lots, rate, buysell, stop, demo=False,flag_pips=False):
+  pips_arg = '--pips' if flag_pips else ''
+  demo_arg = '--demo' if demo else '--real'
+  subprocess.run([CLI_FXADDORDER_PROG_NAME, '-i', instrument, '-n', lots, '-r', rate, '-d', buysell, '-x',stop,pips_arg , demo_arg])
+
+def fxrmorder(orderid, demo=False):
+  demo_arg = '--demo' if demo else '--real'
+  subprocess.run([CLI_FXRMORDER_PROG_NAME, '-id', orderid, demo_arg])
+
+def fxrmtrade(tradeid, demo=False):
+  demo_arg = '--demo' if demo else '--real'
+  subprocess.run([CLI_FXRMTRADE_PROG_NAME, '-tid', tradeid, demo_arg])
+
+def fxtr(tradeid=None,orderid=None, demo=False,save_flag=True):
+  save_arg = '-save' if save_flag else ''
+  demo_arg = '--demo' if demo else '--real'
+  if tradeid:
+    subprocess.run([CLI_FXTR_PROG_NAME, '-tid', tradeid, demo_arg, save_arg])
+  elif orderid:
+    subprocess.run([CLI_FXTR_PROG_NAME, '-id', orderid, demo_arg, save_arg])
+  else:
+    subprocess.run([CLI_FXTR_PROG_NAME, demo_arg, save_arg])
+
+def fxmvstop(tradeid,stop,flag_pips=False, demo=False):
+  pips_arg = '--pips' if flag_pips else ''
+  demo_arg = '--demo' if demo else '--real'
+  subprocess.run([CLI_FXMVSTOP_PROG_NAME, '-tid', tradeid, '-x', stop, demo_arg, pips_arg])
+
+def ids(instrument, timeframe,use_full=False,use_fresh=True):
+  use_fresh_arg = '-old' if not use_fresh else '--fresh'
+  use_full_arg = '--full' if use_full else '-new'
+  subprocess.run([IDSCLI_PROG_NAME, '-i', instrument, '-t', timeframe, use_full_arg, use_fresh_arg])
+
+"""
+fxmvstopgator -tid 68773276  --demo -i AUD/NZD -t H4 --lips
+"""
+
+def fxmvstopgator(i,t,tradeid,lips=True,teeth=False,jaw=False,demo=False):
+  
+  #First update the IDS
+  #ids(i,t,use_fresh=True,use_full=False)
+  #read the last bar from the IDS csv
+  from jgtpy import jgtapyhelper as th
+  df=th.read_ids(i,t)
+  #get the last bar
+  last_bar=df.iloc[-1]
+  #get the stop from choosen indicator line (by flag)
+  if lips:
+    stop=last_bar[LIPS]
+  elif teeth:
+    stop=last_bar[TEETH]
+  elif jaw:
+    stop=last_bar[JAW]
+  else:
+    raise ValueError("No indicator line selected")
+  #Then move the stop
+  fxmvstop(tradeid,stop,demo=demo)
+  
 def tide(instrument, timeframe, buysell):
-  subprocess.run(['tide', instrument, timeframe, buysell])
+  raise DeprecationWarning("tide is deprecated. ")
+  #subprocess.run(['tide', instrument, timeframe, buysell])
 
 def pds(instrument, timeframe,use_full=True):
   use_full_arg = '--full' if use_full else ''
-  subprocess.run([JGTFXCLI_PROGNAME, '-i', instrument, '-t', timeframe, use_full_arg])
+  subprocess.run([PDSCLI_PROG_NAME, '-i', instrument, '-t', timeframe, use_full_arg])
 
 def cds(instrument, timeframe, use_fresh=False,use_full=True):
   use_full_arg = '--full' if use_full else ''
   old_or_fresh = '-old' if not use_fresh else '--fresh'
-  subprocess.run(['jgtcli', '-i', instrument, '-t', timeframe,use_full_arg, old_or_fresh])
+  subprocess.run([CDSCLI_PROG_NAME, '-i', instrument, '-t', timeframe,use_full_arg, old_or_fresh])
 
 def ocds(instrument, timeframe,use_full=True):
   use_full_arg = '--full' if use_full else ''
-  subprocess.run(['jgtcli', '-i', instrument, '-t', timeframe, use_full_arg, '-old'])
+  subprocess.run([JGTCLI_PROG_NAME, '-i', instrument, '-t', timeframe, use_full_arg, '-old'])
 
   
 def ttf(instrument, timeframe,pn="ttf",use_fresh=False,use_full=True):
   use_full_arg = '--full' if use_full else ''
   use_fresh_arg = '-old' if not use_fresh else '--fresh'
   
-  ttf_args = ['ttfcli', '-i', instrument, '-t', timeframe, use_full_arg, use_fresh_arg, '-pn', pn]
+  ttf_args = [TTFCLI_PROG_NAME, '-i', instrument, '-t', timeframe, use_full_arg, use_fresh_arg, '-pn', pn]
   print("TTF is being ran by jgtapp with args: ", ttf_args)
   subprocess.run(ttf_args)
 
@@ -63,14 +132,14 @@ def ttf(instrument, timeframe,pn="ttf",use_fresh=False,use_full=True):
 def mlf(instrument, timeframe,pn="ttf",total_lagging_periods=5,use_fresh=False,use_full=True):
   use_full_arg = '--full' if use_full else ''
   use_fresh_arg = '-old' if not use_fresh else '--fresh'
-  mlf_args = ['mlfcli', '-i', instrument, '-t', timeframe, use_full_arg, use_fresh_arg, '-pn', pn,'--total_lagging_periods',total_lagging_periods]
+  mlf_args = [MLFCLI_PROG_NAME, '-i', instrument, '-t', timeframe, use_full_arg, use_fresh_arg, '-pn', pn,'--total_lagging_periods',total_lagging_periods]
   subprocess.run(mlf_args)
 
   
 
 def mx(instrument, timeframe, use_fresh=False):
   old_or_fresh = '-old' if not use_fresh else '--fresh'
-  subprocess.run(['jgtmlcli', '-i', instrument, '-t', timeframe, old_or_fresh])
+  subprocess.run([MXCLI_PROG_NAME, '-i', instrument, '-t', timeframe, old_or_fresh])
 
 def ttfmxwf(instrument, use_fresh=False):
   for t in ["M1", "W1", "D1", "H4"]:
@@ -106,6 +175,58 @@ def ttfwf(instrument, use_fresh=False):
 def main():
   parser = argparse.ArgumentParser(description="CLI equivalent of bash functions")
   subparsers = parser.add_subparsers(dest='command')
+  
+  #fxaddorder
+  parser_fxaddorder = subparsers.add_parser('fxaddorder', help='Add an order')
+  parser_fxaddorder.add_argument('-i','--instrument', help='Instrument')
+  parser_fxaddorder.add_argument('-n','--lots', help='Lots')
+  parser_fxaddorder.add_argument('-r','--rate', help='Rate')
+  parser_fxaddorder.add_argument('-d','--buysell', help='Buy or Sell')
+  parser_fxaddorder.add_argument('-x','--stop', help='Stop')
+  parser_fxaddorder.add_argument('--demo', action='store_true', help='Use the demo account')
+  parser_fxaddorder.add_argument('--pips', action='store_true', help='Use pips')
+  
+  #fxrmorder
+  parser_fxrmorder = subparsers.add_parser('fxrmorder', help='Remove an order')
+  parser_fxrmorder.add_argument('-id','--orderid', help='Order ID')
+  parser_fxrmorder.add_argument('--demo', action='store_true', help='Use the demo account')
+  
+  #fxrmtrade
+  parser_fxrmtrade = subparsers.add_parser('fxrmtrade', help='Remove a trade')
+  parser_fxrmtrade.add_argument('-tid','--tradeid', help='Trade ID')
+  parser_fxrmtrade.add_argument('--demo', action='store_true', help='Use the demo account')
+  
+  #fxtr
+  parser_fxtr = subparsers.add_parser('fxtr', help='Get trade details')
+  parser_fxtr.add_argument('-tid','--tradeid', help='Trade ID')
+  parser_fxtr.add_argument('-id','--orderid', help='Order ID')
+  parser_fxtr.add_argument('--demo', action='store_true', help='Use the demo account')
+  parser_fxtr.add_argument('--nosave', action='store_true', help='Dont Save the trade details')
+  
+  #fxmvstop
+  parser_fxmvstop = subparsers.add_parser('fxmvstop', help='Move stop')
+  parser_fxmvstop.add_argument('-tid','--tradeid', help='Trade ID')
+  parser_fxmvstop.add_argument('-x','--stop', help='Stop')
+  parser_fxmvstop.add_argument('--pips', action='store_true', help='Use pips')
+  parser_fxmvstop.add_argument('--demo', action='store_true', help='Use the demo account')
+  
+  #ids
+  parser_ids = subparsers.add_parser('ids', help='Refresh the IDS')
+  parser_ids.add_argument('-i','--instrument', help='Instrument')
+  parser_ids.add_argument('-t','--timeframe', help='Timeframe')
+  parser_ids.add_argument('--full', action='store_true', help='Use the full data')
+  parser_ids.add_argument('--fresh', action='store_true', help='Use the fresh data')
+  
+  #fxmvstopgator
+  parser_fxmvstopgator = subparsers.add_parser('fxmvstopgator', help='Move stop using gator')
+  parser_fxmvstopgator.add_argument('-i','--instrument', help='Instrument')
+  parser_fxmvstopgator.add_argument('-t','--timeframe', help='Timeframe')
+  parser_fxmvstopgator.add_argument('-tid','--tradeid', help='Trade ID')
+  parser_fxmvstopgator.add_argument('--lips', action='store_true', help='Use lips', default=True)
+  parser_fxmvstopgator.add_argument('--teeth', action='store_true', help='Use teeth')
+  parser_fxmvstopgator.add_argument('--jaw', action='store_true', help='Use jaw')
+  parser_fxmvstopgator.add_argument('--demo', action='store_true', help='Use the demo account')
+  
 
   parser_tidealligator = subparsers.add_parser('tide', help='Run the pto tidealligator')
   parser_tidealligator.add_argument('-i','--instrument', help='Instrument')
@@ -170,6 +291,20 @@ def main():
 
   if args.command == 'tide':
     tide(args.instrument, args.timeframe, args.buysell)
+  elif args.command == 'fxaddorder':
+    fxaddorder(args.instrument, args.lots, args.rate, args.buysell, args.stop, args.demo,args.pips)
+  elif args.command == 'fxrmorder':
+    fxrmorder(args.orderid, args.demo)
+  elif args.command == 'fxrmtrade':
+    fxrmtrade(args.tradeid, args.demo)
+  elif args.command == 'fxtr':
+    fxtr(args.tradeid,args.orderid,args.demo,not args.nosave)
+  elif args.command == 'fxmvstop':
+    fxmvstop(args.tradeid, args.stop, args.pips, args.demo)
+  elif args.command == 'ids':
+    ids(args.instrument, args.timeframe,args.full,args.fresh)
+  elif args.command == 'fxmvstopgator':
+    fxmvstopgator(args.instrument, args.timeframe, args.tradeid, args.lips,args.teeth,args.jaw,args.demo)
   elif args.command == 'pds':
     pds(args.instrument, args.timeframe,)
   elif args.command == 'cds':
