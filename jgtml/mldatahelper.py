@@ -69,7 +69,7 @@ def read_patternname_columns_list(i,t,use_full=True,pn="ttf",ns="ttf",suffix="_c
 def create_filebase_from_patternname(i,t,pn="ttf")->str:
   ifn=i.replace("/","-")
   output_filename = f"{ifn}_{t}_{pn}"
-  return output_filename.replace("__","_")
+  return output_filename.replace("__","_").replace('"','')
 
 def create_filensbase_from_patternname(i,t,pn="ttf",ns="ttf")->str:
   filebase=create_filebase_from_patternname(i,t,pn)

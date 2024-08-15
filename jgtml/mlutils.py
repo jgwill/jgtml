@@ -61,5 +61,5 @@ def get_outfile_fullpath(i:str,t:str,use_full:bool,ns:str,pn:str="",suffix:str="
   output_filename = f"{ifn}_{t}_{pn}{suffix}.{ext}"
   if i=="-" and t=="-":
     output_filename = f"{pn}{suffix}.{ext}"
-  result_path = os.path.join(save_basedir,output_filename.replace("__","_").replace("_.","."))
+  result_path = os.path.join(save_basedir,output_filename.replace("__","_").replace("_.",".")).replace('"','')
   return result_path
