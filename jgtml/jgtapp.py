@@ -24,7 +24,7 @@
 
 
 
-# Wed 14 Aug 2024 03:40:56 AM EDT
+# Thu 15 Aug 2024 04:18:06 AM EDT
 # SOURCE NAME: /b/Dropbox/jgt/drop/fnml.py
 ########################
  
@@ -32,12 +32,14 @@
 import argparse
 import subprocess
 
+JGTFXCLI_PROGNAME = 'jgtfxcli'
+
 def tide(instrument, timeframe, buysell):
   subprocess.run(['tide', instrument, timeframe, buysell])
 
 def pds(instrument, timeframe,use_full=True):
   use_full_arg = '--full' if use_full else ''
-  subprocess.run(['jgtfxcli', '-i', instrument, '-t', timeframe, use_full_arg])
+  subprocess.run([JGTFXCLI_PROGNAME, '-i', instrument, '-t', timeframe, use_full_arg])
 
 def cds(instrument, timeframe, use_fresh=False,use_full=True):
   use_full_arg = '--full' if use_full else ''
