@@ -7,6 +7,8 @@ sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
 
 # import .
 
+from mlcliconstants import MXCLI_DESCRIPTION, MXCLI_EPILOG, MXCLI_PROG_NAME
+
 from jgtutils import (
     jgtcommon as jgtcommon
 )
@@ -27,7 +29,7 @@ import pandas as pd
 
 
 def parse_args():
-    parser = jgtcommon.new_parser("Process command parameters.")
+    parser = jgtcommon.new_parser(MXCLI_DESCRIPTION,MXCLI_EPILOG,MXCLI_PROG_NAME)
     # jgtfxcommon.add_main_arguments(parser)
     jgtcommon.add_instrument_timeframe_arguments(parser)
     

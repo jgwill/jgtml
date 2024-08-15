@@ -8,11 +8,11 @@ sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
 from jgtutils import jgtcommon
 from mlclicommon import add_patterns_arguments,add_timeframe_standalone_argument
 from mlclicommon import __deprecate_force_read, check_arguments,add_format_outputs_arguments
-from mlcliconstants import PATTERNCLI_DESCRIPTION, PATTERNCLI_EPILOG, PATTERNCLI_PROG_NAME
+from mlcliconstants import PNCLI_DESCRIPTION, PNCLI_EPILOG, PNCLI_PROG_NAME
 from mldatahelper import pndata__write_new_pattern_columns_list,pndata__read_new_pattern_columns_list,pndata__read_new_pattern_columns_list_with_htf,pndata__get_all_patterns
 
 def _parse_args():
-    parser=jgtcommon.new_parser(PATTERNCLI_DESCRIPTION, PATTERNCLI_EPILOG, PATTERNCLI_PROG_NAME)
+    parser=jgtcommon.new_parser(PNCLI_DESCRIPTION, PNCLI_EPILOG, PNCLI_PROG_NAME)
 
     parser=add_patterns_arguments(parser)
     parser=add_timeframe_standalone_argument(parser)
