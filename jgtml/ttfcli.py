@@ -20,7 +20,7 @@ def _parse_args():
     parser=jgtcommon.add_bars_amount_V2_arguments(parser)
   
     #DEPRECATED
-    parser.add_argument("-fr", "--force_read", action="store_true", help="Force to read CDS (should increase speed but relies on existing data)")
+    #parser.add_argument("-fr", "--force_read", action="store_true", help="Force to read CDS (should increase speed but relies on existing data)")
   
     # #columns_list_from_higher_tf
     # pn_group=parser.add_argument_group("Patterns")
