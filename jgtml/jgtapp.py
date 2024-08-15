@@ -24,7 +24,7 @@
 
 
 
-# Thu 15 Aug 2024 07:19:41 AM EDT
+# Thu 15 Aug 2024 08:12:12 AM EDT
 # SOURCE NAME: /b/Dropbox/jgt/drop/fnml.py
 ########################
  
@@ -94,6 +94,8 @@ def fxmvstopgator(i,t,tradeid,lips=True,teeth=False,jaw=False,demo=False):
   #get the last bar
   last_bar=df.iloc[-1]
   #get the stop from choosen indicator line (by flag)
+  if not teeth and not jaw:
+    lips=True # DEFAULT
   if lips:
     stop=str(last_bar[LIPS])
   elif teeth:
