@@ -1,0 +1,55 @@
+{
+  "balligator_flag" : true,
+  "ta": false,
+  "go": true,
+  "keepbidask": true,
+  "i": "NZD/CAD",
+  "t": "D1",
+  "pn": "tstpattern02",
+  "clh": [
+    "zone_sig",
+    "mfi_sq",
+    "ao"
+  ],
+  "patterns":
+    {
+      "zonesq": {
+        "columns": [
+          "zone_sig",
+          "mfi_sq"
+        ]
+      },
+      "aoabz": {
+        "columns": [
+          "aoaz",
+          "aobz"
+        ]
+      },
+      "aoac": {
+      "columns": [
+        "ao",
+        "ac"
+      ]
+    },
+    "ttf": {
+      "columns": [
+        "mfi_sig",
+        "zone_sig"
+      ]
+    },
+    "mfi": {
+      "columns": [
+        "mfi_sq",
+        "mfi_green",
+        "mfi_fade",
+        "mfi_fake"
+      ]
+    },
+    "mfizone": {
+      "columns": [
+        "mfi_sig",
+        "zone_sig"
+      ]
+    }
+  }
+}

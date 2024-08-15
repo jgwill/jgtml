@@ -1,0 +1,8 @@
+{
+	"ttf_columns_to_remove": [
+    "mfi_fade",
+    "zcol",
+    "fl89",
+    "fh89"
+  ]
+}
