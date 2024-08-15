@@ -24,7 +24,7 @@
 
 
 
-# Thu 15 Aug 2024 08:12:12 AM EDT
+# Thu 15 Aug 2024 05:12:42 PM EDT
 # SOURCE NAME: /b/Dropbox/jgt/drop/fnml.py
 ########################
  
@@ -87,7 +87,10 @@ fxmvstopgator -tid 68773276  --demo -i AUD/NZD -t H4 --lips
 def fxmvstopgator(i,t,tradeid,lips=True,teeth=False,jaw=False,demo=False):
   
   #First update the IDS
-  #ids(i,t,use_fresh=True,use_full=False)
+  try:
+    ids(i,t,use_fresh=True,use_full=False)
+  except:
+    print("IDS failed")
   #read the last bar from the IDS csv
   from jgtpy import jgtapyhelper as th
   df=th.read_ids(i,t)
@@ -104,6 +107,7 @@ def fxmvstopgator(i,t,tradeid,lips=True,teeth=False,jaw=False,demo=False):
     stop=str(last_bar[JAW])
   else:
     raise ValueError("No indicator line selected")
+  print("Stop made of choosen line:: ",stop)
   #Then move the stop
   fxmvstop(tradeid,stop,demo=demo)
   
