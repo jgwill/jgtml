@@ -53,6 +53,14 @@
       "args": "-i NZD/CAD -t D1 --full -pn mfi ",
     },
     {
+      "name": "TTFCLI_zonesq_D1_NZDCAD",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "jgtml/ttfcli.py",
+      "console": "integratedTerminal",
+      "args": "-i NZD/CAD -t D1 --full -pn zonesq ",
+    },
+    {
       "name": "TTFCLI_mfi_D1_EURCAD",
       "type": "debugpy",
       "request": "launch",
