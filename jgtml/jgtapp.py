@@ -24,7 +24,7 @@
 
 
 
-# Fri 16 Aug 2024 02:59:52 AM EDT
+# Fri 16 Aug 2024 03:29:22 AM EDT
 # SOURCE NAME: /b/Dropbox/jgt/drop/fnml.py
 ########################
  
@@ -117,15 +117,24 @@ def fxmvstopfdb(i,t,tradeid,demo=False,close=False):
   from jgtutils.FXTransact import FXTransactWrapper,FXTransactDataHelper as ftdh,FXTrades,FXTrade
   print("reading the trade data from the file:",expected_fn)
   fxdata=ftdh.load_fxtransact_from_file(expected_fn)
-  
+  trade_data:FXTrade=None
   trades:FXTrades=fxdata.trades
-  trade=trades[0]
+  for trade in trades.trades:
+    #print(trade)
+    if str(trade["trade_id"])==str(tradeid):
+      trade_data=trade
+      break
+
   #fuck=fxtrades[tradeid]
   #get the trade data
-  print(fxdata)
-  trade_data=ftdh.load_fxtrade_from_fxtransact(fxdata,tradeid)
-  trade_data2=fxdata.get_trade(tradeid)
+  #print(fxdata)
+  #trade_data=ftdh.load_fxtrade_from_fxtransact(fxdata,tradeid)
+  #trade_data2=fxdata.get_trade(tradeid)
+  direction=trade_data["buy_sell"]
+  print("Direction, so we know which col of the bars to look for.",direction)
   print(trade_data)
+  #@STCIssue Why do I want that info on the Trade ??
+  
   
   
   
