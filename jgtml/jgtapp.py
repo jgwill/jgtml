@@ -24,7 +24,7 @@
 
 
 
-# Thu 15 Aug 2024 10:46:13 PM EDT
+# Thu 15 Aug 2024 11:38:38 PM EDT
 # SOURCE NAME: /b/Dropbox/jgt/drop/fnml.py
 ########################
  
@@ -84,6 +84,13 @@ def ids(instrument, timeframe,use_full=False,use_fresh=True):
 fxmvstopgator -tid 68773276  --demo -i AUD/NZD -t H4 --lips
 """
 
+
+from jgtpy.jgtapyhelper import select_value_in_currentbar,select_value_in_lastcompletedbar
+#@STCGoal Move EXIT Stop On FDB Signal
+
+#@STCGoal RM Order if Stop was Hit
+
+
 def fxmvstopgator(i,t,tradeid,lips=True,teeth=False,jaw=False,demo=False):
   
   #First update the IDS
@@ -93,7 +100,6 @@ def fxmvstopgator(i,t,tradeid,lips=True,teeth=False,jaw=False,demo=False):
     print("IDS failed")
   #read the last bar from the IDS csv
   from jgtpy import jgtapyhelper as th
-  from jgtpy.jgtapyhelper import select_value_in_currentbar,select_value_in_lastcompletedbar
   df=th.read_ids(i,t)
   #get the last bar
   last_bar=df.iloc[-1]
