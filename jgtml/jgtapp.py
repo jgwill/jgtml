@@ -24,7 +24,7 @@
 
 
 
-# Fri 16 Aug 2024 12:49:40 AM EDT
+# Fri 16 Aug 2024 02:15:16 AM EDT
 # SOURCE NAME: /b/Dropbox/jgt/drop/fnml.py
 ########################
  
@@ -83,24 +83,41 @@ def ids(instrument, timeframe,use_full=False,use_fresh=True):
 """
 fxmvstopgator -tid 68773276  --demo -i AUD/NZD -t H4 --lips
 """
-
-
-from jgtpy.jgtapyhelper import select_value_in_currentbar,select_value_in_lastcompletedbar
-#@STCGoal Move EXIT Stop On FDB Signal
-
 #@STCGoal RM Order if Stop was Hit
 
+
+#from jgtpy.jgtapyhelper import select_value_in_currentbar,select_value_in_lastcompletedbar
+from jgtpy import jgtapyhelper as th
+
+#@STCGoal Move EXIT Stop On FDB Signal
+
+def fxmvstopfdb(i,t,tradeid,demo=False):
+  df = _get_ids_updated(i, t)
+  from jgtpy.JGTIDS import _ids_add_fdb_column_logics_v2
+  dfc=_ids_add_fdb_column_logics_v2(df)
+  lcb=dfc.iloc[-2]
+  lcbfdb = lcb[FDB]
+  cb=dfc.iloc[-1]
+  
+  
+  from jgtutils.jgtconstants import FDB,HIGH,LOW
+  
+  #Update the local datafor the trade
+  ## we expect : fxtransact_68782480.json
+  fxtr(tradeid=tradeid,demo=demo)
+  expected_fn=f"fxtransact_{tradeid}.json"
+  from jgtutils.FXTransact import FXTransactWrapper
+  ftw=FXTransactWrapper()
+  
+  
+  
+  
+  
 
 def fxmvstopgator(i,t,tradeid,lips=True,teeth=False,jaw=False,demo=False):
   
   #First update the IDS
-  try:
-    ids(i,t,use_fresh=True,use_full=False)
-  except:
-    print("IDS failed")
-  #read the last bar from the IDS csv
-  from jgtpy import jgtapyhelper as th
-  df=th.read_ids(i,t)
+  df = _get_ids_updated(i, t)
   #get the last bar
   last_bar=df.iloc[-1]
   choosen_line="_"
@@ -121,6 +138,15 @@ def fxmvstopgator(i,t,tradeid,lips=True,teeth=False,jaw=False,demo=False):
   print(f"Stop made of choosen line ({choosen_line}):: ",stop)
   #Then move the stop
   fxmvstop(tradeid,stop,demo=demo)
+
+def _get_ids_updated(i, t):
+    try:
+      ids(i,t,use_fresh=True,use_full=False)
+    except:
+      print("IDS failed")
+  #read the last bar from the IDS csv
+    df=th.read_ids(i,t)
+    return df
   
 def tide(instrument, timeframe, buysell):
   raise DeprecationWarning("tide is deprecated. ")
