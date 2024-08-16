@@ -24,7 +24,7 @@
 
 
 
-# Fri 16 Aug 2024 02:58:32 AM EDT
+# Fri 16 Aug 2024 02:59:52 AM EDT
 # SOURCE NAME: /b/Dropbox/jgt/drop/fnml.py
 ########################
  
@@ -119,7 +119,7 @@ def fxmvstopfdb(i,t,tradeid,demo=False,close=False):
   fxdata=ftdh.load_fxtransact_from_file(expected_fn)
   
   trades:FXTrades=fxdata.trades
-  trade=
+  trade=trades[0]
   #fuck=fxtrades[tradeid]
   #get the trade data
   print(fxdata)
