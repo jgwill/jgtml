@@ -24,7 +24,7 @@
 
 
 
-# Thu 15 Aug 2024 05:12:42 PM EDT
+# Thu 15 Aug 2024 08:04:52 PM EDT
 # SOURCE NAME: /b/Dropbox/jgt/drop/fnml.py
 ########################
  
@@ -96,18 +96,22 @@ def fxmvstopgator(i,t,tradeid,lips=True,teeth=False,jaw=False,demo=False):
   df=th.read_ids(i,t)
   #get the last bar
   last_bar=df.iloc[-1]
+  choosen_line="_"
   #get the stop from choosen indicator line (by flag)
   if not teeth and not jaw:
     lips=True # DEFAULT
   if lips:
     stop=str(last_bar[LIPS])
+    choosen_line="lips"
   elif teeth:
     stop=str(last_bar[TEETH])
+    choosen_line="teeth"
   elif jaw:
     stop=str(last_bar[JAW])
+    choosen_line="jaw"
   else:
     raise ValueError("No indicator line selected")
-  print("Stop made of choosen line:: ",stop)
+  print(f"Stop made of choosen line ({choosen_line}):: ",stop)
   #Then move the stop
   fxmvstop(tradeid,stop,demo=demo)
   
