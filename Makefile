@@ -56,7 +56,7 @@ authors:
 
 .PHONY: bump_jgtpy
 bump_jgtpy:
-	pip install -U jgtpy
+	bash bump_jgtpy.sh
 	bash bump_jgtpy.sh
 
 .PHONY: dist
