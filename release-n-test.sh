@@ -1,6 +1,6 @@
 git commit package.json pyproject.toml jgtml/__init__.py -m bump &>/dev/null
 . bump_jgtpy.sh
-. pre-build.sh
+#. pre-build.sh
 
 pip install -U jgtpy jgtutils
 . scripts/version-patcher.sh

@@ -54,9 +54,15 @@ authors:
 	cat AUTHORS | sort --ignore-case | uniq >> AUTHORS_
 	mv AUTHORS_ AUTHORS
 
+.PHONY: bump_jgtpy
+bump_jgtpy:
+	pip install -U jgtpy
+	bash bump_jgtpy.sh
+
 .PHONY: dist
 dist:
 	make clean
+	bash pre-build.sh
 	python -m build
 
 .PHONY: disto
@@ -76,8 +82,7 @@ dev-pypi-release:
 
 .PHONY: dev-release
 dev-release:
-	pip install -U jgtpy
-	bash bump_jgtpy.sh
+	make bump_jgtpy
 	python bump_version.py
 	git commit pyproject.toml package.json jgtml/__init__.py -m bump:dev &> /dev/null
 	make dist
@@ -91,7 +96,7 @@ dev-release-plus:
 .PHONY: bump_version
 bump_version:
 	python bump_version.py
-	git commit . -m "Bump version"
+	git commit pyproject.toml package.json jgtml/__init__.py -m bump:version &> /dev/null
 
 .PHONY: release
 release:
