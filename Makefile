@@ -77,7 +77,9 @@ dev-pypi-release:
 .PHONY: dev-release
 dev-release:
 	pip install -U jgtpy
+	bash bump_jgtpy.sh
 	python bump_version.py
+	git commit pyproject.toml package.json jgtml/__init__.py -m bump:dev &> /dev/null
 	make dist
 	make dev-pypi-release
 

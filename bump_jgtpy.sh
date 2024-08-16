@@ -27,4 +27,4 @@ if [ "$1" == "dev" ]; then
 	make dev-release-plus && \
 		(sleep 25;conda activate jgtsd && pip install -U jgtml) &>/dev/null&
 fi
-(conda activate jgtsd && pip install -U jgtpy) &>/dev/null
+#(conda activate jgtsd && pip install -U jgtpy) &>/dev/null
