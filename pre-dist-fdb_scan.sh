@@ -7,7 +7,7 @@ for f in JGTBalanceAnalyzer.py SignalOrderingHelper.py JGTOutputHelper.py fdb_sc
   git commit jgtml/$f -m "pto:Aucas $f" &>/dev/null
 
   fi
-  cp $sdir/$f jgtml/$f
+  cp -f $sdir/$f jgtml/$f
   chmod 444 jgtml/$f #lock the file back 
   git add jgtml/$f &>/dev/null
   git commit jgtml/$f -m "pto:Updated $f" &>/dev/null
