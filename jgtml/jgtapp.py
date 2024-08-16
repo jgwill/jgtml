@@ -24,7 +24,7 @@
 
 
 
-# Fri 16 Aug 2024 02:20:31 AM EDT
+# Fri 16 Aug 2024 02:58:32 AM EDT
 # SOURCE NAME: /b/Dropbox/jgt/drop/fnml.py
 ########################
  
@@ -35,6 +35,7 @@ import subprocess
 from jgtutils.jgtcliconstants import (CLI_FXADDORDER_PROG_NAME,CLI_FXMVSTOP_PROG_NAME,CLI_FXRMORDER_PROG_NAME,CLI_FXRMTRADE_PROG_NAME,CLI_FXTR_PROG_NAME,PDSCLI_PROG_NAME)
 
 from jgtutils.jgtconstants import (LIPS,TEETH,JAW)
+from jgtutils.jgtconstants import FDB,HIGH,LOW,CLOSE
 
 from jgtpy.jgtpyconstants import (IDSCLI_PROG_NAME,CDSCLI_PROG_NAME,ADSCLI_PROG_NAME,MKSCLI_PROG_NAME,JGTCLI_PROG_NAME)
 
@@ -91,8 +92,16 @@ from jgtpy import jgtapyhelper as th
 
 #@STCGoal Move EXIT Stop On FDB Signal
 
-def fxmvstopfdb(i,t,tradeid,demo=False):
-  df = _get_ids_updated(i, t)
+def fxmvstopfdb(i,t,tradeid,demo=False,close=False):
+  if close:
+    print("Closing the trade if the stop of fdbsignal is already hit")
+    raise NotImplementedError("Closing the trade if the stop of fdbsignal is already hit")
+  
+  skip_generating_ids=True
+  if skip_generating_ids:
+    print("Skipping generating IDS (JUST READING  IT FOR DEV)")
+  
+  df = _get_ids_updated(i, t,skip_generating=skip_generating_ids)
   from jgtpy.JGTIDS import _ids_add_fdb_column_logics_v2
   dfc=_ids_add_fdb_column_logics_v2(df)
   lcb=dfc.iloc[-2]
@@ -100,22 +109,44 @@ def fxmvstopfdb(i,t,tradeid,demo=False):
   cb=dfc.iloc[-1]
   
   
-  from jgtutils.jgtconstants import FDB,HIGH,LOW
   
   #Update the local datafor the trade
   ## we expect : fxtransact_68782480.json
-  fxtr(tradeid=tradeid,demo=demo)
+  #fxtr(tradeid=tradeid,demo=demo)
   expected_fn=f"fxtransact_{tradeid}.json"
-  from jgtutils.FXTransact import FXTransactWrapper
-  ftw=FXTransactWrapper()
+  from jgtutils.FXTransact import FXTransactWrapper,FXTransactDataHelper as ftdh,FXTrades,FXTrade
+  print("reading the trade data from the file:",expected_fn)
+  fxdata=ftdh.load_fxtransact_from_file(expected_fn)
+  
+  trades:FXTrades=fxdata.trades
+  trade=
+  #fuck=fxtrades[tradeid]
+  #get the trade data
+  print(fxdata)
+  trade_data=ftdh.load_fxtrade_from_fxtransact(fxdata,tradeid)
+  trade_data2=fxdata.get_trade(tradeid)
+  print(trade_data)
   
   
   
+
+def _get_ids_updated(i, t,skip_generating=False):
+    try:
+      if not skip_generating:
+        ids(i,t,use_fresh=True,use_full=False)
+    except:
+      print("IDS failed")
+  #read the last bar from the IDS csv
+    df=th.read_ids(i,t)
+    return df
+    
   
   
 
 def fxmvstopgator(i,t,tradeid,lips=True,teeth=False,jaw=False,demo=False):
   
+
+    
   #First update the IDS
   df = _get_ids_updated(i, t)
   #get the last bar
@@ -139,15 +170,6 @@ def fxmvstopgator(i,t,tradeid,lips=True,teeth=False,jaw=False,demo=False):
   #Then move the stop
   fxmvstop(tradeid,stop,demo=demo)
 
-def _get_ids_updated(i, t):
-    try:
-      ids(i,t,use_fresh=True,use_full=False)
-    except:
-      print("IDS failed")
-  #read the last bar from the IDS csv
-    df=th.read_ids(i,t)
-    return df
-  
 def tide(instrument, timeframe, buysell):
   raise DeprecationWarning("tide is deprecated. ")
   #subprocess.run(['tide', instrument, timeframe, buysell])
@@ -273,6 +295,15 @@ def main():
   parser_fxmvstopgator.add_argument('--jaw', action='store_true', help='Use jaw')
   parser_fxmvstopgator.add_argument('--demo', action='store_true', help='Use the demo account')
   
+  #fxmvstopfdb
+  parser_fxmvstopfdb = subparsers.add_parser('fxmvstopfdb', help='Move stop using fdb')
+  parser_fxmvstopfdb.add_argument('-i','--instrument', help='Instrument')
+  parser_fxmvstopfdb.add_argument('-t','--timeframe', help='Timeframe')
+  parser_fxmvstopfdb.add_argument('-tid','--tradeid', help='Trade ID')
+  parser_fxmvstopfdb.add_argument('--demo', action='store_true', help='Use the demo account')
+  #close the trade if the stop of fdbsignal is already hit
+  parser_fxmvstopfdb.add_argument('--close', action='store_true', help='Close the trade if the stop of fdbsignal is already hit')
+  
 
   parser_tidealligator = subparsers.add_parser('tide', help='Run the pto tidealligator')
   parser_tidealligator.add_argument('-i','--instrument', help='Instrument')
@@ -352,6 +383,8 @@ def main():
   elif args.command == 'fxmvstopgator':
     lips_value = True if not args.lips and not args.teeth and not args.jaw else False
     fxmvstopgator(args.instrument, args.timeframe, args.tradeid, lips_value,args.teeth,args.jaw,args.demo)
+  elif args.command == 'fxmvstopfdb':
+    fxmvstopfdb(args.instrument, args.timeframe, args.tradeid, args.demo,args.close)
   elif args.command == 'pds':
     pds(args.instrument, args.timeframe,)
   elif args.command == 'cds':
