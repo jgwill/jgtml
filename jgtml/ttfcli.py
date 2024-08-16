@@ -45,7 +45,8 @@ def main():
   
   #print("Columns List from Higher TF:",columns_list_from_higher_tf)
   
-  create_ttf_csv(args.instrument, args.timeframe, args.full if args.full else False, True if args.fresh else False, args.quotescount,True if args.force_read else False, columns_list_from_higher_tf=columns_list_from_higher_tf, pn=args.patternname, args=args)
+  pseudo_force_read_flag = True if not args.fresh else False
+  create_ttf_csv(args.instrument, args.timeframe, args.full if args.full else False, True if args.fresh else False, args.quotescount,pseudo_force_read_flag, columns_list_from_higher_tf=columns_list_from_higher_tf, pn=args.patternname, args=args)
 
 if __name__ == "__main__":
   main()
