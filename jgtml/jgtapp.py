@@ -24,7 +24,7 @@
 
 
 
-# Thu 15 Aug 2024 10:43:44 PM EDT
+# Thu 15 Aug 2024 10:46:13 PM EDT
 # SOURCE NAME: /b/Dropbox/jgt/drop/fnml.py
 ########################
  
@@ -93,7 +93,7 @@ def fxmvstopgator(i,t,tradeid,lips=True,teeth=False,jaw=False,demo=False):
     print("IDS failed")
   #read the last bar from the IDS csv
   from jgtpy import jgtapyhelper as th
-  from jgtpy.jgtapyhelper import 
+  from jgtpy.jgtapyhelper import select_value_in_currentbar,select_value_in_lastcompletedbar
   df=th.read_ids(i,t)
   #get the last bar
   last_bar=df.iloc[-1]
