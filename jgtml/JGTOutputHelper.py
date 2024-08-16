@@ -51,7 +51,7 @@ def generate_markdown_from_json_file(json_filepath):
 
 
 
-    markdown_output = f"""
+    markdown_output += f"""
 
 ## Signal Bar Data
 | Metric           | Value         |
