@@ -24,7 +24,7 @@
 
 
 
-# Fri 16 Aug 2024 07:39:45 AM EDT
+# Sat 17 Aug 2024 09:48:00 PM EDT
 # SOURCE NAME: /b/Dropbox/jgt/drop/fnml.py
 ########################
  
@@ -35,13 +35,13 @@ import subprocess
 
 from jgtcliconstants import (CLI_FXADDORDER_PROG_NAME,CLI_FXMVSTOP_PROG_NAME,CLI_FXRMORDER_PROG_NAME,CLI_FXRMTRADE_PROG_NAME,CLI_FXTR_PROG_NAME,PDSCLI_PROG_NAME)
 
-from jgtutils.jgtconstants import (LIPS,TEETH,JAW)
-from jgtutils.jgtconstants import FDB,HIGH,LOW,CLOSE
+from jgtconstants import (LIPS,TEETH,JAW)
+from jgtconstants import FDB,HIGH,LOW,CLOSE
 
-from jgtpy.jgtpyconstants import (IDSCLI_PROG_NAME,CDSCLI_PROG_NAME,ADSCLI_PROG_NAME,MKSCLI_PROG_NAME,JGTCLI_PROG_NAME)
+from jgtpyconstants import (IDSCLI_PROG_NAME,CDSCLI_PROG_NAME,ADSCLI_PROG_NAME,MKSCLI_PROG_NAME,JGTCLI_PROG_NAME)
 
 try:
-  from jgtml.mlcliconstants import (MLFCLI_PROG_NAME,TTFCLI_PROG_NAME,PNCLI_PROG_NAME,MXCLI_PROG_NAME)
+  from mlcliconstants import (MLFCLI_PROG_NAME,TTFCLI_PROG_NAME,PNCLI_PROG_NAME,MXCLI_PROG_NAME)
 except:
   from mlcliconstants import (MLFCLI_PROG_NAME,TTFCLI_PROG_NAME,PNCLI_PROG_NAME,MXCLI_PROG_NAME) # type: ignore
 
@@ -89,7 +89,7 @@ fxmvstopgator -tid 68773276  --demo -i AUD/NZD -t H4 --lips
 
 
 #from jgtpy.jgtapyhelper import select_value_in_currentbar,select_value_in_lastcompletedbar
-from jgtpy import jgtapyhelper as th
+import jgtapyhelper as th
 
 
 #@STCGoal Move EXIT Stop On FDB Signal
@@ -108,7 +108,7 @@ def fxmvstopfdb(i,t,tradeid,demo=False,close=False):
   ## we expect : fxtransact_68782480.json
   #fxtr(tradeid=tradeid,demo=demo)
   expected_fn=f"fxtransact_{tradeid}.json"
-  from jgtutils.FXTransact import FXTransactWrapper,FXTransactDataHelper as ftdh,FXTrades,FXTrade
+  from FXTransact import FXTransactWrapper,FXTransactDataHelper as ftdh,FXTrades,FXTrade
   print("reading the trade data from the file:",expected_fn)
   fxdata=ftdh.load_fxtransact_from_file(expected_fn)
   trade_data:FXTrade=None
@@ -140,7 +140,7 @@ def fxmvstopfdb(i,t,tradeid,demo=False,close=False):
     print("Skipping generating IDS (JUST READING  IT FOR DEV)")
   
   df = _get_ids_updated(i, t,skip_generating=skip_generating_ids)
-  from jgtpy.JGTIDS import _ids_add_fdb_column_logics_v2
+  from JGTIDS import _ids_add_fdb_column_logics_v2
   dfc=_ids_add_fdb_column_logics_v2(df)
   lcb=dfc.iloc[-2]
   lcbfdb = lcb[FDB]
