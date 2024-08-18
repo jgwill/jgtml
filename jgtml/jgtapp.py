@@ -24,7 +24,7 @@
 
 
 
-# Sun 18 Aug 2024 05:22:21 AM EDT
+# Sun 18 Aug 2024 12:33:05 PM EDT
 # SOURCE NAME: /b/Dropbox/jgt/drop/fnml.py
 ########################
  
@@ -68,6 +68,7 @@ def fxtr(tradeid=None,orderid=None, demo=False,save_flag=True):
     subprocess.run([CLI_FXTR_PROG_NAME, '-id', orderid, demo_arg, save_arg])
   else:
     subprocess.run([CLI_FXTR_PROG_NAME, demo_arg, save_arg])
+  print("Should have two files created for the treansaction")
 
 def fxmvstop(tradeid,stop,flag_pips=False, demo=False):
   pips_arg = '--pips' if flag_pips else ''
