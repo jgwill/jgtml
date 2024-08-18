@@ -19,6 +19,7 @@ Target Usage:
 import MLFRequest
 import realityhelper
 
+from realityhelper import generate_mlf_feature_pattern as create_mlf # Best place for this function than in realityhelper
 
 class MLFService:
     def __init__(self):
