@@ -1,10 +1,7 @@
 #git commit package.json pyproject.toml jgtml/__init__.py -m bump &>/dev/null
-# . bump_jgtpy.sh
 sleep 2
 make bump_jgtpy
 #. pre-build.sh
-#pip install -U jgtpy jgtutils
-sleep 1
 
 . scripts/version-patcher.sh
 cversion=$(cat pyproject.toml |tr '"' " " |awk '/version/ {print $3}')

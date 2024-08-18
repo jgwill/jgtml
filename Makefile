@@ -1,4 +1,5 @@
 version := $(shell python3 -c 'from jgtml import version; print(version)')
+SHELL := /bin/bash
 
 .PHONY: venv
 venv:
@@ -56,8 +57,7 @@ authors:
 
 .PHONY: bump_jgtpy
 bump_jgtpy:
-	bash bump_jgtpy.sh
-	bash bump_jgtpy.sh
+	. /opt/binscripts/load.sh && _bump_jgtpy
 
 .PHONY: dist
 dist:
@@ -104,4 +104,13 @@ release:
 	git tag  $(version)
 	git push origin $(version)
 	git push
+	make pypi-release
+
+.PHONY: quick-release
+quick-release:
+	bash pre-build.sh
+	bash pre-dist-fdb_scan.sh &>/dev/null
+	make bump_jgtpy||true
+	make bump_version
+	make dist
 	make pypi-release
