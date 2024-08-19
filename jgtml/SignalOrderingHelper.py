@@ -4,7 +4,7 @@
 import tlid
 from jgtutils import iprops
 from jgtutils.jgtconstants import \
-  HIGH,LOW,FDB,ASKHIGH,ASKLOW,BIDHIGH,BIDLOW,JAW,TEETH,LIPS,BJAW,BTEETH,BLIPS
+  HIGH,LOW,FDB,ASKHIGH,ASKLOW,BIDHIGH,BIDLOW,JAW,TEETH,LIPS,BJAW,BTEETH,BLIPS,DATE
 
 #@STCGoal Standardize the Signal Columns
 from jgtml.mlconstants import (
@@ -146,6 +146,9 @@ def create_fdb_entry_order(i,signal_bar,current_bar,lots=1,tick_shift=2,quiet=Tr
       not is_bar_out_of_mouth(current_bar,buysell):
     print(f"## Invalid Gator {i} not valid_sig_out_mouth")
     return None
+  #Get 'Date' or index of the signal bar
+  signal_bar_datetime =signal_bar[DATE] if DATE in signal_bar else  signal_bar.index
+  signalbar_datetime_str=signal_bar_datetime.strftime("%Y-%m-%d %H:%M")[0] 
   
   output_script = generate_entry_order_script(lots, entry_rate, stop_rate, i, buysell,tlid_id=tlid_id,t=t)
   
@@ -166,14 +169,14 @@ def build_order_result_object(lots, entry_rate, stop_rate, buysell, tlid_id, out
     return o
 
 
-def generate_entry_order_script(lots, entry_rate, stop_rate, instrument, buysell,tlid_id=None,t=None):
+def generate_entry_order_script(lots, entry_rate, stop_rate, instrument, buysell,tlid_id=None,t=None,signal_bar_datetime_str=None):
     timeframe=t if t is not None else "_"
     if tlid_id is None:
       tlid_id = tlid.get_seconds()
     output_script=f"""
 ```sh
 ### --- COPY FROM HERE ---
-# Entry Order for {instrument} {timeframe} {buysell}
+# Entry Order for {instrument} {timeframe} {buysell} {signal_bar_datetime_str}
 demo_arg=" --demo"
 tlid_id={tlid_id}
 jgtnewsession $tlid_id {instrument} {timeframe} {entry_rate} {stop_rate} {buysell} {lots} $demo_arg
