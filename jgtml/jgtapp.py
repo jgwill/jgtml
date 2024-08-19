@@ -36,17 +36,17 @@ import sys
 
 sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
 
-from jgtcliconstants import (CLI_FXADDORDER_PROG_NAME,CLI_FXMVSTOP_PROG_NAME,CLI_FXRMORDER_PROG_NAME,CLI_FXRMTRADE_PROG_NAME,CLI_FXTR_PROG_NAME,PDSCLI_PROG_NAME)
+from jgtutils.jgtcliconstants import (CLI_FXADDORDER_PROG_NAME,CLI_FXMVSTOP_PROG_NAME,CLI_FXRMORDER_PROG_NAME,CLI_FXRMTRADE_PROG_NAME,CLI_FXTR_PROG_NAME,PDSCLI_PROG_NAME)
 
-from jgtconstants import (LIPS,TEETH,JAW)
-from jgtconstants import FDB,HIGH,LOW,CLOSE
+from jgtutils.jgtconstants import (LIPS,TEETH,JAW)
+from jgtutils.jgtconstants import FDB,HIGH,LOW,CLOSE
 
-from jgtpyconstants import (IDSCLI_PROG_NAME,CDSCLI_PROG_NAME,ADSCLI_PROG_NAME,MKSCLI_PROG_NAME,JGTCLI_PROG_NAME)
+from jgtpy.jgtpyconstants import (IDSCLI_PROG_NAME,CDSCLI_PROG_NAME,ADSCLI_PROG_NAME,MKSCLI_PROG_NAME,JGTCLI_PROG_NAME)
 
-try:
-  from mlcliconstants import (MLFCLI_PROG_NAME,TTFCLI_PROG_NAME,PNCLI_PROG_NAME,MXCLI_PROG_NAME)
-except:
-  from mlcliconstants import (MLFCLI_PROG_NAME,TTFCLI_PROG_NAME,PNCLI_PROG_NAME,MXCLI_PROG_NAME) # type: ignore
+from jgtutils.FXTransact import FXTransactWrapper,FXTransactDataHelper as ftdh,FXTrades,FXTrade
+
+from mlcliconstants import (MLFCLI_PROG_NAME,TTFCLI_PROG_NAME,PNCLI_PROG_NAME,MXCLI_PROG_NAME)
+
 
 
 def fxaddorder( instrument, lots, rate, buysell, stop, demo=False,flag_pips=False):
@@ -152,7 +152,6 @@ def fxmvstopfdb(i,t,tradeid,demo=False,close=False):
   ## we expect : fxtransact_68782480.json
   #fxtr(tradeid=tradeid,demo=demo)
   expected_fn=f"fxtransact_{tradeid}.json"
-  from FXTransact import FXTransactWrapper,FXTransactDataHelper as ftdh,FXTrades,FXTrade
   print("reading the trade data from the file:",expected_fn)
   fxdata=ftdh.load_fxtransact_from_file(expected_fn)
   trade_data:FXTrade=None
