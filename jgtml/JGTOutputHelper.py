@@ -12,8 +12,8 @@ def generate_markdown_from_json_file(json_filepath):
 # Trade Signal Details
 
 ## Trade Information
-- **Entry Price:** {data['entry']}
-- **Stop Loss:** {data['stop']}
+- **Entry Rate:** {data['entry']}
+- **Stop Rate:** {data['stop']}
 - **Buy/Sell:** {data['bs']}
 - **Lots:** {data['lots']}
 - **Tlid ID:** {data['tlid_id']}
@@ -22,8 +22,8 @@ def generate_markdown_from_json_file(json_filepath):
 
 ![](signal.png)
 
-[../charts](../charts)
-[M1](../charts/M1.png)-[W1](../charts/W1.png)-[D1](../charts/D1.png)-[H4](../charts/H4.png)-[H1](../charts/H1.png)-[m15](../charts/m15.png)-[m5](../charts/m5.png)
+
+[M1](charts/M1.png)-[W1](charts/W1.png)-[D1](charts/D1.png)-[H4](charts/H4.png)-[H1](charts/H1.png)-[m15](charts/m15.png)-[m5](charts/m5.png)
 
 """
 
@@ -35,12 +35,37 @@ def generate_markdown_from_json_file(json_filepath):
 
 ## Utilities
 
-* [entry.sh](../.jgt/entry.sh)
-* [stop.sh](../.jgt/stop.sh)
-* [watch.sh](../.jgt/watch.sh)
-* [status.sh](../.jgt/status.sh)
-* [update.sh](../.jgt/update.sh)
-* [env.sh](../.jgt/env.sh)
+* [entry.sh](.jgt/entry.sh)
+* [cancel.sh](.jgt/cancel.sh)
+* [watch.sh](.jgt/watch.sh)
+* [status.sh](.jgt/status.sh)
+* [update.sh](.jgt/update.sh)
+* [env.sh](.jgt/env.sh)
+* Other scripts might include: .jgt/mv.sh, .jgt/rmtrade.sh, .jgt/xtrail.sh, .jgt/xfdb.sh
+
+### CLI Commands
+
+
+```sh
+fxrmorder -id \$OrderID \$demo_arg
+fxclosetrade -tid \$trade_id \$demo_arg
+fxtr -id \$OrderID \$demo_arg
+jgtapp fxwatchorder -id \$OrderID  -d \$bs \$demo_arg
+jgtapp fxmvstop -tid \$trade_id -x \$1 \$demo_arg
+jgtapp fxrmtrade -tid \$trade_id  \$demo_arg
+jgtapp fxmvstopgator -tid \$trade_id -i \$instrument -t \$timeframe --lips \$demo_arg
+jgtapp fxmvstopfdb -tid \$trade_id -i \$instrument -t \$timeframe  \$demo_arg
+jgtapp fxstatusorder -id \$OrderID  \$demo_arg
+```
+
+#### More
+
+* run 
+
+```sh
+jgtapp --help
+```
+
 
 ### --@STCIssue Future Enhancements
 
