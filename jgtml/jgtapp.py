@@ -24,7 +24,7 @@
 
 
 
-# Mon 19 Aug 2024 03:54:47 AM EDT
+# Mon 19 Aug 2024 04:15:17 AM EDT
 # SOURCE NAME: /b/Dropbox/jgt/drop/fnml.py
 ########################
  
@@ -32,6 +32,9 @@
 import argparse
 import os
 import subprocess
+import sys
+
+sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
 
 from jgtcliconstants import (CLI_FXADDORDER_PROG_NAME,CLI_FXMVSTOP_PROG_NAME,CLI_FXRMORDER_PROG_NAME,CLI_FXRMTRADE_PROG_NAME,CLI_FXTR_PROG_NAME,PDSCLI_PROG_NAME)
 
@@ -51,6 +54,46 @@ def fxaddorder( instrument, lots, rate, buysell, stop, demo=False,flag_pips=Fals
   demo_arg = '--demo' if demo else '--real'
   subprocess.run([CLI_FXADDORDER_PROG_NAME, '-i', instrument, '-n', lots, '-r', rate, '-d', buysell, '-x',stop,pips_arg , demo_arg])
 
+def _get_instrument_from_orderid(orderid):
+  #get the instrument from the orderid
+  #fxtr -id 68782480 --demo
+  #get the instrument from the orderid
+  raise NotImplementedError("get the instrument from the orderid")
+
+def _get_buysell_from_orderid(orderid):
+  #get the buysell from the orderid
+  #fxtr -id 68782480 --demo
+  #get the buysell from the orderid
+  raise NotImplementedError("get the buysell from the orderid")
+
+def _get_stop_rate_from_orderid(orderid):
+  #get the stop rate from the orderid
+  #fxtr -id 68782480 --demo
+  #get the stop rate from the orderid
+  raise NotImplementedError("get the stop rate from the orderid")
+
+def entryvalidate(orderid,timeframe, demo=False):
+  demo_arg = '--demo' if demo else '--real'
+  instrument=_get_instrument_from_orderid(orderid)
+  bs=_get_buysell_from_orderid(orderid)
+  stop_rate=_get_stop_rate_from_orderid(orderid)
+
+  df = _get_ids_updated(i, t,skip_generating=skip_generating_ids)
+  from JGTIDS import _ids_add_fdb_column_logics_v2
+  dfc=_ids_add_fdb_column_logics_v2(df)
+  cb=dfc.iloc[-1]
+  clow=cb[LOW]
+  cclose=cb[CLOSE]
+  chigh=cb[HIGH]
+  if bs=="B" and (cclose<stop_rate or clow<stop_rate):
+    print("The stop rate has hit")
+    fxrmorder(orderid, demo=demo)
+  else:
+    if bs=="S" and (cclose>stop_rate or chigh>stop_rate):
+      print("The stop rate has hit")
+      fxrmorder(orderid, demo=demo)
+  
+  
 def fxrmorder(orderid, demo=False):
   demo_arg = '--demo' if demo else '--real'
   subprocess.run([CLI_FXRMORDER_PROG_NAME, '-id', orderid, demo_arg])
@@ -175,6 +218,9 @@ def fxmvstopfdb(i,t,tradeid,demo=False,close=False):
         stop_has_hit=True
     msg=f"Stop has hit" if stop_has_hit else "Stop has not hit"
     print(msg)
+    _close_trade_cmd=f"jgtapp fxrmtrade -tid {tradeid} {demo_arg}"
+    print(_close_trade_cmd)
+    fxrmtrade(tradeid,demo=demo)
       
   else:
     print("We dont have a signal, Shall we fall in set the stop to the lips ??")
@@ -314,6 +360,11 @@ def main():
   parser_fxrmorder.add_argument('-id','--orderid', help='Order ID')
   parser_fxrmorder.add_argument('--demo', action='store_true', help='Use the demo account')
   
+  #entryvalidate
+  parser_entryvalidate = subparsers.add_parser('entryvalidate', help='Remove an order if it became invalid (e.g. stop rate hit')
+  parser_entryvalidate.add_argument('-id','--orderid', help='Order ID')
+  parser_entryvalidate.add_argument('--demo', action='store_true', help='Use the demo account')
+  
   #fxrmtrade
   parser_fxrmtrade = subparsers.add_parser('fxrmtrade', help='Remove a trade')
   parser_fxrmtrade.add_argument('-tid','--tradeid', help='Trade ID')
@@ -428,6 +479,8 @@ def main():
     fxaddorder(args.instrument, args.lots, args.rate, args.buysell, args.stop, args.demo,args.pips)
   elif args.command == 'fxrmorder':
     fxrmorder(args.orderid, args.demo)
+  elif args.command == 'entryvalidate':
+    entryvalidate(args.orderid, args.demo)
   elif args.command == 'fxrmtrade':
     fxrmtrade(args.tradeid, args.demo)
   elif args.command == 'fxtr':
