@@ -233,8 +233,8 @@ def main():
       if not is_cache_valid(dfsrc, t):
         dfsrc=generate_fresh_and_cache(i,t,quotescount)
       
-      last_bar_timestamp = dfsrc.index[-1]
-      
+      validation_timestamp = dfsrc.index[-1]
+    
       current_bar = dfsrc.iloc[-1]
       signal_bar = dfsrc.iloc[-2]
       if save_bars:
@@ -256,7 +256,7 @@ def main():
       valid_sig_out_mouth=True
       o=create_fdb_entry_order(i,signal_bar,current_bar,lots=lots,t=t,
                                           valid_gator_mouth_open_in_mouth=valid_gator_mouth_open_in_mouth,
-                                          valid_sig_out_mouth=valid_sig_out_mouth)
+                                          valid_sig_out_mouth=valid_sig_out_mouth,validation_timestamp=validation_timestamp)
       if o is not None:
         sh=o["sh"]
         #output_string+="\n"
