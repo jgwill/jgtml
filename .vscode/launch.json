@@ -5,6 +5,14 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "FDBSCan01",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "jgtml/fdb_scanner_2408.py",
+      "console": "integratedTerminal",
+      "args": "",
+    },
+    {
       "name": "PNCLI_add_mfi",
       "type": "debugpy",
       "request": "launch",

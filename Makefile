@@ -62,7 +62,7 @@ bump_jgtpy:
 .PHONY: dist
 dist:
 	make clean
-	bash pre-build.sh
+	make pre-build
 	python -m build
 
 .PHONY: disto
@@ -84,7 +84,7 @@ dev-pypi-release:
 dev-release:
 	make bump_jgtpy
 	python bump_version.py
-	git commit pyproject.toml package.json jgtml/__init__.py -m bump:dev &> /dev/null
+	#git commit pyproject.toml package.json jgtml/__init__.py -m bump:dev &> /dev/null
 	make dist
 	make dev-pypi-release
 
@@ -106,10 +106,13 @@ release:
 	git push
 	make pypi-release
 
+.PHONY: pre-build
+pre-build:
+	bash pre-build.sh
+	bash pre-dist-fdb_scan.sh||true
+
 .PHONY: quick-release
 quick-release:
-	bash pre-build.sh
-	bash pre-dist-fdb_scan.sh &>/dev/null
 	make bump_jgtpy||true
 	make bump_version
 	make dist
