@@ -46,16 +46,18 @@ def generate_markdown_from_json_file(json_filepath):
 ### CLI Commands
 
 
-```sh
-fxrmorder -id \$OrderID \$demo_arg
-fxclosetrade -tid \$trade_id \$demo_arg
-fxtr -id \$OrderID \$demo_arg
-jgtapp fxwatchorder -id \$OrderID  -d \$bs \$demo_arg
-jgtapp fxmvstop -tid \$trade_id -x \$1 \$demo_arg
-jgtapp fxrmtrade -tid \$trade_id  \$demo_arg
-jgtapp fxmvstopgator -tid \$trade_id -i \$instrument -t \$timeframe --lips \$demo_arg
-jgtapp fxmvstopfdb -tid \$trade_id -i \$instrument -t \$timeframe  \$demo_arg
-jgtapp fxstatusorder -id \$OrderID  \$demo_arg
+```bash
+. .jgt/env.sh
+fxtr -id $OrderID $demo_arg
+#fxrmorder -id $OrderID $demo_arg
+#fxclosetrade -tid $trade_id $demo_arg
+#fxtr -id $OrderID $demo_arg
+#jgtapp fxwatchorder -id $OrderID  -d $bs \$demo_arg
+#jgtapp fxmvstop -tid $trade_id -x $1 $demo_arg
+#jgtapp fxrmtrade -tid $trade_id  $demo_arg
+#jgtapp fxmvstopgator -tid $trade_id -i $instrument -t $timeframe --lips $demo_arg
+#jgtapp fxmvstopfdb -tid $trade_id -i $instrument -t $timeframe  $demo_arg
+#jgtapp fxstatusorder -id $OrderID  $demo_arg
 ```
 
 #### More
