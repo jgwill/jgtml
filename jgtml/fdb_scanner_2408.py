@@ -208,6 +208,7 @@ def main():
   timeframes = "D1,H4,H1,m15,m5"
   timeframes = "m15,m5,m1"
   timeframes = "D1,H4,H1,m15,m5"
+  timeframes = "H1,m15,m5"
   timeframes = os.getenv("TIMEFRAMES",timeframes)
   if os.getenv("TIMEFRAMES") is not None:
     print("TIMEFRAMES loaded from environment")
