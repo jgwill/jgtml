@@ -7,7 +7,7 @@ from jgtutils.jgtconstants import \
   HIGH,LOW,FDB,ASKHIGH,ASKLOW,BIDHIGH,BIDLOW,JAW,TEETH,LIPS,BJAW,BTEETH,BLIPS,DATE
 
 #@STCGoal Standardize the Signal Columns
-from jgtml.mlconstants import (
+from mlconstants import (
   NORMAL_MOUTH_IS_OPEN_COLNAME,
   CURRENT_BAR_IS_OUT_OF_NORMAL_MOUTH_COLNAME,
   CURRENT_BAR_IS_IN_BIG_TEETH_COLNAME,

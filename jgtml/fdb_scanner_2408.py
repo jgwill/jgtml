@@ -13,7 +13,7 @@ import tlid
 from jgtutils.coltypehelper import DTYPE_DEFINITIONS
 
 #@STCGoal Standardize the Signal Columns
-from jgtml.mlconstants import (
+from mlconstants import (
   NORMAL_MOUTH_IS_OPEN_COLNAME,
   CURRENT_BAR_IS_OUT_OF_NORMAL_MOUTH_COLNAME,
   CURRENT_BAR_IS_IN_BIG_TEETH_COLNAME,
@@ -207,8 +207,8 @@ def main():
   timeframes = "M1,W1,D1,H4,H1,m15,m5"
   timeframes = "D1,H4,H1,m15,m5"
   timeframes = "m15,m5,m1"
-  timeframes = "D1,H4,H1,m15,m5"
   timeframes = "H1,m15,m5"
+  timeframes = "D1,H4,H1,m15,m5"
   timeframes = os.getenv("TIMEFRAMES",timeframes)
   if os.getenv("TIMEFRAMES") is not None:
     print("TIMEFRAMES loaded from environment")
