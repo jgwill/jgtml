@@ -1,5 +1,5 @@
 # jgtml
-version='0.0.217'
+version='0.0.218'
 import sys
 import os
 
@@ -16,6 +16,15 @@ from jplt import (an_biv_plt2ds as plot_an_biv_plt2ds, an_bivariate_plot00 as pl
 
 from ptottf import create_ttf_csv as create_ttf
 from mlfsvc import create_mlf
+
+
+from jgtapp import (fxtr,
+                    fxaddorder,
+                    fxmvstop,
+                    fxmvstopgator,
+                    fxmvstopfdb,
+                    fxrmorder,
+                    fxrmtrade)
 
 def __init__():
     """
