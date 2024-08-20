@@ -1,5 +1,5 @@
 # jgtml
-version='0.0.218'
+version='0.0.219'
 import sys
 import os
 
@@ -24,7 +24,8 @@ from jgtapp import (fxtr,
                     fxmvstopgator,
                     fxmvstopfdb,
                     fxrmorder,
-                    fxrmtrade)
+                    fxrmtrade,
+                    ids,mlf,ttf,cds,pds,mx)
 
 def __init__():
     """
