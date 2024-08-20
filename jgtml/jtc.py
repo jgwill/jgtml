@@ -163,7 +163,8 @@ def pto_target_calculation(
     talligator_period_jaws=377,
     use_ttf=True,
     pn="ttf",
-    drop_vector_ao_intermediate_array=True
+    drop_vector_ao_intermediate_array=True,
+    quiet=True,
 ):
     """
     Prototype Calculation of target based on the given POV parameters and output to file with report.
@@ -207,6 +208,7 @@ def pto_target_calculation(
         use_ttf (bool, optional): If True, use TTF. Defaults to True.
         pn (str, optional): The midfix for TTF. Defaults to "ttf".
         drop_vector_ao_intermediate_array (bool, optional): If True, drop the vector AO intermediate array. Defaults to True. (we have the Counts vaosc,vaosb)
+        quiet (bool): quiet output
 
         
 
@@ -273,7 +275,8 @@ def pto_target_calculation(
         talligator_period_jaws=talligator_period_jaws, 
         use_ttf=use_ttf,
         pn=pn,
-        drop_vector_ao_intermediate_array=drop_vector_ao_intermediate_array
+        drop_vector_ao_intermediate_array=drop_vector_ao_intermediate_array,
+        quiet=quiet
     )
     return df_result_tmx, sel1, sel2
 
@@ -330,6 +333,7 @@ def _pov_target_calculation_n_output240223(
     use_ttf=True,
     pn="ttf",
     drop_vector_ao_intermediate_array=True,
+    quiet=True,
 ):
     if tlid_tag is None:
         tlid_tag = tlid.get_minutes()
@@ -394,8 +398,10 @@ def _pov_target_calculation_n_output240223(
         laggingFeatureColumns=pndata__read_new_pattern_columns_list_with_htf_and_lags_using_settings(t,pn=pn)
         
         sel_2_keeping_columns = sel_2_keeping_columns+laggingFeatureColumns
-        print("INFO::Lagging Columns list from higher TF:",laggingFeatureColumns)
-        print(">   We would use that to filter the columns and get our training data out of this refactored module (JTC.py)  -or shall I say from prototype to production/new module.  -> OUTPUT:  Training Data and Reality Data with which we would predict using our model.")
+        if not quiet:
+            print("INFO::Lagging Columns list from higher TF:",laggingFeatureColumns)
+        if not quiet:
+            print(">   We would use that to filter the columns and get our training data out of this refactored module (JTC.py)  -or shall I say from prototype to production/new module.  -> OUTPUT:  Training Data and Reality Data with which we would predict using our model.")
         #print(f"Does these columns read from the source we would use to create the MXTarget data align with the input pattern {pn}:",df_cds_source.columns)
         #sys.exit(0)
         #print("JGTML::Debug len of df_cds_source:", len(df_cds_source))
