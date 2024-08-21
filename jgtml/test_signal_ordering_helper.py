@@ -26,7 +26,7 @@ class TestSignalOrderingHelper(unittest.TestCase):
 
     @patch('jgtml.SignalOrderingHelper.datetime')
     def test_create_fdb_entry_order_invalid_due_to_valid_gator(self, mock_datetime):
-        mock_datetime.now.return_value = datetime(2023, 1, 1)
+        mock_datetime.now.return_value = datetime(2024, 8, 21, 11, 0, 0)
         
         result = create_fdb_entry_order(
             i="AUD/CAD",
