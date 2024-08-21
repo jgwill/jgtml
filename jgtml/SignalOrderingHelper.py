@@ -129,7 +129,7 @@ def create_fdb_entry_order(i,signal_bar,current_bar,lots=1,tick_shift=2,quiet=Tr
     if not quiet:print(f"cur_bidlow:{cur_bidlow} entry_rate:{entry_rate} cur_askhigh:{cur_askhigh} stop_rate:{stop_rate}")
   
   if  current_bar_broke_signal and had_valid_signal:
-    print(f"## Current Bar Broke the Signal {i}")
+    print(f"## Current Bar Broke the Signal {i} {t} ")
     return None
   
   if not had_valid_signal:
@@ -138,13 +138,13 @@ def create_fdb_entry_order(i,signal_bar,current_bar,lots=1,tick_shift=2,quiet=Tr
   if valid_gator_mouth_open_in_mouth \
     and \
       not valid_gator(signal_bar,current_bar,buysell):
-    print(f"## Invalid Gator {i} valid_gator_mouth_open_in_mouth")
+    print(f"## Invalid Gator {i} {t} valid_gator_mouth_open_in_mouth")
     return None
   
   if valid_sig_out_mouth \
     and \
       not is_bar_out_of_mouth(current_bar,buysell):
-    print(f"## Invalid Gator {i} not valid_sig_out_mouth")
+    print(f"## Invalid Gator {i} {t} not valid_sig_out_mouth")
     return None
   #Get 'Date' or index of the signal bar
   
