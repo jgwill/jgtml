@@ -280,11 +280,7 @@ def main():
 
       if process_balancing:
 
-        # %%
 
-        # #refresh the import
-        # import importlib
-        # importlib.reload(ba)
 
         r={}
         _df=None
@@ -319,7 +315,6 @@ def main():
           
             
 
-        # %%
 
         os.makedirs(outdir,exist_ok=True)
 
@@ -366,20 +361,6 @@ def main():
             f.write(content)
           
           
-      # # %%
-
-      # rb_tide=rb["tide"]
-      # rs_tide=rs["tide"]
-
-      # # %%
-
-      # rb_tide_df=rb_tide["df"]
-      # rs_tide_df=rs_tide["df"]
-
-      # # %%
-
-      # rb_tide_df.to_csv(f"{outdir}/rb_tide_df.csv")
-      # rs_tide_df.to_csv(f"{outdir}/rs_tide_df.csv")
 
 
 
