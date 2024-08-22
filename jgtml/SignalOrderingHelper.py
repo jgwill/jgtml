@@ -21,6 +21,24 @@ from mlconstants import (
 from jgtutils.iprops import \
   get_pips
 
+
+def calculate_entry_risk(i, bs, entry_rate, stop_rate, position_size, tick_shift=1, rounding_add=2, t=None):
+    pips = get_pips(i)
+    tick_size = pips / 10
+
+    decimal_places = len(str(pips).split('.')[1]) + rounding_add if '.' in str(pips) else 1
+    if bs == "B":
+        entry_rate += tick_size * tick_shift
+        stop_rate -= tick_size * tick_shift
+    elif bs == "S":
+        entry_rate -= tick_size * tick_shift
+        stop_rate += tick_size * tick_shift
+
+    entry_rate = round(entry_rate, decimal_places)
+    stop_rate = round(stop_rate, decimal_places)
+
+    risk_per_unit = abs(entry_rate - stop_rate)
+    print(f"pips:{pips}, risk/u:{risk_per_unit} for {i}")
 def get_entry_stop_rate_ticked(i,bs,entry_rate,stop_rate,tick_shift=1,rouding_add = 2,t=None):
   pips=get_pips(i)
   tick_size=pips/10
