@@ -25,9 +25,7 @@ from mlconstants import (
 )
 
 # Validity of cache
-
-
-def is_cache_valid(df, timeframe:str,use_utc=True,quiet=True):
+def is_timeframe_cached_valid(df, timeframe:str,use_utc=True,quiet=True):
   """
   Checks if the cached data is still valid for the given timeframe.
 
@@ -38,77 +36,81 @@ def is_cache_valid(df, timeframe:str,use_utc=True,quiet=True):
   Returns:
     True if the cache is valid, False otherwise.
   """
-
-  # Get the last bar's timestamp.
-  if "Date" in df.columns:
-    last_bar_timestamp = df.iloc[-1]["Date"]
-  else:
-    last_bar_timestamp = df.index[-1]
-  
-  # Ensure the timestamp is in UTC if required
-    if use_utc:
-      last_bar_timestamp = pd.to_datetime(last_bar_timestamp, utc=True)
-      now = datetime.utcnow().replace(tzinfo=pd.Timestamp.utcnow().tzinfo)
+  try:
+      
+    # Get the last bar's timestamp.
+    if "Date" in df.columns:
+      last_bar_timestamp = df.iloc[-1]["Date"]
     else:
-      last_bar_timestamp = pd.to_datetime(last_bar_timestamp)
-      now = datetime.now()
-  if not quiet:
-    print(f"DEBUG::UTC::last_bar_timestamp:{last_bar_timestamp} now:{now}")
-  # Calculate the valid range for the timeframe.
-  if timeframe == "m1":
-    valid_range = pd.Timedelta(minutes=1)
-  elif timeframe == "m5":
-    valid_range = pd.Timedelta(minutes=5)
-  elif timeframe == "m15":
-    valid_range = pd.Timedelta(minutes=15)
-  elif timeframe == "m30":
-    valid_range = pd.Timedelta(minutes=30)
-  elif timeframe == "H1":
-    valid_range = pd.Timedelta(hours=1)
-  elif timeframe == "H2":
-    # Calculate the next expiration time for H2 timeframe
-    next_expiration = last_bar_timestamp.replace(minute=0, second=0, microsecond=0)
-    while next_expiration <= now:
-      next_expiration += timedelta(hours=2)
-    is_within_expiration = now < next_expiration
-    return is_within_expiration
-  elif timeframe == "H3":
-    next_expiration = last_bar_timestamp.replace(minute=0, second=0, microsecond=0)
-    while next_expiration <= now:
-      next_expiration += timedelta(hours=3)
-    is_within_expiration = now < next_expiration
-    return is_within_expiration
-  elif timeframe == "H4":
-    # Calculate the next expiration time for H4 timeframe
-    next_expiration = last_bar_timestamp.replace(minute=0, second=0, microsecond=0)
-    while next_expiration <= now:
-      next_expiration += timedelta(hours=4)
-    is_within_expiration = now < next_expiration
-    return is_within_expiration
-  elif timeframe == "H6":
-    next_expiration = last_bar_timestamp.replace(minute=0, second=0, microsecond=0)
-    while next_expiration <= now:
-      next_expiration += timedelta(hours=6)
-    is_within_expiration = now < next_expiration
-    return is_within_expiration
-  elif timeframe == "H8":
-    next_expiration = last_bar_timestamp.replace(minute=0, second=0, microsecond=0)
-    while next_expiration <= now:
-      next_expiration += timedelta(hours=8)
-    is_within_expiration = now < next_expiration
-    return is_within_expiration
-  elif timeframe == "D1":
-    valid_range = pd.Timedelta(days=1)
-  elif timeframe == "W1":
-    valid_range = pd.Timedelta(days=7)
-  elif timeframe == "M1":
-    valid_range = pd.Timedelta(days=30)
-  else:
-    raise ValueError("Invalid timeframe.")
-  if not quiet:
-    print("DEBUG::valid_range:",valid_range)
-  # Check if the last bar's timestamp is within the valid range.
-  return last_bar_timestamp + valid_range > now
+      last_bar_timestamp = df.index[-1]
+    
+    # Ensure the timestamp is in UTC if required
+      if use_utc:
+        last_bar_timestamp = pd.to_datetime(last_bar_timestamp, utc=True)
+        now = datetime.utcnow().replace(tzinfo=pd.Timestamp.utcnow().tzinfo)
+      else:
+        last_bar_timestamp = pd.to_datetime(last_bar_timestamp)
+        now = datetime.now()
+    if not quiet:
+      print(f"DEBUG::UTC::last_bar_timestamp:{last_bar_timestamp} now:{now}")
+    # Calculate the valid range for the timeframe.
+    if timeframe == "m1":
+      valid_range = pd.Timedelta(minutes=1)
+    elif timeframe == "m5":
+      valid_range = pd.Timedelta(minutes=5)
+    elif timeframe == "m15":
+      valid_range = pd.Timedelta(minutes=15)
+    elif timeframe == "m30":
+      valid_range = pd.Timedelta(minutes=30)
+    elif timeframe == "H1":
+      valid_range = pd.Timedelta(hours=1)
+    elif timeframe == "H2":
+      # Calculate the next expiration time for H2 timeframe
+      next_expiration = last_bar_timestamp.replace(minute=0, second=0, microsecond=0)
+      while next_expiration <= now:
+        next_expiration += timedelta(hours=2)
+      is_within_expiration = now < next_expiration
+      return is_within_expiration
+    elif timeframe == "H3":
+      next_expiration = last_bar_timestamp.replace(minute=0, second=0, microsecond=0)
+      while next_expiration <= now:
+        next_expiration += timedelta(hours=3)
+      is_within_expiration = now < next_expiration
+      return is_within_expiration
+    elif timeframe == "H4":
+      # Calculate the next expiration time for H4 timeframe
+      next_expiration = last_bar_timestamp.replace(minute=0, second=0, microsecond=0)
+      while next_expiration <= now:
+        next_expiration += timedelta(hours=4)
+      is_within_expiration = now < next_expiration
+      return is_within_expiration
+    elif timeframe == "H6":
+      next_expiration = last_bar_timestamp.replace(minute=0, second=0, microsecond=0)
+      while next_expiration <= now:
+        next_expiration += timedelta(hours=6)
+      is_within_expiration = now < next_expiration
+      return is_within_expiration
+    elif timeframe == "H8":
+      next_expiration = last_bar_timestamp.replace(minute=0, second=0, microsecond=0)
+      while next_expiration <= now:
+        next_expiration += timedelta(hours=8)
+      is_within_expiration = now < next_expiration
+      return is_within_expiration
+    elif timeframe == "D1":
+      valid_range = pd.Timedelta(days=1)
+    elif timeframe == "W1":
+      valid_range = pd.Timedelta(days=7)
+    elif timeframe == "M1":
+      valid_range = pd.Timedelta(days=30)
+    else:
+      raise ValueError("Invalid timeframe.")
+    if not quiet:
+      print("DEBUG::valid_range:",valid_range)
+    # Check if the last bar's timestamp is within the valid range.
+    return last_bar_timestamp + valid_range > now
+  except Exception as e:
+    print(f"Error in is_timeframe_cached_valid: {e}")
+    return False
 
 
 # %% [markdown]
