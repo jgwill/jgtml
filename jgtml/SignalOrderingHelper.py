@@ -65,9 +65,16 @@ def is_bar_out_of_mouth(bar,bs)->bool:
   
 def is_mouth_open(bar,bs)->bool:
   if bs=="B":
-    return  bar[LIPS] < bar[TEETH] and bar[TEETH] < bar[JAW] and  bar[LIPS] < bar[JAW]
+    lips_bellow_teeth = bar[LIPS] < bar[TEETH]
+    teeth_bellow_jaw = bar[TEETH] < bar[JAW]
+    lips_bellow_jaw = bar[LIPS] < bar[JAW]
+    return  lips_bellow_teeth.all() and teeth_bellow_jaw.all() and  lips_bellow_jaw.all()
   if bs=="S":
-    return  bar[LIPS] > bar[TEETH] and bar[TEETH] > bar[JAW]and  bar[LIPS] > bar[JAW]
+    lips_above_teeth = bar[LIPS] > bar[TEETH]
+    teeth_above_jaw = bar[TEETH] > bar[JAW]
+    lips_above_jaw = bar[LIPS] > bar[JAW]
+    return  lips_above_teeth.all() and teeth_above_jaw.all() and  lips_above_jaw.all()
+  return False
   
 def is_big_mouth_open(bar,bs)->bool:
   if bs=="B":
