@@ -30,6 +30,7 @@
  
 
 import argparse
+import json
 import os
 import subprocess
 import sys
@@ -44,6 +45,16 @@ from jgtutils.jgtconstants import FDB,HIGH,LOW,CLOSE
 from jgtpy.jgtpyconstants import (IDSCLI_PROG_NAME,CDSCLI_PROG_NAME,ADSCLI_PROG_NAME,MKSCLI_PROG_NAME,JGTCLI_PROG_NAME)
 
 from jgtutils.FXTransact import FXTransactWrapper,FXTransactDataHelper as ftdh,FXTrades,FXTrade
+
+
+
+from jgtpy.JGTIDS import _ids_add_fdb_column_logics_v2
+from jgtpy import jgtapyhelper as th
+
+#from jgtpy.JGTIDSSvc import get_ids
+#from jgtpy.JGTIDSRequest import JGTIDSRequest
+
+from SOHelper import get_bar_at_index,get_last_two_bars
 
 from mlcliconstants import (MLFCLI_PROG_NAME,TTFCLI_PROG_NAME,PNCLI_PROG_NAME,MXCLI_PROG_NAME)
 
@@ -77,11 +88,8 @@ def entryvalidate(orderid,timeframe, demo=False):
   instrument=_get_instrument_from_orderid(orderid)
   bs=_get_buysell_from_orderid(orderid)
   stop_rate=_get_stop_rate_from_orderid(orderid)
-
-  df = _get_ids_updated(i, t,skip_generating=skip_generating_ids)
-  from JGTIDS import _ids_add_fdb_column_logics_v2
-  dfc=_ids_add_fdb_column_logics_v2(df)
-  cb=dfc.iloc[-1]
+  df = _get_ids_updated(instrument, timeframe)
+  cb=get_bar_at_index(df,-1)
   clow=cb[LOW]
   cclose=cb[CLOSE]
   chigh=cb[HIGH]
@@ -111,7 +119,8 @@ def fxtr(tradeid=None,orderid=None, demo=False,save_flag=True):
     subprocess.run([CLI_FXTR_PROG_NAME, '-id', orderid, demo_arg, save_arg])
   else:
     subprocess.run([CLI_FXTR_PROG_NAME, demo_arg, save_arg])
-  print("Should have two files created for the treansaction")
+  msg = "File saved."
+  print_jsonl_message(msg,extra_dict={"trade_id":tradeid,"order_id":orderid },scope="jgtapp::fxtr")
 
 def fxmvstop(tradeid,stop,flag_pips=False, demo=False):
   pips_arg = '--pips' if flag_pips else ''
@@ -132,14 +141,14 @@ fxmvstopgator -tid 68773276  --demo -i AUD/NZD -t H4 --lips
 #@STCGoal RM Order if Stop was Hit
 
 
-#from jgtpy.jgtapyhelper import select_value_in_currentbar,select_value_in_lastcompletedbar
-import jgtapyhelper as th
+
 
 
 #@STCGoal Move EXIT Stop On FDB Signal
 fxmvstopfdb_epilog = "Move the stop to the FDB signal. If the stop is already hit, close the trade if --close is passed.  Considering we could add --lips to move the stop to the lips if no FDB signal is found #@STCIssue It would requires to detect if previously the stop was moved to an FDB signal (as we dont want to move it again back in the lips if we are still in an FDB signal)"
 
-def fxmvstopfdb(i,t,tradeid,demo=False,close=False):
+MOVED_TO_FDB_FLAG_NAME = "moved_to_fdb"
+def fxmvstopfdb(i,t,tradeid,demo=False,close=False,lips=False,teeth=False,jaw=False,not_if_stop_closer=True):
   demo_arg="--demo" if demo else "--real"
   if close:
     print("Closing the trade if the stop of fdbsignal is already hit")
@@ -151,16 +160,16 @@ def fxmvstopfdb(i,t,tradeid,demo=False,close=False):
   #Update the local datafor the trade
   ## we expect : fxtransact_68782480.json
   #fxtr(tradeid=tradeid,demo=demo)
-  expected_fn=f"fxtransact_{tradeid}.json"
-  print("reading the trade data from the file:",expected_fn)
-  fxdata=ftdh.load_fxtransact_from_file(expected_fn)
-  trade_data:FXTrade=None
-  trades:FXTrades=fxdata.trades
-  for trade in trades.trades:
-    #print(trade)
-    if str(trade["trade_id"])==str(tradeid):
-      trade_data=trade
-      break
+  
+  trade_data = _get_trade_data(tradeid, demo)
+  #just make sure we have the same instrument
+  if i == "_": # use the instrument from the trade data 
+    i = trade_data["instrument"]
+  if not trade_data["instrument"]==i:
+    print(f"Trade data instrument {trade_data['instrument']} is different from the passed instrument {i}")
+    from jgtutils.jgterrorcodes import INSTRUMENT_NOT_VALID_EXIT_ERROR_CODE
+    sys.exit(INSTRUMENT_NOT_VALID_EXIT_ERROR_CODE)
+  
 
   #fuck=fxtrades[tradeid]
   #get the trade data
@@ -169,8 +178,9 @@ def fxmvstopfdb(i,t,tradeid,demo=False,close=False):
   #trade_data2=fxdata.get_trade(tradeid)
   direction=trade_data["buy_sell"]
   original_stop=trade_data["stop"]
-  print("Direction, so we know which col of the bars to look for.",direction)
-  print(trade_data)
+  msg = "Detected trade direction."
+  print_jsonl_message(msg,extra_dict={"direction":direction,"original_stop":original_stop})
+  # print(trade_data)
   #@STCIssue Why do I want that info on the Trade ??
   
     
@@ -182,14 +192,13 @@ def fxmvstopfdb(i,t,tradeid,demo=False,close=False):
   if skip_generating_ids:
     print("Skipping generating IDS (JUST READING  IT FOR DEV)")
   
-  df = _get_ids_updated(i, t,skip_generating=skip_generating_ids)
-  from JGTIDS import _ids_add_fdb_column_logics_v2
-  dfc=_ids_add_fdb_column_logics_v2(df)
-  lcb=dfc.iloc[-2]
+
+  dfc = _get_ids_updated(i, t)
+  lcb=get_bar_at_index(dfc,-2)
   lcbfdb = lcb[FDB]
   lcbhigh=lcb[HIGH]
   lcblow=lcb[LOW]
-  cb=dfc.iloc[-1]
+  cb=get_bar_at_index(dfc,-1)
   clow=cb[LOW]
   cclose=cb[CLOSE]
   chigh=cb[HIGH]
@@ -217,15 +226,92 @@ def fxmvstopfdb(i,t,tradeid,demo=False,close=False):
         stop_has_hit=True
     msg=f"Stop has hit" if stop_has_hit else "Stop has not hit"
     print(msg)
-    _close_trade_cmd=f"jgtapp fxrmtrade -tid {tradeid} {demo_arg}"
-    print(_close_trade_cmd)
-    fxrmtrade(tradeid,demo=demo)
+    
+    if stop_has_hit:
+      msg = "The stop has hit the FDB signal, we are closing the trade"
+      print_jsonl_message(msg,scope="fxmvstopfdb")
+      _close_trade_cmd=f"jgtapp fxrmtrade -tid {tradeid} {demo_arg}"
+      msg = f"Executing:{_close_trade_cmd}"
+      print_jsonl_message(msg)
+      fxrmtrade(tradeid,demo=demo)
+      #print("Done")
+    else:
+      print("We are moving the stop to the FDB signal")
+      fxmvstop(tradeid,stop_price,demo=demo)
+      #write a flag so we know we moved to an FDB Signal
+      flag_object={MOVED_TO_FDB_FLAG_NAME:True}
+      flag_file_path = __get_fdb_moved_flag_filename(tradeid)
+      with open(flag_file_path,"w"):
+        json.dump(flag_object)
+  
       
   else:
-    print("We dont have a signal, Shall we fall in set the stop to the lips ??")
-    fxmvstopgator_cmd = f"jgtapp fxmvstopgator -i {i} -t {t} -tid {tradeid} --lips {demo_arg}"
-    print(fxmvstopgator_cmd)
-  
+    #msg = "We dont have a signal, Shall we fall in set the stop to the lips ??"
+    #print_jsonl_message(msg,scope="fxmvstopfdb")
+    if lips or teeth or jaw:
+      
+      flag_moved_to_fdb=_check_flag_fdb_moved(tradeid)
+      
+      if flag_moved_to_fdb:
+        msg = "We already moved to an FDB signal, we are not moving the stop back to the lips."
+        print_jsonl_message(msg,scope="fxmvstopfdb",extra_dict={"trade_id":tradeid, "goal":"Know we had an FDB signal.  Could that be invalidated by the current bar broking the other side of our FDB Signal, therefore we would come back to the probably --lips"})
+      else:
+          
+        line_arg="lips" if lips else "teeth" if teeth else "jaw"
+        fxmvstopgator_cmd = f"jgtapp fxmvstopgator -i {i} -t {t} -tid {tradeid} --{line_arg} {demo_arg}"
+        #print("We are running something like this:",fxmvstopgator_cmd)
+        msg = f"Moving stop to {line_arg}"
+        print_jsonl_message(msg,extra_dict={"trade_id":tradeid,"instrument":i,"timeframe":t, "line":line_arg})
+        fxmvstopgator(i,t,tradeid,lips=lips,teeth=teeth,jaw=jaw,demo=demo,skip_trade_data_update=True)
+    else:
+      msg = "No --lips, --teeth or --jaw passed, we are not moving the stop"
+      print_jsonl_message(msg)
+
+def _get_trade_data(tradeid, demo,fresh=True):
+    fxtr(demo=demo,tradeid=tradeid)
+    expected_fn=f"fxtransact_{tradeid}.json"
+    from jgtutils.jgtfxhelper import mkfn_cfxdata_filepath
+    expected_path=mkfn_cfxdata_filepath(expected_fn)
+    #expected_path=os.path.join("data","jgt",expected_fn)
+    #x=FXTrade.from_id(tradeid)
+    #expected_path=ftdh.load_fxtransact_from_file(expected_fn)
+    if not os.path.exists(expected_path):
+      fresh=True
+      print(f"File {expected_path} does not exist - fxtr will be ran")
+    else:
+      fresh=False # We have the file, we dont need to run fxtr
+    
+    if fresh:
+      # fxtr(tradeid=tradeid,demo=demo)
+      fxtr(demo=demo)
+    #return
+    msg = "Reading the trade data from the file:"
+    print_jsonl_message(msg,extra_dict={"trade_id":tradeid,"demo":demo, "expected_fn":expected_path},scope="jgtapp")
+    fxdata=ftdh.load_fxtransact_from_file(expected_path)
+    trade_data:FXTrade=None
+    trades:FXTrades=fxdata.trades
+    #return None if no trades in the list
+    for trade in trades.trades:
+    #print(trade)
+      if str(trade["trade_id"])==str(tradeid):
+        trade_data=trade
+        break
+    return trade_data
+
+def _check_flag_fdb_moved(tradeid):
+    flag_file_path = __get_fdb_moved_flag_filename(tradeid)
+    flag_moved_to_fdb=False
+    if os.path.exists(flag_file_path):
+        #Load it and check if we moved to an FDB signal is set to true
+      with open(flag_file_path,"r") as f:
+        flag_object=json.load(f)
+        if MOVED_TO_FDB_FLAG_NAME in flag_object:
+          flag_moved_to_fdb=flag_object[MOVED_TO_FDB_FLAG_NAME]
+    return flag_moved_to_fdb
+
+def __get_fdb_moved_flag_filename(tradeid):
+    return f".jgt/fdb_moved_flag_{tradeid}.json"
+    
   
   
   
@@ -238,35 +324,53 @@ def _get_ids_updated(i, t,skip_generating=False):
       print("IDS failed")
   #read the last bar from the IDS csv
     df=th.read_ids(i,t)
-    return df
+    dfc=_ids_add_fdb_column_logics_v2(df)
+    return dfc
     
   
+def print_jsonl_message(msg,extra_dict:dict=None,scope=None):
+  o={}
+  o["message"]=msg
+  if extra_dict:
+      o.update(extra_dict)
+  if scope:
+    o["scope"]=scope
+  print(json.dumps(o))
+
+def fxmvstopgator(i,t,tradeid,lips=True,teeth=False,jaw=False,demo=False,skip_trade_data_update=False):
   
 
-def fxmvstopgator(i,t,tradeid,lips=True,teeth=False,jaw=False,demo=False):
-  
-
+  trade_data=_get_trade_data(tradeid, demo,fresh=not skip_trade_data_update)
+  if trade_data is None or trade_data=={}:
+    msg = f"Trade data not found for tradeid {tradeid}"
+    print_jsonl_message(msg)
+    from jgtutils.jgterrorcodes import TRADE_NOT_FOUND_EXIT_ERROR_CODE
+    sys.exit(TRADE_NOT_FOUND_EXIT_ERROR_CODE)
     
+  if i == "_": # use the instrument from the trade data
+    i = trade_data["instrument"]
+  
   #First update the IDS
   df = _get_ids_updated(i, t)
   #get the last bar
-  last_bar=df.iloc[-1]
+  current_bar=get_bar_at_index(df,-1)
   choosen_line="_"
   #get the stop from choosen indicator line (by flag)
   if not teeth and not jaw:
     lips=True # DEFAULT
   if lips:
-    stop=str(last_bar[LIPS])
+    stop=str(current_bar[LIPS])
     choosen_line="lips"
   elif teeth:
-    stop=str(last_bar[TEETH])
+    stop=str(current_bar[TEETH])
     choosen_line="teeth"
   elif jaw:
-    stop=str(last_bar[JAW])
+    stop=str(current_bar[JAW])
     choosen_line="jaw"
   else:
     raise ValueError("No indicator line selected")
-  print(f"Stop made of choosen line ({choosen_line}):: ",stop)
+  msg = f"Made Gator line stop."
+  print_jsonl_message(msg,extra_dict={"stop":stop,"line":choosen_line},scope="fxmvstopgator")
   #Then move the stop
   fxmvstop(tradeid,stop,demo=demo)
 
@@ -352,28 +456,33 @@ def main():
   parser_fxaddorder.add_argument('-d','--buysell', help='Buy or Sell')
   parser_fxaddorder.add_argument('-x','--stop', help='Stop')
   parser_fxaddorder.add_argument('--demo', action='store_true', help='Use the demo account')
+  parser_fxaddorder.add_argument('--real', action='store_true', help='Use the real account',default=True)
   parser_fxaddorder.add_argument('--pips', action='store_true', help='Use pips')
   
   #fxrmorder
   parser_fxrmorder = subparsers.add_parser('fxrmorder', help='Remove an order')
   parser_fxrmorder.add_argument('-id','--orderid', help='Order ID')
   parser_fxrmorder.add_argument('--demo', action='store_true', help='Use the demo account')
+  parser_fxrmorder.add_argument('--real', action='store_true', help='Use the real account',default=True)
   
   #entryvalidate
   parser_entryvalidate = subparsers.add_parser('entryvalidate', help='Remove an order if it became invalid (e.g. stop rate hit')
   parser_entryvalidate.add_argument('-id','--orderid', help='Order ID')
   parser_entryvalidate.add_argument('--demo', action='store_true', help='Use the demo account')
+  parser_entryvalidate.add_argument('--real', action='store_true', help='Use the real account',default=True)
   
   #fxrmtrade
   parser_fxrmtrade = subparsers.add_parser('fxrmtrade', help='Remove a trade')
   parser_fxrmtrade.add_argument('-tid','--tradeid', help='Trade ID')
   parser_fxrmtrade.add_argument('--demo', action='store_true', help='Use the demo account')
-  
+  parser_fxrmtrade.add_argument('--real', action='store_true', help='Use the real account',default=True)
+    
   #fxtr
   parser_fxtr = subparsers.add_parser('fxtr', help='Get trade details')
   parser_fxtr.add_argument('-tid','--tradeid', help='Trade ID')
   parser_fxtr.add_argument('-id','--orderid', help='Order ID')
   parser_fxtr.add_argument('--demo', action='store_true', help='Use the demo account')
+  parser_fxtr.add_argument('--real', action='store_true', help='Use the real account',default=True)
   parser_fxtr.add_argument('--nosave', action='store_true', help='Dont Save the trade details')
   
   #fxmvstop
@@ -382,6 +491,7 @@ def main():
   parser_fxmvstop.add_argument('-x','--stop', help='Stop')
   parser_fxmvstop.add_argument('--pips', action='store_true', help='Use pips')
   parser_fxmvstop.add_argument('--demo', action='store_true', help='Use the demo account')
+  parser_fxmvstop.add_argument('--real', action='store_true', help='Use the real account',default=True)
   
   #ids
   parser_ids = subparsers.add_parser('ids', help='Refresh the IDS')
@@ -392,23 +502,28 @@ def main():
   
   #fxmvstopgator
   parser_fxmvstopgator = subparsers.add_parser('fxmvstopgator', help='Move stop using gator')
-  parser_fxmvstopgator.add_argument('-i','--instrument', help='Instrument')
+  parser_fxmvstopgator.add_argument('-i','--instrument', help='Instrument',default="_",required=False)
   parser_fxmvstopgator.add_argument('-t','--timeframe', help='Timeframe')
   parser_fxmvstopgator.add_argument('-tid','--tradeid', help='Trade ID')
   parser_fxmvstopgator.add_argument('--lips', action='store_true', help='Use lips')
   parser_fxmvstopgator.add_argument('--teeth', action='store_true', help='Use teeth')
   parser_fxmvstopgator.add_argument('--jaw', action='store_true', help='Use jaw')
   parser_fxmvstopgator.add_argument('--demo', action='store_true', help='Use the demo account')
+  parser_fxmvstopgator.add_argument('--real', action='store_true', help='Use the real account',default=True)
   
   #fxmvstopfdb
   
   parser_fxmvstopfdb = subparsers.add_parser('fxmvstopfdb', help='Move stop using fdb',epilog=fxmvstopfdb_epilog)
-  parser_fxmvstopfdb.add_argument('-i','--instrument', help='Instrument')
+  parser_fxmvstopfdb.add_argument('-i','--instrument', help='Instrument',default="_",required=False)
   parser_fxmvstopfdb.add_argument('-t','--timeframe', help='Timeframe')
   parser_fxmvstopfdb.add_argument('-tid','--tradeid', help='Trade ID')
   parser_fxmvstopfdb.add_argument('--demo', action='store_true', help='Use the demo account')
+  parser_fxmvstopfdb.add_argument('--real', action='store_true', help='Use the real account',default=True)
   #close the trade if the stop of fdbsignal is already hit
   parser_fxmvstopfdb.add_argument('--close', action='store_true', help='Close the trade if the stop of fdbsignal is already hit')
+  parser_fxmvstopfdb.add_argument('--lips', action='store_true', help='Use lips (if no FDB signal is found, the lips will be used)')
+  parser_fxmvstopfdb.add_argument('--teeth', action='store_true', help='Use teeth. If no FDB signal is found, the teeth will be used')
+  parser_fxmvstopfdb.add_argument('--jaw', action='store_true', help='Use jaw (if no FDB signal is found, the jaw will be used)')
   
 
   parser_tidealligator = subparsers.add_parser('tide', help='Run the pto tidealligator')
@@ -466,12 +581,26 @@ def main():
   parser_wf_ttf_prep_19.add_argument('-new','--fresh', action='store_true', help='Use the fresh data')
   parser_wf_ttf_prep_19.add_argument('--full', action='store_true', help='Use the full data')
 
+  #An --autocomplete for bash
+  # This argument --autocomplete is used to generate the bash autocomplete script
+  ## We should not see it in the help
+  parser.add_argument('--autocomplete', action='store_true',help=argparse.SUPPRESS)
+  
+  
   args = parser.parse_args()
+  
+  if args.autocomplete:
+      print("fxaddorder fxrmorder entryalidate fxrmtrade fxtr fxmvstop ids fxmvstopgator fxmvstopfdb")#Generating bash autocomplete script...")
+      
+      exit()
+      
   #if no arguments are passed, print help
   if not vars(args).get('command'):
     parser.print_help()
     parser.exit()
-
+  
+  
+  
   if args.command == 'tide':
     tide(args.instrument, args.timeframe, args.buysell)
   elif args.command == 'fxaddorder':
@@ -492,7 +621,7 @@ def main():
     lips_value = True if not args.lips and not args.teeth and not args.jaw else False
     fxmvstopgator(args.instrument, args.timeframe, args.tradeid, lips_value,args.teeth,args.jaw,args.demo)
   elif args.command == 'fxmvstopfdb':
-    fxmvstopfdb(args.instrument, args.timeframe, args.tradeid, args.demo,args.close)
+    fxmvstopfdb(args.instrument, args.timeframe, args.tradeid, args.demo,args.close,args.lips,args.teeth,args.jaw)
   elif args.command == 'pds':
     pds(args.instrument, args.timeframe,)
   elif args.command == 'cds':
