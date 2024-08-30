@@ -126,8 +126,8 @@ def serialize_signal_to_json_file(i,t,o,signal_bar,current_bar,quiet=True,signal
       tlid_id=o["tlid_id"]
       o["i"]=i
       o["t"]=t
-      o["signalbar"]=signal_bar.to_dict()
-      o["currentbar"]=current_bar.to_dict()
+      o["signalbar"]=signal_bar
+      o["currentbar"]=current_bar
       
       signal_fn = create_signal_filename(i,t, tlid_id, ext)
       signal_savepath =os.path.join(signal_dir,signal_fn)
