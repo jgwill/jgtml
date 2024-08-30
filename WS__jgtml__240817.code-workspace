@@ -7,9 +7,22 @@
 	"settings": {
 		"editor.tabSize": 2,
 		"files.autoSave": "afterDelay",
+		"github.copilot.chat.customUserInstructions": [
+			"You assist in developping a trading session assistant and analysis code base using Python and bash",
+			"We use the Python developped code in bash",
+			"Just output results, no comments",
+			"Do not output the whole code except if asked otherwise",
+			"Try to understand what the file does and what is already in there before addressing what you are asked",
+			"In bash, we grap usage of the jgtapp by executing: for a in $(echo \"fxaddorder,fxrmorder,entryvalidate,fxrmtrade,fxtr,fxmvstop,ids,fxmvstopgator,fxmvstopfdb\"|tr \",\" \" \");do echo $a;python jgtml/jgtapp.py $a --help;done|grep usage|sed 's/\\.py//g'",
+			"Some constants and acronym:  Our timeframes are :  M1(month), W1(week), D1(daily), H4(4 hours), H1 (1 hour), m15 (15 minutes), m5 (5 minutes), m1 (1 minutes).  You always use the timeframe acronym and respect the lower/higher case specified in here)"
+		],
 		"python.analysis.extraPaths": [
-			"/a/src/_jgt/ids/jgtpy",
-			"/a/src/_jgt/jgtutils/jgtutils"
+			"/a/src/_jgt/jgtutils/jgtutils",
+			"/a/src/_jgt/ids/jgtpy"
+		],
+		"python.analysis.include": [
+			"/a/src/_jgt/jgtutils/jgtutils",
+			"/a/src/_jgt/ids/jgtpy"
 		]
 	}
 }

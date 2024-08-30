@@ -96,7 +96,7 @@ dev-release-plus:
 .PHONY: bump_version
 bump_version:
 	python bump_version.py
-	git commit pyproject.toml package.json jgtml/__init__.py -m bump:version &> /dev/null
+	#git commit pyproject.toml package.json jgtml/__init__.py -m bump:version &> /dev/null
 
 .PHONY: release
 release:
@@ -113,7 +113,8 @@ pre-build:
 
 .PHONY: quick-release
 quick-release:
-	make bump_jgtpy||true
+	#make bump_jgtpy||true
+	echo "ISSUE : _bump_jgtpy MANUALLY"
 	make bump_version
 	make dist
 	make pypi-release

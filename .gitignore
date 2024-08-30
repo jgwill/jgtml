@@ -178,3 +178,5 @@ LLM_Histories.md
 pto_ttf_cli_patterns.sh
 .stc/*
 docs/help-jgtmlttfcli.txt
+data/*
+zarch
