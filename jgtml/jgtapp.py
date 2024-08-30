@@ -387,6 +387,17 @@ def cds(instrument, timeframe, use_fresh=False,use_full=True):
   old_or_fresh = '-old' if not use_fresh else '--fresh'
   subprocess.run([CDSCLI_PROG_NAME, '-i', instrument, '-t', timeframe,use_full_arg, old_or_fresh])
 
+def ads(instrument, timeframe, use_fresh=False,tc=True,pov=False):
+  old_or_fresh = '-old' if not use_fresh else '--fresh'
+  ads_cli_args = [ADSCLI_PROG_NAME, '-i', instrument, '-t', timeframe, old_or_fresh]
+  if tc and not pov:
+    ads_cli_args.append('-sf')
+    ads_cli_args.append('tc')
+  elif pov:
+    ads_cli_args.append('-sf')
+    ads_cli_args.append('pov')
+  subprocess.run(ads_cli_args)
+
 def ocds(instrument, timeframe,use_full=True):
   use_full_arg = '--full' if use_full else ''
   subprocess.run([JGTCLI_PROG_NAME, '-i', instrument, '-t', timeframe, use_full_arg, '-old'])
@@ -542,7 +553,15 @@ def main():
   #--fresh flag to use the fresh data
   parser_prep_cds_05.add_argument('-new','--fresh', action='store_true', help='Use the fresh data')
   parser_prep_cds_05.add_argument('--full', action='store_true', help='Use the full data')
-
+  
+  parser_prep_ads_06 = subparsers.add_parser('ads', help='Refresh the ADS charts')
+  parser_prep_ads_06.add_argument('-i','--instrument', help='Instrument')
+  parser_prep_ads_06.add_argument('-t','--timeframe', help='Timeframe')
+  #--fresh flag to use the fresh data
+  parser_prep_ads_06.add_argument('-new','--fresh', action='store_true', help='Use the fresh data')
+  #-pov, --save_figure_as_pov_name
+  parser_prep_ads_06.add_argument('-pov','--save_figure_as_pov_name', action='store_true', help='Save the figure as pov name')
+  
   parser_prep_cds_06_old = subparsers.add_parser('ocds', help='Refresh the CDS from old PDS')
   parser_prep_cds_06_old.add_argument('-i','--instrument', help='Instrument')
   parser_prep_cds_06_old.add_argument('-t','--timeframe', help='Timeframe')
@@ -626,6 +645,11 @@ def main():
     pds(args.instrument, args.timeframe,)
   elif args.command == 'cds':
     cds(args.instrument, args.timeframe, args.fresh,args.full)
+  elif args.command == 'ads':
+    use_pov_name = args.save_figure_as_pov_name if args.save_figure_as_pov_name else False
+    tc_flag = False if use_pov_name else True
+    
+    ads(args.instrument, args.timeframe, args.fresh,pov=use_pov_name,tc=tc_flag)
   elif args.command == 'ocds':
     ocds(args.instrument, args.timeframe)
   elif args.command == 'ttf':
