@@ -2,7 +2,7 @@ import json
 import os
 
 def create_entry_signal_summary(data):
-    markdown_output = f"""
+    out = f"""
 # Entry Signal Details
 ## Trade Information
 - **Entry Rate:** {data['entry']}
@@ -12,9 +12,10 @@ def create_entry_signal_summary(data):
 - **Tlid ID:** {data['tlid_id']}
 - **Instrument:** {data['i']}
 - **Timeframe:** {data['t']}
+- **Risk(pips):** {data['pips_risk']}
 """
 
-    return markdown_output
+    return out
 
 TEMPLATE_CHART_N_LINKS="""
 ![](charts/signal.png)
@@ -26,6 +27,8 @@ TEMPLATE_CHART_N_LINKS="""
 TEMPLATE_UTILITES = """
 ----
 ## Utilities
+
+
 * [entry.sh](.jgt/entry.sh)
 * [cancel.sh](.jgt/cancel.sh)
 * [watch.sh](.jgt/watch.sh)
@@ -33,7 +36,9 @@ TEMPLATE_UTILITES = """
 * [update.sh](.jgt/update.sh)
 * [env.sh](.jgt/env.sh)
 * Other scripts might include: .jgt/mv.sh, .jgt/rmtrade.sh, .jgt/xtrail.sh, .jgt/xfdb.sh
+
 ### CLI Commands
+
 ```sh
 #.jgt/env.sh
 #fxtr -id $OrderID $demo_arg
@@ -47,16 +52,20 @@ TEMPLATE_UTILITES = """
 #jgtapp fxmvstopfdb -tid $trade_id -i $instrument -t $timeframe  $demo_arg
 #jgtapp fxstatusorder -id $OrderID  $demo_arg
 ```
+
 #### More
+
 * run 
+
 ```sh
-mkdir -p helps
-jgtapp --help > helps/jgtapp.txt
-fxtr --help > helps/fxtr.txt
+#mkdir -p helps
+#jgtapp --help > helps/jgtapp.txt
+#fxtr --help > helps/fxtr.txt
 ```
 ### --@STCIssue Future Enhancements
 * CLI Commands to run, not hard coded scripts
 * Example : _fxtrupdate, _jgtsession_mksg, _jgtsession_vswsopen, _jgtsession_mkads_ctx_timeframe, _jgtsession_mkads_all_timeframes
+
 """
 
 def create_bar_to_markdown(bar,title):
@@ -71,12 +80,12 @@ def create_bar_to_markdown(bar,title):
     return mddata
         
 def get_chart_n_links():
-    if 'TEMPLATE_CHART_N_LINKS' is os.environ:
+    if 'TEMPLATE_CHART_N_LINKS' in os.environ:
         return os.getenv('TEMPLATE_CHART_N_LINKS')
     return TEMPLATE_CHART_N_LINKS
 
 def get_utilities():
-    if 'TEMPLATE_UTILITES' is os.environ:
+    if 'TEMPLATE_UTILITES' in os.environ:
         return os.getenv('TEMPLATE_UTILITES')
     return TEMPLATE_UTILITES
 
