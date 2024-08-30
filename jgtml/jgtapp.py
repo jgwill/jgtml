@@ -395,7 +395,7 @@ def ads(instrument, timeframe, use_fresh=False,tc=True,pov=False):
     ads_cli_args.append('tc')
   elif pov:
     ads_cli_args.append('-sf')
-    ads_cli_args.append('pov')
+    ads_cli_args.append('tp')
   subprocess.run(ads_cli_args)
 
 def ocds(instrument, timeframe,use_full=True):
@@ -560,7 +560,8 @@ def main():
   #--fresh flag to use the fresh data
   parser_prep_ads_06.add_argument('-new','--fresh', action='store_true', help='Use the fresh data')
   #-pov, --save_figure_as_pov_name
-  parser_prep_ads_06.add_argument('-pov','--save_figure_as_pov_name', action='store_true', help='Save the figure as pov name')
+  parser_prep_ads_06.add_argument('-pov','--save_figure_as_pov_name', action='store_true', help='Save the figure as pov name. Default is in ./charts/T.png')
+  
   
   parser_prep_cds_06_old = subparsers.add_parser('ocds', help='Refresh the CDS from old PDS')
   parser_prep_cds_06_old.add_argument('-i','--instrument', help='Instrument')
