@@ -18,7 +18,7 @@ import realityhelper
 def create_app_arguments()->argparse.Namespace:
   from jgtutils import jgtcommon
   
-  parser:argparse.ArgumentParser=jgtcommon.new_parser(MLFCLI_DESCRIPTION,MLFCLI_EPILOG,MLFCLI_PROG_NAME)
+  parser:argparse.ArgumentParser=jgtcommon.new_parser(MLFCLI_DESCRIPTION,MLFCLI_EPILOG,MLFCLI_PROG_NAME,add_exiting_quietly_flag=True)
   #parser = argparse.ArgumentParser(description="Create mlf alpha CSV file")
   parser=jgtcommon.add_patterns_arguments(parser)
   
