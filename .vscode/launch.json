@@ -117,12 +117,28 @@
       "args": "fxmvstopgator -i AUD/CAD -t m15 --real -tid 36197090 --jaw",
     },
     {
+      "name": "fxmvstopgator01_jaw_W",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "jgtml/jgtapp.py",
+      "console": "integratedTerminal",
+      "args": "fxmvstopgator -tid 68790509 -i USD/CAD -t m5  --teeth --demo -W",
+    },
+    {
       "name": "fxmvstopgator01_teeth",
       "type": "debugpy",
       "request": "launch",
       "program": "jgtml/jgtapp.py",
       "console": "integratedTerminal",
       "args": "fxmvstopgator  -t H4 --demo -tid 68785024 --teeth",
+    },
+    {
+      "name": "fdb68785024",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "jgtml/jgtapp.py",
+      "console": "integratedTerminal",
+      "args": "fxmvstopfdb -tid 68785024 -i GBP/USD -t m5 --teeth --demo",
     },
     {
       "name": "fxmvstopfdb_with_tradeid_error",

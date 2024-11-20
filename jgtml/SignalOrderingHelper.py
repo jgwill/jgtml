@@ -242,7 +242,7 @@ def generate_entry_order_script(lots, entry_rate, stop_rate, instrument, buysell
 ```sh
 
 ### --- COPY FROM HERE --- 
-demo_arg="--{demo_arg}{demo_arg_opp}"
+demo_arg="--{demo_arg}" {demo_arg_opp}
 # FDB {bs_string} Entry {instrument} {timeframe} - bts/now:{validation_timestamp_str}/{now_utc_string}
 risk_in_pips={risk_in_pips}
 instrument="{instrument}";timeframe="{timeframe}";bs="{buysell}"

@@ -34,9 +34,10 @@ import json
 import os
 import subprocess
 import sys
+from time import sleep
 
 sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
-
+from jgtutils import jgtcommon
 from jgtutils.jgtcliconstants import (CLI_FXADDORDER_PROG_NAME,CLI_FXMVSTOP_PROG_NAME,CLI_FXRMORDER_PROG_NAME,CLI_FXRMTRADE_PROG_NAME,CLI_FXTR_PROG_NAME,PDSCLI_PROG_NAME)
 
 from jgtutils.jgtconstants import (LIPS,TEETH,JAW)
@@ -58,12 +59,24 @@ from SOHelper import get_bar_at_index,get_last_two_bars
 
 from mlcliconstants import (MLFCLI_PROG_NAME,TTFCLI_PROG_NAME,PNCLI_PROG_NAME,MXCLI_PROG_NAME)
 
+TFW_PROG_NAME = "tfw"
+
+def w(timeframe,script_to_run=None,exit_on_timeframe=False):
+  if script_to_run:
+    subprocess.run([TFW_PROG_NAME, '-t', timeframe,'-N', '-B', script_to_run], check=True)
+  elif exit_on_timeframe:
+    subprocess.run([TFW_PROG_NAME, '-t', timeframe,'-N', '-X'], check=True)
+    #print("Timeframe reached in W")
+    #wait for it to exit
+  else:
+    subprocess.run([TFW_PROG_NAME, '-t', timeframe,'-N'], check=True)
+
 
 
 def fxaddorder( instrument, lots, rate, buysell, stop, demo=False,flag_pips=False):
   pips_arg = '--pips' if flag_pips else ''
   demo_arg = '--demo' if demo else '--real'
-  subprocess.run([CLI_FXADDORDER_PROG_NAME, '-i', instrument, '-n', lots, '-r', rate, '-d', buysell, '-x',stop,pips_arg , demo_arg])
+  subprocess.run([CLI_FXADDORDER_PROG_NAME, '-i', instrument, '-n', lots, '-r', rate, '-d', buysell, '-x',stop,pips_arg , demo_arg], check=True)
 
 def _get_instrument_from_orderid(orderid):
   #get the instrument from the orderid
@@ -104,36 +117,46 @@ def entryvalidate(orderid,timeframe, demo=False):
   
 def fxrmorder(orderid, demo=False):
   demo_arg = '--demo' if demo else '--real'
-  subprocess.run([CLI_FXRMORDER_PROG_NAME, '-id', orderid, demo_arg])
+  subprocess.run([CLI_FXRMORDER_PROG_NAME, '-id', orderid, demo_arg], check=True)
 
 def fxrmtrade(tradeid, demo=False):
   demo_arg = '--demo' if demo else '--real'
-  subprocess.run([CLI_FXRMTRADE_PROG_NAME, '-tid', tradeid, demo_arg])
+  subprocess.run([CLI_FXRMTRADE_PROG_NAME, '-tid', tradeid, demo_arg], check=True)
 
 def fxtr(tradeid=None,orderid=None, demo=False,save_flag=True):
   save_arg = '-save' if save_flag else ''
   demo_arg = '--demo' if demo else '--real'
   if tradeid:
-    subprocess.run([CLI_FXTR_PROG_NAME, '-tid', tradeid, demo_arg, save_arg])
+    subprocess.run([CLI_FXTR_PROG_NAME, '-tid', tradeid, demo_arg, save_arg], check=True)
   elif orderid:
-    subprocess.run([CLI_FXTR_PROG_NAME, '-id', orderid, demo_arg, save_arg])
+    subprocess.run([CLI_FXTR_PROG_NAME, '-id', orderid, demo_arg, save_arg], check=True)
   else:
-    subprocess.run([CLI_FXTR_PROG_NAME, demo_arg, save_arg])
+    subprocess.run([CLI_FXTR_PROG_NAME, demo_arg, save_arg], check=True)
   msg = "File saved."
   print_jsonl_message(msg,extra_dict={"trade_id":tradeid,"order_id":orderid },scope="jgtapp::fxtr")
 
-def fxmvstop(tradeid,stop,flag_pips=False, demo=False):
+def fxmvstop(tradeid,stop,flag_pips=False, demo=False,args=None):
   pips_arg = '--pips' if flag_pips else ''
   demo_arg = '--demo' if demo else '--real'
   cli_args = [CLI_FXMVSTOP_PROG_NAME, '-tid', tradeid, '-x', stop, demo_arg]
   if pips_arg != '':
     cli_args.append(pips_arg)
-  subprocess.run(cli_args)
+  try:
+    subprocess.run(cli_args, check=True)
+  except subprocess.CalledProcessError as e:
+    print(f"Error moving stop: {e}")
+    from jgtutils.jgterrorcodes import (
+      TRADE_STOP_CHANGING_EXIT_ERROR_CODE,
+      TRADE_STOP_NOT_CHANGED_EXIT_ERROR_CODE,
+      TRADE_STOP_INVALID_EXIT_ERROR_CODE)
+    #@STCGoal Handle the error codes and ways to recover
+    #@STCIssue pass the error code to the caller context.  ex. fxmvstop is ran directly from the CLI, the error code should be passed by exiting the process with the error code, else if used by fxmvstopgator, the error code should be passed to the caller context in a raised exception.
+    #look at the args command to guess the context
 
 def ids(instrument, timeframe,use_full=False,use_fresh=True):
   use_fresh_arg = '-old' if not use_fresh else '--fresh'
   use_full_arg = '--full' if use_full else '-new'
-  subprocess.run([IDSCLI_PROG_NAME, '-i', instrument, '-t', timeframe, use_full_arg, use_fresh_arg])
+  subprocess.run([IDSCLI_PROG_NAME, '-i', instrument, '-t', timeframe, use_full_arg, use_fresh_arg], check=True)
 
 """
 fxmvstopgator -tid 68773276  --demo -i AUD/NZD -t H4 --lips
@@ -262,7 +285,8 @@ def fxmvstopfdb(i,t,tradeid,demo=False,close=False,lips=False,teeth=False,jaw=Fa
         #print("We are running something like this:",fxmvstopgator_cmd)
         msg = f"Moving stop to {line_arg}"
         print_jsonl_message(msg,extra_dict={"trade_id":tradeid,"instrument":i,"timeframe":t, "line":line_arg})
-        fxmvstopgator(i,t,tradeid,lips=lips,teeth=teeth,jaw=jaw,demo=demo,skip_trade_data_update=True)
+        skip_update = False
+        fxmvstopgator(i,t,tradeid,lips=lips,teeth=teeth,jaw=jaw,demo=demo,skip_trade_data_update=skip_update)
     else:
       msg = "No --lips, --teeth or --jaw passed, we are not moving the stop"
       print_jsonl_message(msg)
@@ -270,6 +294,7 @@ def fxmvstopfdb(i,t,tradeid,demo=False,close=False,lips=False,teeth=False,jaw=Fa
 def _get_trade_data(tradeid, demo,fresh=True):
     fxtr(demo=demo,tradeid=tradeid)
     expected_fn=f"fxtransact_{tradeid}.json"
+
     from jgtutils.jgtfxhelper import mkfn_cfxdata_filepath
     expected_path=mkfn_cfxdata_filepath(expected_fn)
     #expected_path=os.path.join("data","jgt",expected_fn)
@@ -337,7 +362,7 @@ def print_jsonl_message(msg,extra_dict:dict=None,scope=None):
     o["scope"]=scope
   print(json.dumps(o))
 
-def fxmvstopgator(i,t,tradeid,lips=True,teeth=False,jaw=False,demo=False,skip_trade_data_update=False):
+def fxmvstopgator(i,t,tradeid,lips=True,teeth=False,jaw=False,demo=False,skip_trade_data_update=False,loop_action=False):
   
 
   trade_data=_get_trade_data(tradeid, demo,fresh=not skip_trade_data_update)
@@ -373,6 +398,13 @@ def fxmvstopgator(i,t,tradeid,lips=True,teeth=False,jaw=False,demo=False,skip_tr
   print_jsonl_message(msg,extra_dict={"stop":stop,"line":choosen_line},scope="fxmvstopgator")
   #Then move the stop
   fxmvstop(tradeid,stop,demo=demo)
+  if loop_action:
+    print("{\"message\":\"Loop action run the fxmvstopgator active\"}")
+    sleep(60) # We will wait at least 60 seconds before running the loop action, we already changed the stop
+    sleep(1)
+    w(t,exit_on_timeframe=True)
+    #recursive call
+    fxmvstopgator(i,t,tradeid,lips=lips,teeth=teeth,jaw=jaw,demo=demo,loop_action=True,skip_trade_data_update=skip_trade_data_update)
 
 def tide(instrument, timeframe, buysell):
   raise DeprecationWarning("tide is deprecated. ")
@@ -380,12 +412,12 @@ def tide(instrument, timeframe, buysell):
 
 def pds(instrument, timeframe,use_full=True):
   use_full_arg = '--full' if use_full else ''
-  subprocess.run([PDSCLI_PROG_NAME, '-i', instrument, '-t', timeframe, use_full_arg])
+  subprocess.run([PDSCLI_PROG_NAME, '-i', instrument, '-t', timeframe, use_full_arg], check=True)
 
 def cds(instrument, timeframe, use_fresh=False,use_full=True):
   use_full_arg = '--full' if use_full else ''
   old_or_fresh = '-old' if not use_fresh else '--fresh'
-  subprocess.run([CDSCLI_PROG_NAME, '-i', instrument, '-t', timeframe,use_full_arg, old_or_fresh])
+  subprocess.run([CDSCLI_PROG_NAME, '-i', instrument, '-t', timeframe,use_full_arg, old_or_fresh], check=True)
 
 def ads(instrument, timeframe, use_fresh=False,tc=True,pov=False):
   old_or_fresh = '-old' if not use_fresh else '--fresh'
@@ -395,12 +427,12 @@ def ads(instrument, timeframe, use_fresh=False,tc=True,pov=False):
     ads_cli_args.append('tc')
   elif pov:
     ads_cli_args.append('-sf')
-    ads_cli_args.append('tp')
-  subprocess.run(ads_cli_args)
+    ads_cli_args.append('cp')
+  subprocess.run(ads_cli_args, check=True)
 
 def ocds(instrument, timeframe,use_full=True):
   use_full_arg = '--full' if use_full else ''
-  subprocess.run([JGTCLI_PROG_NAME, '-i', instrument, '-t', timeframe, use_full_arg, '-old'])
+  subprocess.run([JGTCLI_PROG_NAME, '-i', instrument, '-t', timeframe, use_full_arg, '-old'], check=True)
 
   
 def ttf(instrument, timeframe,pn="ttf",use_fresh=False,use_full=True):
@@ -409,20 +441,20 @@ def ttf(instrument, timeframe,pn="ttf",use_fresh=False,use_full=True):
   
   ttf_args = [TTFCLI_PROG_NAME, '-i', instrument, '-t', timeframe, use_full_arg, use_fresh_arg, '-pn', pn]
   print("TTF is being ran by jgtapp with args: ", ttf_args)
-  subprocess.run(ttf_args)
+  subprocess.run(ttf_args, check=True)
 
 
 def mlf(instrument, timeframe,pn="ttf",total_lagging_periods=5,use_fresh=False,use_full=True):
   use_full_arg = '--full' if use_full else ''
   use_fresh_arg = '-old' if not use_fresh else '--fresh'
   mlf_args = [MLFCLI_PROG_NAME, '-i', instrument, '-t', timeframe, use_full_arg, use_fresh_arg, '-pn', pn,'--total_lagging_periods',total_lagging_periods]
-  subprocess.run(mlf_args)
+  subprocess.run(mlf_args, check=True)
 
   
 
 def mx(instrument, timeframe, use_fresh=False):
   old_or_fresh = '-old' if not use_fresh else '--fresh'
-  subprocess.run([MXCLI_PROG_NAME, '-i', instrument, '-t', timeframe, old_or_fresh])
+  subprocess.run([MXCLI_PROG_NAME, '-i', instrument, '-t', timeframe, old_or_fresh], check=True)
 
 def ttfmxwf(instrument, use_fresh=False):
   for t in ["M1", "W1", "D1", "H4"]:
@@ -437,7 +469,7 @@ def ttfmxwf(instrument, use_fresh=False):
       mx(instrument, t)
       
 def ttfwf(instrument, use_fresh=False):
-  from jgtutils import jgtcommon
+  
   _settings = jgtcommon.get_settings()
   #ttf2run
   if hasattr(_settings, 'ttf2run'):
@@ -454,13 +486,28 @@ def ttfwf(instrument, use_fresh=False):
       if t != "M1":
         print("  TTF....")
         ttf(instrument, t,pn=pn)
-        
+
+def _add_common_arguments(parser,from_jgt_env=True,required_instrument=True,required_timeframe=True,fresh=True,fresh_from_settings=True,full_from_settings=False):
+  parser=jgtcommon.add_instrument_standalone_argument(parser,from_jgt_env=from_jgt_env,required=required_instrument)
+  parser=jgtcommon.add_timeframe_standalone_argument(parser,from_jgt_env=from_jgt_env,required=required_timeframe)
+  parser=jgtcommon.add_use_fresh_argument(parser,load_from_settings=fresh_from_settings)
+  parser=jgtcommon.add_use_full_argument(parser,load_from_settings=full_from_settings)
+  parser=jgtcommon.add_verbose_argument(parser,load_from_settings=True)
+  parser=jgtcommon.add_demo_flag_argument(parser,load_default_from_settings=True,from_jgt_env=from_jgt_env)
+  
+  return parser
+def _add_ordering_arguments(parser,from_jgt_env=True):
+  parser=jgtcommon.add_orderid_arguments(parser,from_jgt_env=from_jgt_env)
+  return parser
+
 def main():
-  parser = argparse.ArgumentParser(description="CLI equivalent of bash functions")
+  cli_help_description = "CLI equivalent of bash functions"
+  parser = jgtcommon.new_parser(cli_help_description,"JGTApp Wrapper/runner - run various ","jgtapp",add_exiting_quietly_flag=True)#argparse.ArgumentParser(description=cli_help_description)
   subparsers = parser.add_subparsers(dest='command')
   
   #fxaddorder
-  parser_fxaddorder = subparsers.add_parser('fxaddorder', help='Add an order')
+  parser_fxaddorder = subparsers.add_parser('fxaddorder', help='Add an order',aliases=['add'])
+  add_get_bash_autocomplete_argument(parser_fxaddorder)
   parser_fxaddorder.add_argument('-i','--instrument', help='Instrument')
   parser_fxaddorder.add_argument('-n','--lots', help='Lots')
   parser_fxaddorder.add_argument('-r','--rate', help='Rate')
@@ -471,7 +518,7 @@ def main():
   parser_fxaddorder.add_argument('--pips', action='store_true', help='Use pips')
   
   #fxrmorder
-  parser_fxrmorder = subparsers.add_parser('fxrmorder', help='Remove an order')
+  parser_fxrmorder = subparsers.add_parser('fxrmorder', help='Remove an order',aliases=['rm'])
   parser_fxrmorder.add_argument('-id','--orderid', help='Order ID')
   parser_fxrmorder.add_argument('--demo', action='store_true', help='Use the demo account')
   parser_fxrmorder.add_argument('--real', action='store_true', help='Use the real account',default=True)
@@ -483,7 +530,7 @@ def main():
   parser_entryvalidate.add_argument('--real', action='store_true', help='Use the real account',default=True)
   
   #fxrmtrade
-  parser_fxrmtrade = subparsers.add_parser('fxrmtrade', help='Remove a trade')
+  parser_fxrmtrade = subparsers.add_parser('fxrmtrade', help='Remove a trade',aliases=['rmtrade','close'])
   parser_fxrmtrade.add_argument('-tid','--tradeid', help='Trade ID')
   parser_fxrmtrade.add_argument('--demo', action='store_true', help='Use the demo account')
   parser_fxrmtrade.add_argument('--real', action='store_true', help='Use the real account',default=True)
@@ -497,7 +544,7 @@ def main():
   parser_fxtr.add_argument('--nosave', action='store_true', help='Dont Save the trade details')
   
   #fxmvstop
-  parser_fxmvstop = subparsers.add_parser('fxmvstop', help='Move stop')
+  parser_fxmvstop = subparsers.add_parser('fxmvstop', help='Move stop',aliases=['mvstop','mv'])
   parser_fxmvstop.add_argument('-tid','--tradeid', help='Trade ID')
   parser_fxmvstop.add_argument('-x','--stop', help='Stop')
   parser_fxmvstop.add_argument('--pips', action='store_true', help='Use pips')
@@ -512,7 +559,7 @@ def main():
   parser_ids.add_argument('--fresh', action='store_true', help='Use the fresh data')
   
   #fxmvstopgator
-  parser_fxmvstopgator = subparsers.add_parser('fxmvstopgator', help='Move stop using gator')
+  parser_fxmvstopgator = subparsers.add_parser('fxmvstopgator', help='Move stop using gator',aliases=['gator'])
   parser_fxmvstopgator.add_argument('-i','--instrument', help='Instrument',default="_",required=False)
   parser_fxmvstopgator.add_argument('-t','--timeframe', help='Timeframe')
   parser_fxmvstopgator.add_argument('-tid','--tradeid', help='Trade ID')
@@ -521,10 +568,11 @@ def main():
   parser_fxmvstopgator.add_argument('--jaw', action='store_true', help='Use jaw')
   parser_fxmvstopgator.add_argument('--demo', action='store_true', help='Use the demo account')
   parser_fxmvstopgator.add_argument('--real', action='store_true', help='Use the real account',default=True)
+  parser_fxmvstopgator.add_argument('-W','--loop_action', help='Loop action', action='store_true')
   
   #fxmvstopfdb
   
-  parser_fxmvstopfdb = subparsers.add_parser('fxmvstopfdb', help='Move stop using fdb',epilog=fxmvstopfdb_epilog)
+  parser_fxmvstopfdb = subparsers.add_parser('fxmvstopfdb', help='Move stop using fdb',epilog=fxmvstopfdb_epilog,aliases=['fdb'])
   parser_fxmvstopfdb.add_argument('-i','--instrument', help='Instrument',default="_",required=False)
   parser_fxmvstopfdb.add_argument('-t','--timeframe', help='Timeframe')
   parser_fxmvstopfdb.add_argument('-tid','--tradeid', help='Trade ID')
@@ -568,6 +616,12 @@ def main():
   parser_prep_cds_06_old.add_argument('-t','--timeframe', help='Timeframe')
   parser_prep_cds_06_old.add_argument('--full', action='store_true', help='Use the full data')
   
+  #tfw
+  parser_tfw_cron = subparsers.add_parser('w', help='Refresh wait for timeframe')
+  parser_tfw_cron.add_argument('-t','--timeframe', help='Timeframe')
+  parser_tfw_cron.add_argument("-B", "--script-to-run", help="Script to run when the timeframe is reached. (.jgt/tfw.sh). ")
+  parser_tfw_cron.add_argument("-X", "--exit", action="store_true", help="Exit the program when the timeframe is reached.")
+  
   
   parser_prep_ttf_10 = subparsers.add_parser('ttf', help='Refresh the TTF for an instrument and timeframe')
   parser_prep_ttf_10.add_argument('-i','--instrument', help='Instrument symbol')
@@ -604,14 +658,28 @@ def main():
   #An --autocomplete for bash
   # This argument --autocomplete is used to generate the bash autocomplete script
   ## We should not see it in the help
-  parser.add_argument('--autocomplete', action='store_true',help=argparse.SUPPRESS)
+  add_get_bash_autocomplete_argument(parser)
   
   
   args = parser.parse_args()
   
-  if args.autocomplete:
-      print("fxaddorder fxrmorder entryalidate fxrmtrade fxtr fxmvstop ids fxmvstopgator fxmvstopfdb")#Generating bash autocomplete script...")
+  if args.get_bash_autocomplete:
+      command_list = "fxaddorder fxrmorder entryalidate fxrmtrade fxtr fxmvstop ids fxmvstopgator fxmvstopfdb"
+      array_commands = command_list.split(" ")
+      #print(args.get_bash_autocomplete)
+      if args.get_bash_autocomplete and args.get_bash_autocomplete in array_commands:
+        current_command = args.get_bash_autocomplete
+        print(current_command)
+        #get subparser of the current command
+        subparser = subparsers.choices[current_command]
+        #print its help 
+        subparser.print_help()
+      else:
+        print(command_list)#Generating bash autocomplete script...")
       
+      #print(args.get_bash_autocomplete)
+      
+     
       exit()
       
   #if no arguments are passed, print help
@@ -623,25 +691,27 @@ def main():
   
   if args.command == 'tide':
     tide(args.instrument, args.timeframe, args.buysell)
-  elif args.command == 'fxaddorder':
+  elif args.command == 'fxaddorder' or args.command == 'add':
     fxaddorder(args.instrument, args.lots, args.rate, args.buysell, args.stop, args.demo,args.pips)
-  elif args.command == 'fxrmorder':
+  elif args.command == 'fxrmorder' or args.command == 'rm':
     fxrmorder(args.orderid, args.demo)
   elif args.command == 'entryvalidate':
     entryvalidate(args.orderid, args.demo)
-  elif args.command == 'fxrmtrade':
+  elif args.command == 'fxrmtrade' or args.command == 'rmtrade' or args.command == 'close':
     fxrmtrade(args.tradeid, args.demo)
   elif args.command == 'fxtr':
     fxtr(args.tradeid,args.orderid,args.demo,not args.nosave)
-  elif args.command == 'fxmvstop':
+  elif args.command  in ['fxmvstop','mvstop','mv']:
     fxmvstop(args.tradeid, args.stop, args.pips, args.demo)
   elif args.command == 'ids':
     ids(args.instrument, args.timeframe,args.full,args.fresh)
-  elif args.command == 'fxmvstopgator':
+  elif args.command == 'fxmvstopgator' or args.command == 'gator':
     lips_value = True if not args.lips and not args.teeth and not args.jaw else False
-    fxmvstopgator(args.instrument, args.timeframe, args.tradeid, lips_value,args.teeth,args.jaw,args.demo)
-  elif args.command == 'fxmvstopfdb':
+    fxmvstopgator(args.instrument, args.timeframe, args.tradeid, lips_value,args.teeth,args.jaw,args.demo,loop_action=args.loop_action)
+  elif args.command == 'fxmvstopfdb' or args.command == 'fdb':
     fxmvstopfdb(args.instrument, args.timeframe, args.tradeid, args.demo,args.close,args.lips,args.teeth,args.jaw)
+  elif args.command == 'w':
+    w(args.timeframe,args.script_to_run,args.exit)
   elif args.command == 'pds':
     pds(args.instrument, args.timeframe,)
   elif args.command == 'cds':
@@ -663,6 +733,9 @@ def main():
     mx(args.instrument, args.timeframe)
   elif args.command == 'ttfwf':
     ttfwf(args.instrument, args.fresh,args.full)
+
+def add_get_bash_autocomplete_argument(parser):
+    parser.add_argument('--get-bash-autocomplete','--get-autocomplete','--autocomplete',help=argparse.SUPPRESS,nargs='?',const=True,action='store',dest='get_bash_autocomplete')
 
 if __name__ == "__main__":
   main()
