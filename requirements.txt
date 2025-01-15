@@ -7,3 +7,4 @@ jgtutils
 jgtpy
 seaborn
 dash
+aiohttp
