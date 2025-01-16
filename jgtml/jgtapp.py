@@ -233,7 +233,7 @@ def fxmvstop(tradeid,stop,flag_pips=False, demo=False,args=None):
 def ids(instrument, timeframe,use_full=False,use_fresh=True):
   """Refresh the IDS data (indicator Data Service)."""
   use_fresh_arg = '-old' if not use_fresh else '--fresh'
-  use_full_arg = '--full' if use_full else '-new'
+  use_full_arg = '--full' if use_full else ''
   subprocess.run([IDSCLI_PROG_NAME, '-i', instrument, '-t', timeframe, use_full_arg, use_fresh_arg], check=True)
 
 """
