@@ -339,11 +339,14 @@ def main():
       
       validation_timestamp = dfsrc.index[-1]
       from jgtutils.jgtos import tlid_dt_to_string
-      output_string += f"{tlid_dt_to_string(validation_timestamp)};"# if verbose_level>0 else ""
+      tlid_timestamp_string = f"{tlid_dt_to_string(validation_timestamp)};"
+      
+      tlid_id = tlid.get_seconds()
+      
+      output_string += tlid_timestamp_string if tlid_timestamp_string != "" else tlid_id # if verbose_level>0 else ""
 
 
       
-      tlid_id = tlid.get_seconds()
       while tlid_id == previous_tlid_id:
         tlid_id = tlid.get_seconds()
       
