@@ -92,11 +92,57 @@ def fxaddorder( instrument, lots, rate, buysell, stop, demo=False,flag_pips=Fals
   demo_arg = '--demo' if demo else '--real'
   subprocess.run([CLI_FXADDORDER_PROG_NAME, '-i', instrument, '-n', lots, '-r', rate, '-d', buysell, '-x',stop,pips_arg , demo_arg], check=True)
 
-def _get_instrument_from_orderid(orderid):
-  #get the instrument from the orderid
-  #fxtr -id 68782480 --demo
-  #get the instrument from the orderid
-  raise NotImplementedError("get the instrument from the orderid")
+def _get_order_data(orderid, demo=False):
+    fx_file_path = os.path.join("data","jgt", f"fxtransact_{orderid}.json")
+    if os.path.exists(fx_file_path):
+      with open(fx_file_path, "r") as f:
+          fxdata = json.load(f)
+      for o in fxdata.get("orders", []):
+          if o.get("order_id") == orderid:
+              return o
+    #Case  where the order is still in the orders and has not became a trade yet
+    fxtr(orderid=orderid,demo=demo)
+    fx_file_path = os.path.join("data","jgt", f"fxtransact_{orderid}.json")
+    if os.path.exists(fx_file_path):
+      with open(fx_file_path, "r") as f:
+          fxdata = json.load(f)
+      for o in fxdata.get("orders", []):
+          if o.get("order_id") == orderid:
+              return o
+def _get_instrument_from_orderid(orderid, demo=False):
+    # First, it is possible that we already have that file : ./data/jgt/fxaddorder_170492374.json
+    fx_file_path = os.path.join("data","jgt", f"fxaddorder_{orderid}.json")
+    if os.path.exists(fx_file_path):
+      with open(fx_file_path, "r") as f:
+          fxdata = json.load(f)
+      return fxdata.get("instrument")
+    
+    #Case  where the order is still in the orders and has not became a trade yet
+    fxtr(orderid=orderid,demo=demo)
+    fx_file_path = os.path.join("data","jgt", f"fxtransact_{orderid}.json")
+    if os.path.exists(fx_file_path):
+      with open(fx_file_path, "r") as f:
+          fxdata = json.load(f)
+      for o in fxdata.get("orders", []):
+          if o.get("order_id") == orderid:
+              return o.get("instrument")
+    #Case where we did not find the instrument because it might have became a trade
+    fxtr(demo=demo) 
+    # We will find the instrument under the property 'contingent_order_id' in the orders or in 'open_order_id' in the trades
+    fx_file_path = os.path.join("data","jgt", "fxtransact.json")
+    if os.path.exists(fx_file_path):
+      with open(fx_file_path, "r") as f:
+          fxdata = json.load(f)
+      for o in fxdata.get("orders", []):
+          if o.get("order_id") == orderid:
+              return o.get("instrument")
+      for o in fxdata.get("orders", []):
+          if o.get("contingent_order_id") == orderid:
+              return o.get("instrument")
+      for t in fxdata.get("trades", []):
+          if t.get("open_order_id") == orderid:
+              return t.get("instrument")
+    raise ValueError(f"No matching order found for {orderid}.")
 
 def _get_buysell_from_orderid(orderid):
   #get the buysell from the orderid
