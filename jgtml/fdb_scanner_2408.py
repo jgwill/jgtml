@@ -133,7 +133,7 @@ import pandas as pd
 # # CDS Data gets added ctx bar Ctx gator
 #use_cache=True
 cds_cache_file_suffix = "_cds_cache"
-cache_root_dir="/var/lib/jgt/cache"
+cache_root_dir="/srv/lib/jgt/cache"
 no_cache=False
 #look if writable, able to create otherwise use $HOME/.cache/jgt/cache
 
