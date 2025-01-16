@@ -31,6 +31,38 @@ from mlcliconstants import (MLFCLI_PROG_NAME,TTFCLI_PROG_NAME,PNCLI_PROG_NAME,MX
 TFW_PROG_NAME = "tfw"
 
 def w(timeframe,script_to_run=None,exit_on_timeframe=False):
+  """Wrapper to run a bash script when a timeframe update is detected.
+  
+  (It is a wrapper of the command: tfw)
+  
+  usage: tfw [-h] [-ls SETTINGS] -t TIMEFRAME [-X | -S [SCRIPT_TO_RUN ...] | -C
+           [CLI_TO_RUN ...] | -F FUNCTION] [-M MESSAGE] [-I IN_MESSAGE] [-N]
+           [-v VERBOSE]
+
+  JGT WTF CLI helper  
+  
+  options:
+  -h, --help            show this help message and exit
+  -ls SETTINGS, --settings SETTINGS
+                        Load settings from a specific settings file (overrides default
+                        settings (/etc/jgt/settings.json and HOME/.jgt/settings.json
+                        and .jgt/settings.json)).
+  -t TIMEFRAME, --timeframe TIMEFRAME
+                        Timeframe
+  -X, --exit            Exit the program when the timeframe is reached.
+  -S [SCRIPT_TO_RUN ...], -B [SCRIPT_TO_RUN ...], --script-to-run [SCRIPT_TO_RUN ...]
+                        Script to run when the timeframe is reached. (.jgt/tfw.sh).
+  -C [CLI_TO_RUN ...], --cli-to-run [CLI_TO_RUN ...]
+                        CLI to run when the timeframe is reached. (python -m
+                        jgtutils.cli_test_cronrun_helper)
+  -F FUNCTION, --function FUNCTION
+                        Function to run when the timeframe is reached.
+  -M MESSAGE, --message MESSAGE
+                        Message to display when the timeframe is reached.
+  -I IN_MESSAGE, --in-message IN_MESSAGE
+                        Message to display when the timeframe wait starts.
+  -N, --no-output       Do not output anything.
+  """
   if script_to_run:
     subprocess.run([TFW_PROG_NAME, '-t', timeframe,'-N', '-B', script_to_run], check=True)
   elif exit_on_timeframe:
@@ -43,6 +75,19 @@ def w(timeframe,script_to_run=None,exit_on_timeframe=False):
 
 
 def fxaddorder( instrument, lots, rate, buysell, stop, demo=False,flag_pips=False):
+  """Add an entry order to the market.
+  
+  Used when an entry signal is detected.
+  
+  Args:
+    instrument (str): Instrument to trade
+    lots (str): Number of lots to trade
+    rate (str): Entry rate
+    buysell (str): Buy or Sell
+    stop (str): Stop rate
+    demo (bool, optional): Use the demo account. Defaults to False.
+    flag_pips (bool, optional): Use pips as the unit for the stop rate (rather than specifying a specific price for the stop rate (useful when an instrument requires a minimal amount of pips for the entry order (example: SPX500))). Defaults to False.
+  """
   pips_arg = '--pips' if flag_pips else ''
   demo_arg = '--demo' if demo else '--real'
   subprocess.run([CLI_FXADDORDER_PROG_NAME, '-i', instrument, '-n', lots, '-r', rate, '-d', buysell, '-x',stop,pips_arg , demo_arg], check=True)
@@ -66,8 +111,12 @@ def _get_stop_rate_from_orderid(orderid):
   raise NotImplementedError("get the stop rate from the orderid")
 
 def entryvalidate(orderid,timeframe, demo=False):
+  """Validate that an entry order is still valid and remove it if not.
+  
+  Used when the timeframe of the entry order is updated to validate that the order is still valid.
+  """
   demo_arg = '--demo' if demo else '--real'
-  instrument=_get_instrument_from_orderid(orderid)
+  instrument=_get_instrument_from_orderid(orderid)#@STCIssue Does that needs to Get the instrument from the OrderID ?
   bs=_get_buysell_from_orderid(orderid)
   stop_rate=_get_stop_rate_from_orderid(orderid)
   df = _get_ids_updated(instrument, timeframe)
@@ -85,14 +134,26 @@ def entryvalidate(orderid,timeframe, demo=False):
   
   
 def fxrmorder(orderid, demo=False):
+  """Remove an existing entry order.
+  
+  Used in case an order has become invalid (e.g. stop rate hit).
+  """
   demo_arg = '--demo' if demo else '--real'
   subprocess.run([CLI_FXRMORDER_PROG_NAME, '-id', orderid, demo_arg], check=True)
 
 def fxrmtrade(tradeid, demo=False):
+  """Remove/Close an existing trade.
+  
+  Might be used by other function to close a trade in certain condition where the stop was hit or the trade is not valid anymore but still open.
+  """
   demo_arg = '--demo' if demo else '--real'
   subprocess.run([CLI_FXRMTRADE_PROG_NAME, '-tid', tradeid, demo_arg], check=True)
 
 def fxtr(tradeid=None,orderid=None, demo=False,save_flag=True):
+  """Get trade details / update local trade data.
+  
+  (Wrapper for the command: fxtr)
+  """
   save_arg = '-save' if save_flag else ''
   demo_arg = '--demo' if demo else '--real'
   if tradeid:
@@ -105,6 +166,7 @@ def fxtr(tradeid=None,orderid=None, demo=False,save_flag=True):
   print_jsonl_message(msg,extra_dict={"trade_id":tradeid,"order_id":orderid },scope="jgtapp::fxtr")
 
 def fxmvstop(tradeid,stop,flag_pips=False, demo=False,args=None):
+  """Move stop for a trade"""
   pips_arg = '--pips' if flag_pips else ''
   demo_arg = '--demo' if demo else '--real'
   cli_args = [CLI_FXMVSTOP_PROG_NAME, '-tid', tradeid, '-x', stop, demo_arg]
@@ -123,6 +185,7 @@ def fxmvstop(tradeid,stop,flag_pips=False, demo=False,args=None):
     #look at the args command to guess the context
 
 def ids(instrument, timeframe,use_full=False,use_fresh=True):
+  """Refresh the IDS data (indicator Data Service)."""
   use_fresh_arg = '-old' if not use_fresh else '--fresh'
   use_full_arg = '--full' if use_full else '-new'
   subprocess.run([IDSCLI_PROG_NAME, '-i', instrument, '-t', timeframe, use_full_arg, use_fresh_arg], check=True)
@@ -141,6 +204,9 @@ fxmvstopfdb_epilog = "Move the stop to the FDB signal. If the stop is already hi
 
 MOVED_TO_FDB_FLAG_NAME = "moved_to_fdb"
 def fxmvstopfdb(i,t,tradeid,demo=False,close=False,lips=False,teeth=False,jaw=False,not_if_stop_closer=True):
+  """Move stop to the FDB signal. 
+  
+  ENhance the exit to use the FDB signal (probably a better exit that using the lips).  Is used in the case that we are at the ending phase of a trading campaign.  """
   demo_arg="--demo" if demo else "--real"
   if close:
     print("Closing the trade if the stop of fdbsignal is already hit")
@@ -664,7 +730,7 @@ def main():
     fxaddorder(args.instrument, args.lots, args.rate, args.buysell, args.stop, args.demo,args.pips)
   elif args.command == 'fxrmorder' or args.command == 'rm':
     fxrmorder(args.orderid, args.demo)
-  elif args.command == 'entryvalidate':
+  elif args.command == 'entryvalidate': #@STCIssue Does that needs to Get the instrument from the OrderID ?
     entryvalidate(args.orderid, args.demo)
   elif args.command == 'fxrmtrade' or args.command == 'rmtrade' or args.command == 'close':
     fxrmtrade(args.tradeid, args.demo)
