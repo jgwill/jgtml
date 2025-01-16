@@ -575,4 +575,8 @@ def _future_filtering_by_big_tide_gator(md_df_tail_amount, outdir, contexes, i, 
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except KeyboardInterrupt:
+        print("\nUser interrupted with CTRL+C, exiting gracefully.")
+        sys.exit(0)
