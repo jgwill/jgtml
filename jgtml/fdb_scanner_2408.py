@@ -335,7 +335,7 @@ def main():
         #print("Skipping ",t, " We just loaded it for data")
         continue
       scanning_info_header = f"a=Scanning;i={i};t={t};vtlid="
-      output_string = scanning_info_header if verbose_level>0 else ""
+      output_string = scanning_info_header #if verbose_level>0 else ""
       
       validation_timestamp = dfsrc.index[-1]
       from jgtutils.jgtos import tlid_dt_to_string
