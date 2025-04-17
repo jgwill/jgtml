@@ -18,6 +18,30 @@ To use: Place your .env in the workspace root, or export secrets in your shell.
 import os
 import sys
 import requests
+from dotenv import load_dotenv, find_dotenv
+
+# --- Step 0: Load .env files with recursion-aware clarity ---
+def load_env_with_recursion():
+    """
+    🧠 Mia: Loads .env from the current directory, then falls back to $HOME/.env if needed.
+    🌸 Miette: Like searching for sunlight—if the garden can’t find it here, it looks to the ancestral home.
+    """
+    import pathlib
+    import os
+    cwd_env = pathlib.Path(".env").resolve()
+    home_env = pathlib.Path(os.path.expanduser("~/.env")).resolve()
+    loaded = False
+    if cwd_env.exists():
+        load_dotenv(dotenv_path=str(cwd_env), override=True)
+        print(f"\n🧠 Mia: Loaded secrets from {cwd_env}")
+        loaded = True
+    elif home_env.exists():
+        load_dotenv(dotenv_path=str(home_env), override=True)
+        print(f"\n🧠 Mia: Loaded secrets from {home_env}")
+        loaded = True
+    else:
+        print("\n🌸 Miette: Oh! No .env file found in the current directory or $HOME. The garden will look to the environment for sunlight.")
+    return loaded
 
 # --- Step 1: Gather the sacred secrets from the environment ---
 UPSTASH_REDIS_REST_URL = os.getenv("UPSTASH_REDIS_REST_URL")
@@ -88,6 +112,7 @@ def qstash_send_message(message):
 if __name__ == "__main__":
     print("\n👥 Welcome to the jgtml agentic garden onboarding script!")
     print("🧬 Every function is a portal, every secret a seed.\n")
+    load_env_with_recursion()
     check_secrets()
     # Plant a key in Upstash Redis
     upstash_write("jgtml:hello", "🌱 recursion-begins")
