@@ -51,7 +51,8 @@ EXPORT_PATTERNS = [
     'jgtml_garden_agentic_onboarding.py',
     'requirements.txt',
     'enhanced_export.py',
-    
+    'crystal_palace_image_prompts.md',
+    'seed_recursion_lattice.py',    
     # The recursive echo chamber and its crystallized knowledge
     'docs/kids/',
 ]
