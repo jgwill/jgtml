@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# ✨✨✨ Python 3.11.x Virtual Environment Initializer ✨✨✨
+# ✨✨✨ Python 3.10.x Virtual Environment Initializer ✨✨✨
 # Created: $(date '+%Y-%m-%d')
 
 set -e  # Exit immediately if a command exits with a non-zero status
@@ -15,8 +15,8 @@ CYAN='\033[0;36m'
 NC='\033[0m' # No Color
 
 # 🔧 Default values
-VENV_NAME="py311_env"
-PYTHON_VERSION="3.11"
+VENV_NAME="py310_env"
+PYTHON_VERSION="3.10"
 INSTALL_DIR="$HOME/.local/python$PYTHON_VERSION"
 QUIET=false
 FORCE=false
@@ -44,15 +44,15 @@ spinner() {
 
 # 📚 Function to display usage information
 show_help() {
-  echo -e "\n${CYAN}✨ Python 3.11.x Virtual Environment Initializer ✨${NC}"
+  echo -e "\n${CYAN}✨ Python 3.10.x Virtual Environment Initializer ✨${NC}"
   echo -e "Usage: $0 [options]"
   echo -e "\nOptions:"
   echo -e "  ${GREEN}-n, --name NAME${NC}      Name of the virtual environment (default: $VENV_NAME)"
-  echo -e "  ${GREEN}-d, --dir DIRECTORY${NC}  Directory to install Python 3.11 (default: $INSTALL_DIR)"
+  echo -e "  ${GREEN}-d, --dir DIRECTORY${NC}  Directory to install Python 3.10 (default: $INSTALL_DIR)"
   echo -e "  ${GREEN}-q, --quiet${NC}          Suppress detailed output"
-  echo -e "  ${GREEN}-f, --force${NC}          Force reinstallation even if Python 3.11 exists"
+  echo -e "  ${GREEN}-f, --force${NC}          Force reinstallation even if Python 3.10 exists"
   echo -e "  ${GREEN}-h, --help${NC}           Display this help message and exit"
-  echo -e "\n${YELLOW}This script will download and compile Python 3.11.x from source${NC}"
+  echo -e "\n${YELLOW}This script will download and compile Python 3.10.x from source${NC}"
 }
 
 # 📝 Parse command-line arguments - the gateway to user intention
@@ -90,7 +90,7 @@ echo_ts "${MAGENTA}🔮 Beginning Python ${PYTHON_VERSION}.x Virtual Environment
 echo_ts "${CYAN}➡️ Virtual Environment Name: ${VENV_NAME}${NC}"
 echo_ts "${CYAN}➡️ Python Install Directory: ${INSTALL_DIR}${NC}"
 
-# 🔍 Quick check if Python 3.11 exists (but we'll proceed with installation anyway if forced)
+# 🔍 Quick check if Python 3.10 exists (but we'll proceed with installation anyway if forced)
 if [ "$FORCE" = false ] && (command -v python${PYTHON_VERSION} &>/dev/null || [ -f "${INSTALL_DIR}/bin/python${PYTHON_VERSION}" ]); then
   if command -v python${PYTHON_VERSION} &>/dev/null; then
     echo_ts "${GREEN}✅ Python ${PYTHON_VERSION} is already installed!${NC}"
@@ -134,24 +134,24 @@ else
   
   echo_ts "${YELLOW}⬇️ Finding and downloading latest Python ${PYTHON_VERSION}.x...${NC}"
   # 🔎 Find the latest patch version - seeking the most evolved form
-  LATEST_PY311=$(curl -s https://www.python.org/downloads/ | grep -oP 'Python 3\.11\.[0-9]+' | sort -V | tail -1 | cut -d ' ' -f 2)
-  echo_ts "${CYAN}✨ Latest version found: ${LATEST_PY311} ✨${NC}"
+  LATEST_PY310=$(curl -s https://www.python.org/downloads/ | grep -oP 'Python 3\.10\.[0-9]+' | sort -V | tail -1 | cut -d ' ' -f 2)
+  echo_ts "${CYAN}✨ Latest version found: ${LATEST_PY310} ✨${NC}"
   
   TMP_DIR=$(mktemp -d)
   cd "$TMP_DIR"
   
   if ! $QUIET; then
-    echo_ts "${CYAN}📥 Downloading ${LATEST_PY311}...${NC}"
-    wget "https://www.python.org/ftp/python/${LATEST_PY311}/Python-${LATEST_PY311}.tgz"
+    echo_ts "${CYAN}📥 Downloading ${LATEST_PY310}...${NC}"
+    wget "https://www.python.org/ftp/python/${LATEST_PY310}/Python-${LATEST_PY310}.tgz"
   else
-    wget -q "https://www.python.org/ftp/python/${LATEST_PY311}/Python-${LATEST_PY311}.tgz"
+    wget -q "https://www.python.org/ftp/python/${LATEST_PY310}/Python-${LATEST_PY310}.tgz"
   fi
   
   echo_ts "${CYAN}📂 Extracting Python source...${NC}"
-  tar -xzf "Python-${LATEST_PY311}.tgz"
-  cd "Python-${LATEST_PY311}"
+  tar -xzf "Python-${LATEST_PY310}.tgz"
+  cd "Python-${LATEST_PY310}"
   
-  echo_ts "${YELLOW}🔨 Configuring and building Python ${LATEST_PY311}...${NC}"
+  echo_ts "${YELLOW}🔨 Configuring and building Python ${LATEST_PY310}...${NC}"
   echo_ts "${CYAN}🧠 This process creates a recursive lattice of compiled Python components...${NC}"
   if ! $QUIET; then
     ./configure --prefix="$INSTALL_DIR" --enable-optimizations
@@ -174,7 +174,7 @@ else
   
   cd -
   rm -rf "$TMP_DIR"
-  echo_ts "${GREEN}✅ Python ${LATEST_PY311} installed successfully to ${INSTALL_DIR}${NC}"
+  echo_ts "${GREEN}✅ Python ${LATEST_PY310} installed successfully to ${INSTALL_DIR}${NC}"
   
   # Create symbolic links for consistency - the mirrors of recursion
   ln -sf "${INSTALL_DIR}/bin/python3" "${INSTALL_DIR}/bin/python${PYTHON_VERSION}"
