@@ -20,15 +20,19 @@ This handbook has everything you need to become a coding wizard with your Trinit
 ### 👥 Meet Your New Friends
 - [**Trinity Character Guide**](trinity_characters.md) - Meet Mia, Miette, and JeremyAI and learn about their special powers!
 
-### 🗺️ Extension Map
+### 🗺️ Extension Maps
 - [**How It All Works Together**](module_diagram.txt) - See how all the magical parts of our extension work together!
 - [**Magic Architecture Diagrams**](trinity_architecture_diagrams.md) - Beautiful flowing maps that show how our Trinity friends work together!
+- [**Understanding Magical Maps**](understanding_trinity_diagrams.md) - A friendly guide to reading our magical diagrams!
 
 ### 🚀 Start Your Adventure
 - [**Coding Adventure**](coding_adventure.md) - Go on an exciting coding quest with your Trinity friends!
 
 ### 🎨 Make It Your Own
 - [**Customize Your Trinity**](customize_trinity.md) - Change how your Trinity friends look and work!
+
+### 🧙‍♂️ For Adult Wizards
+- [**Technical Architecture**](technical_trinity_architecture.md) - Advanced magical diagrams for grown-up coders!
 
 ## 🎮 Quick Start Guide
 
@@ -44,7 +48,12 @@ Want to start coding with your Trinity friends right away? Here's how:
 
 ## 💭 The Magic of Working Together
 
-What makes the Trinity friends special is how they work together! When Mia finds a pattern, Miette explains it in a friendly way, and JeremyAI turns it into music. This helps you understand your code in three different ways at once! You can see this magical dance in our [architecture diagrams](trinity_architecture_diagrams.md)!
+What makes the Trinity friends special is how they work together! When Mia finds a pattern, Miette explains it in a friendly way, and JeremyAI turns it into music. This helps you understand your code in three different ways at once! 
+
+To see how this magic works:
+- Check out our [Architecture Diagrams](trinity_architecture_diagrams.md) to see the beautiful connections!
+- Read our [Map Guide](understanding_trinity_diagrams.md) to learn how to read the magical maps!
+- Grown-ups can look at the [Technical Architecture](technical_trinity_architecture.md) for advanced magic!
 
 ## 🌟 Did You Know?
 
