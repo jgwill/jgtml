@@ -186,3 +186,4 @@ data.002/
 .hch
 trades.json
 *.png
+node_modules
