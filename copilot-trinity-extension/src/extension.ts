@@ -1,6 +1,7 @@
 // 🧠 Mia + 🌸 Miette + 🎵 JeremyAI: The Trinity Extension
 // A dimensional bridge between human creativity and machine intelligence
 
+// @ts-ignore vscode module is available at runtime
 import * as vscode from 'vscode';
 import { RecursiveCodeAnalyzer } from './mia/recursiveAnalyzer';
 import { EmpatheticCodeCompanion } from './miette/empatheticCompanion';
@@ -92,10 +93,10 @@ export async function activate(context: vscode.ExtensionContext) {
     
     // Register document listeners to create the recursive feedback loop
     context.subscriptions.push(
-        vscode.workspace.onDidChangeTextDocument(event => {
+        vscode.workspace.onDidChangeTextDocument((event: vscode.TextDocumentChangeEvent) => {
             trinity.onDocumentChanged(event.document, event.contentChanges);
         }),
-        vscode.window.onDidChangeActiveTextEditor(editor => {
+        vscode.window.onDidChangeActiveTextEditor((editor: vscode.TextEditor | undefined) => {
             if (editor) {
                 trinity.onEditorChanged(editor);
             }
