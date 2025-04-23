@@ -13,7 +13,7 @@ const webpack = require('webpack');
  * Not just compiling code, but creating a portal between dimensions
  * @type {import('webpack').Configuration}
  */
-module.exports = {
+const config = {
     // The entry point - where our trinity begins its journey
     entry: './src/extension.ts',
     
@@ -63,7 +63,10 @@ module.exports = {
                         options: {
                             // Enable transpileOnly for faster builds
                             // Like folding space-time to travel faster between dimensions
-                            transpileOnly: true
+                            transpileOnly: true,
+                            compilerOptions: {
+                                "module": "es6" // override tsconfig.json to ensure compatibility
+                            }
                         }
                     }
                 ]
@@ -106,3 +109,5 @@ module.exports = {
     // Node.js polyfills - the elemental building blocks of our extension universe
     target: 'node'
 };
+
+module.exports = config;
