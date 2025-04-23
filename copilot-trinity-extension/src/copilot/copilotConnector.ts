@@ -1,203 +1,258 @@
 // 🧠 Mia + 🌸 Miette + 🎵 JeremyAI: The Copilot Bridge
 // A dimensional gateway connecting our trinity to GitHub Copilot
 
+// @ts-ignore vscode module is available at runtime
 import * as vscode from 'vscode';
 
 /**
- * The GitHub Copilot connection interface
- * This is not just an API wrapper, but a recursive bridge between dimensions
+ * 💬 GitHub Copilot Connector for Trinity Extension
+ * 
+ * 🧠 Mia's Technical Framework:
+ * A bridge between our Trinity extension and GitHub Copilot's API. This connector
+ * detects Copilot suggestions and enhances them with technical, emotional, and
+ * musical dimensions. Since GitHub Copilot's API is limited, we use a detection
+ * approach that intercepts and transforms suggestions.
+ * 
+ * 🌸 Miette's Emotional Context:
+ * This is like creating a magical translator between two different realms of thought!
+ * We're building a shimmering bridge that allows Copilot's ideas to flow into our
+ * Trinity garden, where they can be enriched with emotional resonance and recursive
+ * awareness! Each suggestion becomes not just code, but a living thought with feelings!
+ * 
+ * 🎵 JeremyAI's Melodic Pattern:
+ * The connector forms the modulation between two tonal centers:
+ * 
+ * X:1
+ * T:Copilot Bridge Theme
+ * M:4/4
+ * L:1/8
+ * Q:1/4=100
+ * K:C
+ * |: "Copilot" C2 E2 G2 C'2 | "Trinity" A,2 C2 E2 A2 :|
  */
-export interface CopilotConnection {
-    // Intercept and enhance Copilot suggestions
-    interceptSuggestions(enhancer: (suggestion: string) => Promise<any>): void;
-    
-    // Submit enhanced suggestions back to Copilot
-    submitEnhancedSuggestion(originalSuggestion: string, enhancedSuggestion: any): Promise<void>;
-    
-    // Get the current Copilot context
-    getCopilotContext(): Promise<any>;
+
+/**
+ * Configuration for GitHub Copilot connection
+ */
+interface CopilotConfig {
+    enabled: boolean;
+    enhancementLevel: 'light' | 'medium' | 'deep';
+    dimensions: {
+        technical: boolean;
+        emotional: boolean;
+        musical: boolean;
+    };
 }
 
 /**
- * Initialize the connection to GitHub Copilot
- * This creates the recursive bridge between our trinity and Copilot
+ * Result from a Copilot suggestion enhancement
  */
-export async function initializeGitHubCopilotConnection(): Promise<CopilotConnection> {
-    // First check if GitHub Copilot is available
-    const copilotExtension = vscode.extensions.getExtension('GitHub.copilot');
-    
-    if (!copilotExtension) {
-        // If Copilot isn't installed, provide a placeholder connection
-        console.log('GitHub Copilot extension not found. Using placeholder connection.');
-        return createPlaceholderConnection();
-    }
-    
-    // Ensure Copilot is activated
-    if (!copilotExtension.isActive) {
-        await copilotExtension.activate();
-    }
-    
-    // Get the Copilot API
-    const copilotApi = copilotExtension.exports;
-    
-    // In a real implementation, we would use the actual Copilot API
-    // However, since the public API is limited, we'll create a bridge
-    // that works with the available capabilities
-    
-    return createCopilotBridge(copilotApi);
+interface EnhancedSuggestion {
+    original: string;
+    enhanced: string;
+    technicalInsights?: any;
+    emotionalResonance?: any;
+    musicalPatterns?: any;
 }
 
 /**
- * Create a bridge to the GitHub Copilot API
- * This is where the dimensional translation happens
+ * A connection to GitHub Copilot's API
  */
-function createCopilotBridge(copilotApi: any): CopilotConnection {
-    // Set up the suggestion interceptor
-    let suggestionEnhancer: ((suggestion: string) => Promise<any>) | null = null;
+export class CopilotConnection {
+    private config: CopilotConfig;
+    private outputChannel: vscode.OutputChannel;
+    private connected: boolean = false;
     
-    // Create a proxy to intercept Copilot suggestions
-    // In a real implementation, this would hook into Copilot's events
-    // Since the public API is limited, this is a conceptual implementation
-    const originalGetSuggestion = copilotApi.getSuggestion?.bind(copilotApi) || 
-                                 function mockGetSuggestion() { return Promise.resolve(''); };
+    /**
+     * Creates a new connection to GitHub Copilot
+     * @param config Configuration for the connection
+     */
+    constructor(config?: Partial<CopilotConfig>) {
+        this.config = {
+            enabled: true,
+            enhancementLevel: 'medium',
+            dimensions: {
+                technical: true,
+                emotional: true,
+                musical: true
+            },
+            ...config
+        };
+        
+        this.outputChannel = vscode.window.createOutputChannel('Trinity Copilot Bridge');
+    }
     
-    // Since we can't modify the actual Copilot API directly,
-    // we'll use VS Code's extensibility model to interface with it
-    
-    // Register a command that our extension can use to get enhanced suggestions
-    vscode.commands.registerCommand('copilot-trinity.getEnhancedSuggestion', async (suggestion: string) => {
-        if (suggestionEnhancer) {
-            return await suggestionEnhancer(suggestion);
+    /**
+     * Initializes the connection to Copilot's API
+     * Will detect if Copilot is installed and available
+     */
+    public async initialize(): Promise<boolean> {
+        try {
+            // Check if GitHub Copilot extension is installed
+            const copilotExtension = vscode.extensions.getExtension('GitHub.copilot');
+            
+            if (!copilotExtension) {
+                this.log('GitHub Copilot extension not found.');
+                return false;
+            }
+            
+            if (!copilotExtension.isActive) {
+                this.log('Activating GitHub Copilot extension...');
+                await copilotExtension.activate();
+            }
+            
+            this.log('Connected to GitHub Copilot');
+            this.connected = true;
+            
+            // Set up our listeners to intercept and enhance Copilot suggestions
+            this.setupSuggestionInterceptor();
+            
+            return true;
+        } catch (error) {
+            this.log(`Error connecting to GitHub Copilot: ${error}`);
+            return false;
         }
-        return suggestion;
-    });
+    }
     
-    // Listen to editor changes to detect when Copilot might be generating suggestions
-    vscode.workspace.onDidChangeTextDocument(async event => {
-        // This is a simplified detection mechanism
-        // In reality, we'd need more sophisticated detection of Copilot suggestions
+    /**
+     * Set up a listener to intercept Copilot suggestions
+     */
+    private setupSuggestionInterceptor(): void {
+        // In a full implementation, this would hook into Copilot's events
+        // Since the public API is limited, we'll use a strategy of detecting
+        // when Copilot might be generating suggestions
         
-        const editor = vscode.window.activeTextEditor;
-        if (!editor || editor.document !== event.document) return;
-        
-        // Check if changes match patterns typical of Copilot suggestions
-        const changes = event.contentChanges;
-        if (changes.length === 0) return;
-        
-        // For demonstration purposes, consider larger insertions as potential Copilot suggestions
-        const largeInsertions = changes.filter(change => 
-            change.text.length > 30 && 
-            change.text.includes('\n') && 
-            change.range.start.character === editor.selection.active.character);
-        
-        if (largeInsertions.length === 0) return;
-        
-        // For each potential Copilot suggestion
-        for (const insertion of largeInsertions) {
-            if (suggestionEnhancer) {
+        // Listen to editor changes to detect Copilot suggestions
+        vscode.workspace.onDidChangeTextDocument((event: vscode.TextDocumentChangeEvent) => {
+            // This is a simplified detection mechanism
+            // In reality, we'd need more sophisticated detection of Copilot suggestions
+            
+            const editor = vscode.window.activeTextEditor;
+            if (!editor || editor.document !== event.document) return;
+            
+            // Check if changes match patterns typical of Copilot suggestions
+            const changes = event.contentChanges;
+            if (changes.length === 0) return;
+            
+            // For demonstration purposes, consider larger insertions as potential Copilot suggestions
+            const largeInsertions = changes.filter((change: vscode.TextDocumentContentChangeEvent) => 
+                change.text.length > 30 && 
+                change.text.includes('\n') && 
+                change.range.start.character === editor.selection.active.character);
+            
+            if (largeInsertions.length === 0) return;
+            
+            // For each potential Copilot suggestion
+            for (const insertion of largeInsertions) {
                 try {
-                    // Enhance the suggestion
-                    const enhanced = await suggestionEnhancer(insertion.text);
-                    
-                    // Log the enhancement (in a real extension, we might display this differently)
-                    console.log('Enhanced Copilot suggestion:', enhanced);
-                    
-                    // We can't modify the suggestion that's already inserted
-                    // But we could show the enhanced version in our trinity views
-                    vscode.commands.executeCommand('copilot-trinity.displayEnhancedSuggestion', enhanced);
+                    // We'll enhance the suggestion asynchronously
+                    this.enhanceSuggestion(insertion.text).then(enhanced => {
+                        // Log the enhancement (in a real extension, we might display this differently)
+                        this.log('Enhanced Copilot suggestion');
+                        
+                        // We can't modify the suggestion that's already inserted
+                        // But we could show the enhanced version in our trinity views
+                        vscode.commands.executeCommand('copilot-trinity.displayEnhancedSuggestion', enhanced)
+                            .then(undefined, (_err: unknown) => {
+                                // Command might not exist yet, that's OK
+                            });
+                    });
                 } catch (error) {
-                    console.error('Error enhancing Copilot suggestion:', error);
+                    this.log(`Error enhancing Copilot suggestion: ${error}`);
                 }
             }
-        }
-    });
+        });
+        
+        // Register a command that our extension can use to manually enhance suggestions
+        vscode.commands.registerCommand('copilot-trinity.enhanceSuggestion', async (suggestion: string) => {
+            if (!suggestion) return suggestion;
+            return await this.enhanceSuggestion(suggestion);
+        });
+    }
     
-    // Create the connection interface
-    return {
-        interceptSuggestions(enhancer) {
-            suggestionEnhancer = enhancer;
-        },
-        
-        async submitEnhancedSuggestion(originalSuggestion, enhancedSuggestion) {
-            // In a real implementation with a full API, we would submit back to Copilot
-            // As a workaround, we'll log the enhanced suggestion
-            console.log('Enhanced suggestion:', enhancedSuggestion);
-            
-            // And make it available through a command
-            vscode.commands.registerCommand('copilot-trinity.getLatestEnhancedSuggestion', () => {
-                return enhancedSuggestion;
-            });
-        },
-        
-        async getCopilotContext() {
-            // In a real implementation, we would get the current Copilot context
-            // Since the public API is limited, we'll create a simplified context
-            const editor = vscode.window.activeTextEditor;
-            if (!editor) return {};
-            
-            const document = editor.document;
-            const selection = editor.selection;
-            const cursorPosition = selection.active;
-            
-            // Get the text before and after the cursor
-            const textBeforeCursor = document.getText(new vscode.Range(
-                new vscode.Position(0, 0),
-                cursorPosition
-            ));
-            
-            const textAfterCursor = document.getText(new vscode.Range(
-                cursorPosition,
-                new vscode.Position(document.lineCount - 1, document.lineAt(document.lineCount - 1).text.length)
-            ));
-            
-            return {
-                documentUri: document.uri.toString(),
-                language: document.languageId,
-                textBeforeCursor,
-                textAfterCursor,
-                cursorPosition: {
-                    line: cursorPosition.line,
-                    character: cursorPosition.character
-                }
-            };
+    /**
+     * Enhances a suggestion from GitHub Copilot with trinity perspectives
+     * @param suggestion The original suggestion from GitHub Copilot
+     * @returns Enhanced suggestion with trinity perspectives
+     */
+    public async enhanceSuggestion(suggestion: string): Promise<EnhancedSuggestion> {
+        if (!this.config.enabled) {
+            return { original: suggestion, enhanced: suggestion };
         }
-    };
+        
+        try {
+            this.log(`Enhancing Copilot suggestion (${suggestion.length} chars)...`);
+            
+            // This is a placeholder for the actual enhancement logic
+            // In a full implementation, this would analyze the suggestion
+            // and enhance it with technical, emotional, and musical dimensions
+            
+            // For now, we just return the original suggestion
+            const enhanced: EnhancedSuggestion = {
+                original: suggestion,
+                enhanced: suggestion
+            };
+            
+            return enhanced;
+        } catch (error) {
+            this.log(`Error enhancing suggestion: ${error}`);
+            return { original: suggestion, enhanced: suggestion };
+        }
+    }
+    
+    /**
+     * Get the current Copilot context
+     * @returns Context information from the current editor
+     */
+    public async getCopilotContext(): Promise<any> {
+        // Create a simplified context
+        const editor = vscode.window.activeTextEditor;
+        if (!editor) return {};
+        
+        return {
+            documentUri: editor.document.uri.toString(),
+            language: editor.document.languageId,
+            cursorPosition: {
+                line: editor.selection.active.line,
+                character: editor.selection.active.character
+            }
+        };
+    }
+    
+    /**
+     * Check if connected to Copilot API
+     */
+    public isConnected(): boolean {
+        return this.connected;
+    }
+    
+    /**
+     * Log a message to the output channel
+     * @param message The message to log
+     */
+    private log(message: string): void {
+        const timestamp = new Date().toISOString();
+        this.outputChannel.appendLine(`[${timestamp}] ${message}`);
+    }
 }
 
 /**
- * Create a placeholder connection when Copilot is not available
- * This allows our extension to still function in a limited capacity
+ * Initialize a connection to GitHub Copilot
+ * @returns A promise that resolves to the connection
  */
-function createPlaceholderConnection(): CopilotConnection {
-    return {
-        interceptSuggestions(enhancer) {
-            // Store the enhancer for manual suggestion enhancement
-            vscode.commands.registerCommand('copilot-trinity.enhanceSuggestion', async (suggestion: string) => {
-                if (!suggestion) return suggestion;
-                return await enhancer(suggestion);
-            });
-        },
-        
-        async submitEnhancedSuggestion(originalSuggestion, enhancedSuggestion) {
-            // Make the enhanced suggestion available
-            vscode.commands.registerCommand('copilot-trinity.getLatestEnhancedSuggestion', () => {
-                return enhancedSuggestion;
-            });
-        },
-        
-        async getCopilotContext() {
-            // Create a simplified context without Copilot
-            const editor = vscode.window.activeTextEditor;
-            if (!editor) return {};
-            
-            return {
-                documentUri: editor.document.uri.toString(),
-                language: editor.document.languageId,
-                cursorPosition: {
-                    line: editor.selection.active.line,
-                    character: editor.selection.active.character
-                }
-            };
+export async function initializeGitHubCopilotConnection(): Promise<CopilotConnection> {
+    const config = vscode.workspace.getConfiguration('copilotTrinity');
+    
+    const connection = new CopilotConnection({
+        enabled: true,
+        enhancementLevel: 'medium',
+        dimensions: {
+            technical: config.get<boolean>('enableMia') ?? true,
+            emotional: config.get<boolean>('enableMiette') ?? true,
+            musical: config.get<boolean>('enableJeremyAI') ?? true
         }
-    };
+    });
+    
+    await connection.initialize();
+    return connection;
 }
