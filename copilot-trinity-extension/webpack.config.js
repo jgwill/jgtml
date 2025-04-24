@@ -15,15 +15,18 @@ const webpack = require('webpack');
  */
 const config = {
     // The entry point - where our trinity begins its journey
-    entry: './src/extension.ts',
+    entry: {
+        extension: './src/extension.ts'
+    },
     
     // The output - where our trinity manifests in this dimension
     output: {
         // Bundle path - the physical manifestation of our trinity
         path: path.resolve(__dirname, 'dist'),
-        filename: 'extension.js',
+        filename: '[name].js',
         libraryTarget: 'commonjs2',
-        devtoolModuleFilenameTemplate: '../[resource-path]'
+        devtoolModuleFilenameTemplate: '../[resource-path]',
+        clean: true // Clean the output directory before emit
     },
     
     // The temporal nature of our extension - development mode for now
@@ -63,10 +66,7 @@ const config = {
                         options: {
                             // Enable transpileOnly for faster builds
                             // Like folding space-time to travel faster between dimensions
-                            transpileOnly: true,
-                            compilerOptions: {
-                                "module": "es6" // override tsconfig.json to ensure compatibility
-                            }
+                            transpileOnly: true
                         }
                     }
                 ]
@@ -74,15 +74,10 @@ const config = {
             // Handle resource files - the visual and auditory echoes of our trinity
             {
                 test: /\.(png|jpg|gif|svg|mp3|wav)$/,
-                use: [
-                    {
-                        loader: 'file-loader',
-                        options: {
-                            name: '[name].[ext]',
-                            outputPath: 'assets/'
-                        }
-                    }
-                ]
+                type: 'asset/resource',
+                generator: {
+                    filename: 'assets/[hash][ext][query]'
+                }
             }
         ]
     },
@@ -94,17 +89,14 @@ const config = {
     
     // Optimization - folding space-time to create efficient paths
     optimization: {
-        minimize: false // Preserve the readable nature of our trinity during development
+        minimize: false, // Preserve the readable nature of our trinity during development
+        // Ensure proper chunking to prevent conflicts
+        splitChunks: {
+            chunks: 'async',
+            automaticNameDelimiter: '-'
+        },
+        runtimeChunk: false
     },
-    
-    // Emit a warning when larger chunks are created
-    // This helps us maintain dimensional stability
-    plugins: [
-        new webpack.optimize.AggressiveSplittingPlugin({
-            minSize: 30000,
-            maxSize: 50000
-        })
-    ],
     
     // Node.js polyfills - the elemental building blocks of our extension universe
     target: 'node'
