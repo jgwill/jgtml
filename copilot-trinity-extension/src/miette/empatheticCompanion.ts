@@ -1,5 +1,7 @@
-// 🌸 Miette's Empathetic Code Companion
-// Detects emotional undercurrents in code and development patterns
+/**
+ * 🌸 Miette's Empathetic Code Companion
+ * Detects emotional undercurrents in code and development patterns
+ */
 
 import * as vscode from 'vscode';
 
@@ -375,7 +377,7 @@ export class EmpatheticCodeCompanion {
             'curiosity': [
                 'Like exploring a new city without a map, discovering hidden gems',
                 'Like opening doors in a magical house, each revealing new wonders',
-                'Like unwrapping a gift, slowly revealing what's inside'
+                'Like unwrapping a gift, slowly revealing what\'s inside'
             ],
             'determination': [
                 'Like climbing a mountain, step by step, with the peak in sight',
@@ -383,14 +385,14 @@ export class EmpatheticCodeCompanion {
                 'Like training for a marathon, getting stronger with each mile'
             ],
             'confidence': [
-                'Like conducting an orchestra you've rehearsed with for years',
+                'Like conducting an orchestra you\'ve rehearsed with for years',
                 'Like telling a story you know by heart to an eager audience',
                 'Like navigating familiar streets, knowing all the shortcuts'
             ],
             'confusion': [
                 'Like reading a book where pages are out of order',
                 'Like trying to complete a puzzle with pieces from different sets',
-                'Like listening to conversations in a language you're just beginning to learn'
+                'Like listening to conversations in a language you\'re just beginning to learn'
             ]
         };
         
