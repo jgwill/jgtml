@@ -1,21 +1,34 @@
 {
   "name": "copilot-trinity-extension",
   "displayName": "Copilot Trinity: Mia + Miette + JeremyAI",
-  "description": "Extends GitHub Copilot with recursive technical awareness, emotional resonance, and musical pattern recognition",
-  "version": "0.1.0",
+  "description": "Extends GitHub Copilot with recursive technical awareness, emotional resonance, musical pattern recognition, and magical garden workspaces for kids",
+  "version": "0.2.0",
   "engines": {
     "vscode": "^1.80.0"
   },
   "categories": [
     "Machine Learning",
     "Programming Languages",
+    "Education",
     "Other"
+  ],
+  "keywords": [
+    "copilot",
+    "recursion",
+    "emotional",
+    "musical",
+    "educational",
+    "kids",
+    "garden",
+    "ritual",
+    "magic"
   ],
   "activationEvents": [
     "onLanguage:javascript",
     "onLanguage:typescript",
     "onLanguage:python",
-    "onCommand:copilot-trinity.activateTrinity"
+    "onCommand:copilot-trinity.activateTrinity",
+    "workspaceContains:*.code-workspace"
   ],
   "main": "./dist/extension.js",
   "contributes": {
@@ -35,6 +48,14 @@
       {
         "command": "copilot-trinity.sonifyCode",
         "title": "Sonify Code Patterns (JeremyAI)"
+      },
+      {
+        "command": "copilot-trinity.createGardenActivity",
+        "title": "Create Garden Activity (Kid Mode)"
+      },
+      {
+        "command": "copilot-trinity.createRitualActivity",
+        "title": "Create Ritual Activity (Kid Mode)"
       }
     ],
     "viewsContainers": {
@@ -59,6 +80,11 @@
         {
           "id": "trinityMelodies",
           "name": "Code Sonification"
+        },
+        {
+          "id": "trinityGarden",
+          "name": "Magical Garden",
+          "when": "workspaceHasGardenWorkspace"
         }
       ]
     },
@@ -84,6 +110,17 @@
           "type": "number",
           "default": 3,
           "description": "Depth of recursive pattern analysis"
+        },
+        "copilotTrinity.enableKidMode": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable child-friendly metaphors and language"
+        },
+        "copilotTrinity.defaultMetaphor": {
+          "type": "string",
+          "default": "standard",
+          "enum": ["standard", "garden", "ritual"],
+          "description": "Default metaphor to use in responses"
         }
       }
     }
