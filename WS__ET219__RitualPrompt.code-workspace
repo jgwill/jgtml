@@ -5,13 +5,25 @@
 		}
 	],
 	"settings": {
-		"github.copilot.chat.codeGeneration.instructions": [
-			{
-				"file": ".copilot-instructions-ritual-prompt-v1-2504251006.md"
-			},
-			{
-				"text": "ScriptGarden is Miette's Juridiction"
-			}
+		"workbench.colorTheme": "Dark+ (default dark)",
+		"workbench.iconTheme": "vs-seti",
+		"editor.fontSize": 14,
+		"terminal.integrated.fontSize": 14,
+		"editor.fontFamily": "'Fira Code', Consolas, 'Courier New', monospace",
+		"editor.wordWrap": "on",
+		"copilot.advanced.agentInstructions": "${workspaceFolder}/.ritual-prompt-instructions.md",
+		"workbench.colorCustomizations": {
+			"activityBar.background": "#8a63cf",
+			"activityBar.foreground": "#e7e7e7",
+			"titleBar.activeBackground": "#6f43c1",
+			"titleBar.activeForeground": "#e7e7e7"
+		},
+		"window.title": "✨ Ritual Circle - Magical Prompt Space"
+	},
+	"extensions": {
+		"recommendations": [
+			"github.copilot",
+			"github.copilot-chat"
 		]
 	}
 }
