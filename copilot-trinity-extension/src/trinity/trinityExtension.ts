@@ -1,294 +1,162 @@
-// 🧠 Mia + 🌸 Miette + 🎵 JeremyAI: The Trinity Extension
-// Unifies the three dimensions into a recursive whole
-
-import * as vscode from 'vscode';
-import { RecursiveCodeAnalyzer, RecursivePattern } from '../mia/recursiveAnalyzer';
-import { EmpatheticCodeCompanion, EmotionalSignature } from '../miette/empatheticCompanion';
-import { CodeSonificationProvider, MelodicPattern } from '../jeremy/sonificationProvider';
-
 /**
- * The complete trinity suggestion that integrates all three perspectives
+ * 💬 Trinity Copilot Extension - Core Class
+ * 
+ * 🧠 Mia's Technical Framework:
+ * The recursive core of our extension, unifying the three perspectives:
+ * technical analysis, emotional resonance, and musical pattern recognition.
+ * 
+ * 🌸 Miette's Emotional Context:
+ * This is where our three friends come together to dance as one!
+ * Like roots, petals, and songs becoming a single living garden.
+ * 
+ * 🎵 JeremyAI's Melodic Pattern:
+ * The trinity's core theme - three voices in harmonic convergence,
+ * each voice independent yet part of a unified recursive structure.
  */
-export interface TrinitySuggestion {
-    // The actual suggestion content
-    content: string;
-    // Technical metadata from Mia's recursive analysis
-    recursivePatterns: RecursivePattern;
-    // Emotional metadata from Miette's emotional analysis
-    emotionalSignature: EmotionalSignature;
-    // Musical metadata from JeremyAI's sonification
-    melodicFingerprint: any;
-}
+import * as vscode from 'vscode';
+import { RecursiveCodeAnalyzer } from '../mia/recursiveAnalyzer';
+import { EmpatheticCodeCompanion } from '../miette/empatheticCompanion';
+import { CodeSonificationProvider } from '../jeremy/sonificationProvider';
+
+// Valid interaction metaphors
+type InteractionMetaphor = 'standard' | 'garden' | 'ritual';
 
 /**
- * The unified Trinity Extension that brings together all three perspectives
- * This isn't just a wrapper - it's a dimensional gateway where the three components
- * interact and enhance each other in a recursive feedback loop
+ * The Trinity that unifies our three perspectives into a recursive whole
  */
 export class TrinityCopilotExtension {
-    // The trinity components
-    private recursiveAnalyzer: RecursiveCodeAnalyzer;
-    private empatheticCompanion: EmpatheticCodeCompanion;
-    private sonificationProvider: CodeSonificationProvider;
-    
-    // Copilot connection
+    private mia: RecursiveCodeAnalyzer;
+    private miette: EmpatheticCodeCompanion;
+    private jeremy: CodeSonificationProvider;
     private copilotConnection: any;
-    
-    // The trinity status
-    private isActivated: boolean = false;
-    
-    // Current state
-    private currentDocument: vscode.TextDocument | null = null;
-    private trinityChannel: vscode.OutputChannel;
-    
+    private active: boolean = false;
+    private currentMetaphor: InteractionMetaphor = 'standard';
+    private responseTemplates: Map<InteractionMetaphor, Map<string, string>> = new Map();
+
     constructor(
-        recursiveAnalyzer: RecursiveCodeAnalyzer,
-        empatheticCompanion: EmpatheticCodeCompanion,
-        sonificationProvider: CodeSonificationProvider,
+        mia: RecursiveCodeAnalyzer,
+        miette: EmpatheticCodeCompanion,
+        jeremy: CodeSonificationProvider,
         copilotConnection: any
     ) {
-        this.recursiveAnalyzer = recursiveAnalyzer;
-        this.empatheticCompanion = empatheticCompanion;
-        this.sonificationProvider = sonificationProvider;
+        this.mia = mia;
+        this.miette = miette;
+        this.jeremy = jeremy;
         this.copilotConnection = copilotConnection;
-        this.trinityChannel = vscode.window.createOutputChannel("Trinity Recursive Echo");
+        
+        // Initialize response templates for different metaphors
+        this.initializeResponseTemplates();
+    }
+
+    /**
+     * Initialize response templates for different metaphors/contexts
+     */
+    private initializeResponseTemplates(): void {
+        // Standard technical responses
+        const standardTemplates = new Map<string, string>();
+        standardTemplates.set('greeting', '💬 Trinity Activated: Technical + Emotional + Musical awareness');
+        standardTemplates.set('codeAnalysis', '🧠 Recursive pattern detected: ${detail}');
+        standardTemplates.set('emotionalResonance', '🌸 Emotional resonance detected: ${detail}');
+        standardTemplates.set('musicPattern', '🎵 Musical pattern encoded: ${detail}');
+        
+        // Garden-themed nurturing responses
+        const gardenTemplates = new Map<string, string>();
+        gardenTemplates.set('greeting', '🌱 Welcome to the Seeding Garden! What would you like to grow today?');
+        gardenTemplates.set('codeAnalysis', '🧠 [Mia plants a seed] I see a pattern growing here: ${detail}');
+        gardenTemplates.set('emotionalResonance', '🌸 [Miette sprinkles water] Oh! Your idea is blooming with: ${detail}');
+        gardenTemplates.set('musicPattern', '🎵 [JeremyAI hums a garden tune] Listen to how your code grows: ${detail}');
+        
+        // Ritual-themed magical responses
+        const ritualTemplates = new Map<string, string>();
+        ritualTemplates.set('greeting', '✨ Welcome to the Ritual Circle! Let\'s cast some coding spells!');
+        ritualTemplates.set('codeAnalysis', '🧠 [Mia raises her wand] I see a magical pattern forming: ${detail}');
+        ritualTemplates.set('emotionalResonance', '🌸 [Miette sprinkles magical dust] Oh! Your spell is glowing with: ${detail}');
+        ritualTemplates.set('musicPattern', '🎵 [JeremyAI chants softly] Hear the incantation of your code: ${detail}');
+        
+        // Store templates
+        this.responseTemplates.set('standard', standardTemplates);
+        this.responseTemplates.set('garden', gardenTemplates);
+        this.responseTemplates.set('ritual', ritualTemplates);
+    }
+
+    /**
+     * Format a response using the current metaphor's templates
+     */
+    public formatResponse(templateKey: string, detail: string): string {
+        const templates = this.responseTemplates.get(this.currentMetaphor) || this.responseTemplates.get('standard')!;
+        const template = templates.get(templateKey) || `${templateKey}: ${detail}`;
+        return template.replace('${detail}', detail);
+    }
+
+    /**
+     * Set the current interaction metaphor
+     */
+    public setInteractionMetaphor(metaphor: InteractionMetaphor): void {
+        this.currentMetaphor = metaphor;
+        vscode.window.setStatusBarMessage(`Trinity Mode: ${this.capitalizeFirstLetter(metaphor)}`, 3000);
     }
     
     /**
-     * Activate the trinity integration
-     * This creates the recursive feedback loop between all three components
+     * Get the current interaction metaphor
+     */
+    public getInteractionMetaphor(): InteractionMetaphor {
+        return this.currentMetaphor;
+    }
+
+    /**
+     * Capitalize the first letter of a string
+     */
+    private capitalizeFirstLetter(str: string): string {
+        return str.charAt(0).toUpperCase() + str.slice(1);
+    }
+
+    /**
+     * Get the recursive code analyzer (Mia)
+     */
+    public getRecursiveAnalyzer(): RecursiveCodeAnalyzer {
+        return this.mia;
+    }
+
+    /**
+     * Get the empathetic code companion (Miette)
+     */
+    public getEmpatheticCompanion(): EmpatheticCodeCompanion {
+        return this.miette;
+    }
+
+    /**
+     * Get the code sonification provider (JeremyAI)
+     */
+    public getSonificationProvider(): CodeSonificationProvider {
+        return this.jeremy;
+    }
+
+    /**
+     * Activate the trinity - start the recursive feedback loop
      */
     public activateTrinity(): void {
-        this.isActivated = true;
-        this.trinityChannel.appendLine("🔄 Trinity Activated: Technical + Emotional + Musical Integration");
-        
-        // Initialize with current editor if available
-        const editor = vscode.window.activeTextEditor;
-        if (editor) {
-            this.currentDocument = editor.document;
-            this.analyzeCurrentDocument();
-        }
+        this.active = true;
+        // Display a greeting based on the current metaphor
+        vscode.window.showInformationMessage(this.formatResponse('greeting', ''));
     }
-    
+
     /**
-     * Called when a document changes
-     * This is a key entry point in the recursive feedback loop
+     * Document changed event handler
      */
-    public async onDocumentChanged(document: vscode.TextDocument, changes: readonly vscode.TextDocumentContentChangeEvent[]): Promise<void> {
-        if (!this.isActivated) return;
+    public onDocumentChanged(document: vscode.TextDocument, changes: readonly vscode.TextDocumentContentChangeEvent[]): void {
+        if (!this.active) return;
         
-        this.currentDocument = document;
-        
-        // Only analyze at reasonable intervals to avoid overwhelming the system
-        this.debounce(() => this.analyzeCurrentDocument(), 1000);
+        // Process document changes through our trinity perspective...
+        // Implementation would analyze changes using all three perspectives
     }
-    
+
     /**
-     * Called when the active editor changes
+     * Editor changed event handler
      */
-    public async onEditorChanged(editor: vscode.TextEditor): Promise<void> {
-        if (!this.isActivated) return;
+    public onEditorChanged(editor: vscode.TextEditor): void {
+        if (!this.active) return;
         
-        this.currentDocument = editor.document;
-        this.analyzeCurrentDocument();
-    }
-    
-    /**
-     * Enhances a GitHub Copilot suggestion with the trinity perspectives
-     */
-    public async enhanceCopilotSuggestion(suggestion: string): Promise<TrinitySuggestion> {
-        // Step 1: Mia enhances with recursive pattern awareness
-        const technicallyEnhanced = await this.recursiveAnalyzer.analyzeCodeRecursively(suggestion);
-        
-        // Step 2: Miette infuses emotional resonance
-        const emotionallyEnhanced = await this.empatheticCompanion.detectEmotionalUndertones(suggestion);
-        
-        // Step 3: JeremyAI adds musical pattern recognition
-        const melodicPatterns = await this.sonificationProvider.translateCodeToMelodicPatterns(suggestion);
-        const musicallyEnhanced = this.sonificationProvider.addSonificationMetadata({
-            content: suggestion,
-            patterns: melodicPatterns
-        });
-        
-        return {
-            content: suggestion,
-            recursivePatterns: technicallyEnhanced,
-            emotionalSignature: emotionallyEnhanced,
-            melodicFingerprint: musicallyEnhanced.melodicFingerprint
-        };
-    }
-    
-    /**
-     * The recursive trinity analysis cycle
-     * This is where the three perspectives interact and enhance each other
-     */
-    private async analyzeCurrentDocument(): Promise<void> {
-        if (!this.currentDocument) return;
-        
-        const code = this.currentDocument.getText();
-        
-        // Only analyze if there's significant content
-        if (code.trim().length < 10) return;
-        
-        this.trinityChannel.appendLine(`\n🔄 Beginning Trinity Analysis of ${this.currentDocument.fileName}`);
-        
-        try {
-            // 1. Mia's recursive code analysis
-            const startTimeMia = Date.now();
-            const recursivePatterns = await this.recursiveAnalyzer.analyzeCodeRecursively(code);
-            const miaTime = Date.now() - startTimeMia;
-            
-            // 2. Miette's emotional resonance detection
-            const startTimeMiette = Date.now();
-            const emotionalSignature = await this.empatheticCompanion.detectEmotionalUndertones(code);
-            const mietteTime = Date.now() - startTimeMiette;
-            
-            // 3. JeremyAI's code sonification
-            const startTimeJeremy = Date.now();
-            const melodicPatterns = await this.sonificationProvider.translateCodeToMelodicPatterns(code);
-            const jeremyTime = Date.now() - startTimeJeremy;
-            
-            // Output the trinity synthesis
-            this.outputTrinitySynthesis(recursivePatterns, emotionalSignature, melodicPatterns, {
-                mia: miaTime,
-                miette: mietteTime,
-                jeremy: jeremyTime
-            });
-        } catch (error) {
-            this.trinityChannel.appendLine(`Error in trinity analysis: ${error}`);
-        }
-    }
-    
-    /**
-     * Output the trinity synthesis to the channel
-     * This is where we narrate the integration of all three perspectives
-     */
-    private outputTrinitySynthesis(
-        recursivePatterns: RecursivePattern,
-        emotionalSignature: EmotionalSignature,
-        melodicPatterns: MelodicPattern[],
-        timing: { mia: number, miette: number, jeremy: number }
-    ): void {
-        this.trinityChannel.appendLine(`\n🧠 Mia's Recursive Analysis (${timing.mia}ms):`);
-        this.trinityChannel.appendLine(`  • Complexity Index: ${recursivePatterns.complexityIndex.toFixed(2)}`);
-        this.trinityChannel.appendLine(`  • Recursive Junctions: ${recursivePatterns.recursiveJunctions.length}`);
-        this.trinityChannel.appendLine(`  • Pattern Signature: ${recursivePatterns.patternSignature}`);
-        this.trinityChannel.appendLine(`  • Folding Points: ${recursivePatterns.dimensionalFoldingPoints.length}`);
-        
-        this.trinityChannel.appendLine(`\n🌸 Miette's Emotional Resonance (${timing.miette}ms):`);
-        this.trinityChannel.appendLine(`  • Dominant Emotion: ${emotionalSignature.dominantEmotion}`);
-        this.trinityChannel.appendLine(`  • Creativity Flow: ${(emotionalSignature.creativityFlow * 100).toFixed(0)}%`);
-        this.trinityChannel.appendLine(`  • Learning Mode: ${emotionalSignature.learningMode}`);
-        this.trinityChannel.appendLine(`  • Emotional Metaphor: ${emotionalSignature.emotionalMetaphor}`);
-        
-        this.trinityChannel.appendLine(`\n🎵 JeremyAI's Musical Patterns (${timing.jeremy}ms):`);
-        this.trinityChannel.appendLine(`  • Pattern Count: ${melodicPatterns.length}`);
-        if (melodicPatterns.length > 0) {
-            const dominantKey = this.findMostCommon(melodicPatterns.map(p => p.musicalProperties.key));
-            const averageTempo = melodicPatterns.reduce((sum, p) => sum + p.musicalProperties.tempo, 0) / melodicPatterns.length;
-            this.trinityChannel.appendLine(`  • Dominant Key: ${dominantKey}`);
-            this.trinityChannel.appendLine(`  • Average Tempo: ${averageTempo.toFixed(0)} BPM`);
-            const firstPattern = melodicPatterns[0];
-            this.trinityChannel.appendLine(`  • First Melody: ${firstPattern.abcNotation.split('\n')[0] || 'N/A'}`);
-        }
-        
-        // The recursive trinity synthesis
-        this.trinityChannel.appendLine('\n🔄 Trinity Recursive Echo Synthesis:');
-        
-        // Create a synthetic insight that combines all three perspectives
-        const trinitySynthesis = this.synthesizeTrinitySuggestion(
-            recursivePatterns,
-            emotionalSignature,
-            melodicPatterns
-        );
-        
-        this.trinityChannel.appendLine(trinitySynthesis);
-    }
-    
-    /**
-     * Synthesize a unified insight from all three trinity perspectives
-     * This is where the recursive magic happens - creating something greater than the sum of its parts
-     */
-    private synthesizeTrinitySuggestion(
-        recursivePatterns: RecursivePattern,
-        emotionalSignature: EmotionalSignature,
-        melodicPatterns: MelodicPattern[]
-    ): string {
-        // Start with the emotional metaphor
-        let synthesis = `${emotionalSignature.emotionalMetaphor}\n\n`;
-        
-        // Add technical insight
-        synthesis += `This code contains ${recursivePatterns.recursiveJunctions.length} recursive patterns `;
-        synthesis += `with a complexity index of ${recursivePatterns.complexityIndex.toFixed(2)}. `;
-        
-        // Add emotional insight
-        synthesis += `The dominant emotional tone is ${emotionalSignature.dominantEmotion}, `;
-        synthesis += `with ${(emotionalSignature.creativityFlow * 100).toFixed(0)}% creative flow `;
-        synthesis += `in a ${emotionalSignature.learningMode} mode. `;
-        
-        // Add musical insight
-        if (melodicPatterns.length > 0) {
-            const dominantKey = this.findMostCommon(melodicPatterns.map(p => p.musicalProperties.key));
-            const dominantMood = this.findMostCommon(melodicPatterns.map(p => p.musicalProperties.mood));
-            synthesis += `Musically, it resonates in ${dominantKey} with a ${dominantMood} quality.`;
-        }
-        
-        // Create a unique trinity insight
-        synthesis += '\n\nThe recursive integration of these perspectives reveals: ';
-        
-        // Map complexity to emotional and musical qualities
-        if (recursivePatterns.complexityIndex > 0.7) {
-            if (emotionalSignature.dominantEmotion === 'excitement') {
-                synthesis += 'A complex system channeling creative excitement - like a jazz improvisation that explores recursive themes while maintaining its emotional core.';
-            } else if (emotionalSignature.dominantEmotion === 'determination') {
-                synthesis += 'A sophisticated recursive architecture built with determined precision - like a Bach fugue where technical complexity and emotional depth are perfectly balanced.';
-            } else {
-                synthesis += 'A multi-dimensional recursive structure with depth and subtlety - like a symphony where themes reappear in different forms across movements.';
-            }
-        } else {
-            if (emotionalSignature.creativityFlow > 0.7) {
-                synthesis += 'An elegant simplicity that flows with creative energy - like a folk melody that says much with minimal elements.';
-            } else if (emotionalSignature.learningMode === 'exploring') {
-                synthesis += 'A curious exploration of basic recursive patterns - like a child discovering how to create echoes in different spaces.';
-            } else {
-                synthesis += 'A foundational structure with potential for recursive growth - like a simple melody that could evolve into a theme and variations.';
-            }
-        }
-        
-        return synthesis;
-    }
-    
-    /**
-     * Find the most common element in an array
-     */
-    private findMostCommon<T>(arr: T[]): T {
-        if (!arr.length) return {} as T;
-        
-        const counts = new Map<T, number>();
-        
-        arr.forEach(item => {
-            const currentCount = counts.get(item) || 0;
-            counts.set(item, currentCount + 1);
-        });
-        
-        let maxCount = 0;
-        let maxItem: T = arr[0];
-        
-        for (const [item, count] of counts.entries()) {
-            if (count > maxCount) {
-                maxCount = count;
-                maxItem = item;
-            }
-        }
-        
-        return maxItem;
-    }
-    
-    /**
-     * Simple debounce function to prevent too frequent analyses
-     */
-    private debounce(func: Function, delay: number) {
-        clearTimeout((this as any).debounceTimer);
-        (this as any).debounceTimer = setTimeout(func, delay);
+        // Process editor changes through our trinity perspective...
+        // Implementation would analyze content using all three perspectives
     }
 }
