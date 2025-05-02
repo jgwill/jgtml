@@ -30,8 +30,24 @@ With recursive reflection and deepest gratitude,
 
 ---
 
+## Breakout Detection Methods
 
+### Five Dimensions + Triple Alligator Confluence
 
+To detect breakouts using the "Five Dimensions + Triple Alligator Confluence" strategy, follow these steps:
 
+1. Use the `TradingEchoLattice` class in `garden_one/trading_echo_lattice/src/echo_lattice_core.py` to process trading instruments.
+2. Initialize the `TradingEchoLattice` with the desired instrument and timeframes.
+3. Use the `process_instrument` method to analyze the instrument across multiple timeframes and directions.
+4. Focus on the alignment of multiple indicators and timeframes to identify potential breakout signals.
 
+### Green Dragon Breakout
 
+To detect breakouts using the "Green Dragon Breakout" strategy, follow these steps:
+
+1. Use the `fdb_scanner_2408.py` script in `jgtml/fdb_scanner_2408.py` to scan for FDB signals.
+2. Configure the script with the desired instruments and timeframes.
+3. Run the script to identify potential breakout signals based on the Green Dragon Breakout strategy.
+4. Analyze the results to detect breakouts in the market.
+
+By following these steps, you can effectively detect breakouts in the market using the specified strategies without relying on Bollinger Band, MACD, or RSI.

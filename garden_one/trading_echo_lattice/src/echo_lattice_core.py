@@ -140,6 +140,14 @@ class TradingEchoLattice:
             analyze_higher_tf=analyze_higher_tf
         )
         
+        # Detect breakouts using the new methods
+        breakout_results = self.detect_breakouts(instrument, timeframes)
+        green_dragon_results = self.detect_green_dragon_breakout(instrument, timeframes)
+        
+        # Include breakout results in the processing results
+        results['breakouts'] = breakout_results
+        results['green_dragon_breakouts'] = green_dragon_results
+        
         execution_time = time.time() - start_time
         self._echo(f"\n✅ Processing complete in {execution_time:.2f} seconds")
         
@@ -161,6 +169,54 @@ class TradingEchoLattice:
             )
             
         return results
+        
+    def detect_breakouts(self, instrument: str, timeframes: List[str]) -> Dict:
+        """
+        Detect breakouts using the "Five Dimensions + Triple Alligator Confluence" strategy.
+        
+        Args:
+            instrument: Trading instrument symbol
+            timeframes: List of timeframes to analyze
+            
+        Returns:
+            Dictionary with breakout detection results
+        """
+        self._echo(f"\n🔍 Detecting breakouts for {instrument} using Five Dimensions + Triple Alligator Confluence")
+        
+        # Placeholder for breakout detection logic
+        breakout_results = {
+            "instrument": instrument,
+            "timeframes": timeframes,
+            "breakouts": []
+        }
+        
+        # Implement the breakout detection logic here
+        # For now, we'll just return an empty result
+        return breakout_results
+        
+    def detect_green_dragon_breakout(self, instrument: str, timeframes: List[str]) -> Dict:
+        """
+        Detect breakouts using the "Green Dragon Breakout" strategy.
+        
+        Args:
+            instrument: Trading instrument symbol
+            timeframes: List of timeframes to analyze
+            
+        Returns:
+            Dictionary with breakout detection results
+        """
+        self._echo(f"\n🔍 Detecting breakouts for {instrument} using Green Dragon Breakout")
+        
+        # Placeholder for breakout detection logic
+        green_dragon_results = {
+            "instrument": instrument,
+            "timeframes": timeframes,
+            "breakouts": []
+        }
+        
+        # Implement the breakout detection logic here
+        # For now, we'll just return an empty result
+        return green_dragon_results
         
     def analyze_performance(self, 
                           instrument: Optional[str] = None,
