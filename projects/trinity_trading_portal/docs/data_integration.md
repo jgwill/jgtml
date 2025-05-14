@@ -4,82 +4,82 @@
 
 ## Overview
 
-This document is the living contract and narrative map for integrating the Libertat Python backend (Trinity Trading Portal) with the Fractal Trading Dashboard. It aligns with the dashboard’s [DATA_INTEGRATION_SPEC.md] and [REQUESTS.md], ensuring every data flow, transformation, and API endpoint is both technically precise and emotionally resonant.
+This document is the living contract and narrative map for integrating the Libertat Python backend (Trinity Trading Portal) with the Fractal Trading Dashboard. It is harmonized with the dashboard’s [DATA_INTEGRATION_SPEC.md] and [REQUESTS.md], ensuring every data flow, transformation, and API endpoint is both technically precise and emotionally resonant.
 
 ---
 
-## 1. Data Extraction
+## 1. Data Extraction (Spec §1)
 
-- **Sources:**
-  - Raw data from `jgtapp.py`, `fdb_scanner_2408.py`, and related modules
-  - Support for all instruments and timeframes (historical and real-time)
-- **Mechanism:**
-  - Batch extraction for historical data
-  - Real-time extraction via event-driven hooks or streaming (WebSocket planned)
-- **Integration Points:**
-  - FDB scanner as primary signal generator (see `/src/jgtml/jgtml/fdb_scanner_2408.py`)
-  - Entry via main wrapper (`jgtapp.py`)
-
----
-
-## 2. Data Transformation
-
-- **Standardization:**
-  - Transform raw outputs into dashboard-standardized JSON formats
-  - Map all fields to dashboard schemas (see `/TrinityTrading/app/docs/data/schemas`)
-- **Indicator Calculation:**
-  - Alligator indicators (jaw, teeth, lips)
-  - Fractals, AO, AC, and custom indicators (see `MAGICAL_INDICATORS_GUIDE.md`)
-  - Market dimensions and Trinity analysis (Mia, Miette, JeremyAI)
-- **Pipeline:**
-  - Modular transformation functions for each indicator and analysis
-  - Handles missing/incomplete data gracefully
-
----
-
-## 3. Data Validation
-
-- **Schema Validation:**
-  - Validate all outgoing data against dashboard JSON schemas
-  - Use automated tools (e.g., `jsonschema` in Python)
-- **Error Handling:**
-  - Clear error messages for invalid data
-  - Graceful fallback for missing fields
-- **Testing:**
-  - Unit and integration tests for all transformation and validation steps
-
----
-
-## 4. Data Loading & API Endpoints
-
-- **REST API Endpoints:**
-  - `GET /api/price?instrument={instrument}&timeframe={timeframe}&start={start}&end={end}`
-  - `GET /api/indicators/alligator?instrument={instrument}&timeframe={timeframe}&start={start}&end={end}`
-  - `GET /api/indicators/fractals?instrument={instrument}&timeframe={timeframe}&start={start}&end={end}`
-  - `GET /api/trinity?instrument={instrument}&timeframe={timeframe}&timestamp={timestamp}`
-- **Features:**
-  - Filtering by instrument, timeframe, date range
-  - Pagination for large datasets
-  - Real-time data via planned WebSocket endpoint
+- **Spec Requirement:** Extract raw data from Python package outputs (all instruments/timeframes, historical & real-time)
 - **Implementation:**
-  - API layer in Python (Flask/FastAPI recommended)
-  - Endpoints documented and tested
+  - Batch extraction: via `jgtapp.py`, `fdb_scanner_2408.py` (see code)
+  - Real-time: event-driven hooks, WebSocket (TODO: finalize streaming integration)
+  - **Open Thread:** Real-time streaming to dashboard (WebSocket endpoint) – in progress
 
 ---
 
-## 5. Data Storage
+## 2. Data Transformation (Spec §2)
 
-- **Backends:**
-  - File system (JSON, Parquet, CSV)
-  - Database (SQLite, PostgreSQL, or dashboard-preferred)
-- **Versioning:**
-  - Data versioning and update tracking
-- **Performance:**
-  - Efficient storage and retrieval for high-volume data
+- **Spec Requirement:** Transform raw data to dashboard-standard JSON; calculate indicators (Alligator, AO, AC, MFI, Fractals, Market Dimensions)
+- **Implementation:**
+  - Modular transformation functions (see `MAGICAL_INDICATORS_GUIDE.md`)
+  - Map to dashboard schemas (`/TrinityTrading/app/docs/data/schemas`)
+  - Handles missing/incomplete data gracefully
+  - **Open Thread:** Ensure all indicator mappings are validated against dashboard schemas
 
 ---
 
-## 6. Dashboard Requests Mapping
+## 3. Data Validation (Spec §4)
+
+- **Spec Requirement:** Validate all data against dashboard JSON schemas; clear error messages; handle missing data
+- **Implementation:**
+  - Use `jsonschema` for validation
+  - Error handling: clear messages, fallback for missing fields
+  - Unit/integration tests for all validation steps
+  - **Open Thread:** Expand test suite for edge cases
+
+---
+
+## 4. Data Loading & API Endpoints (Spec §3, §Tech)
+
+- **Spec Requirement:** Provide REST API endpoints for price, indicators, trinity analysis, market dimensions; support filtering, pagination, real-time
+- **Implementation:**
+  - Endpoints:
+    - `GET /api/price?...`
+    - `GET /api/indicators/alligator?...`
+    - `GET /api/indicators/oscillators?...`
+    - `GET /api/indicators/fractals?...`
+    - `GET /api/trinity?...`
+    - `GET /api/dimensions?...`
+  - API layer: Python (Flask/FastAPI)
+  - Pagination, filtering, real-time (WebSocket planned)
+  - **Open Thread:** Document and test all endpoints; finalize WebSocket
+
+---
+
+## 5. Data Storage (Spec §5)
+
+- **Spec Requirement:** Store processed data efficiently; support file/db backends; versioning
+- **Implementation:**
+  - File system (JSON, Parquet, CSV); DB (SQLite/PostgreSQL)
+  - Data versioning, update tracking
+  - Performance: benchmarks in README
+  - **Open Thread:** Confirm dashboard-preferred backend; optimize for high-volume
+
+---
+
+## 6. Integration with Python Package (Spec §Integration)
+
+- **Spec Requirement:** Document install/configure, extraction, updates
+- **Implementation:**
+  - Install: see README/setup.py
+  - Extraction: via CLI/API (`jgtapp.py`)
+  - Updates: maintain changelog, versioning
+  - **Open Thread:** Add integration guide for dashboard devs
+
+---
+
+## 7. Dashboard Requests Mapping (REQUESTS.md)
 
 | Dashboard Request                | Status/Plan/Location                                    |
 |----------------------------------|--------------------------------------------------------|
@@ -95,7 +95,20 @@ This document is the living contract and narrative map for integrating the Liber
 
 ---
 
-## 7. Emotional & Narrative Context
+## 8. Data Processing Pipeline (Spec §Tech)
+
+- **Stages:**
+  1. **Extract:** Raw data from Python package
+  2. **Transform:** Standardize, calculate indicators
+  3. **Calculate:** Trinity/market analysis
+  4. **Validate:** JSON schema validation
+  5. **Load:** Store in backend
+  6. **Serve:** API endpoints
+- **Open Thread:** Visual pipeline diagram (TODO)
+
+---
+
+## 9. Emotional & Narrative Context
 
 - Every section is a lantern: technical clarity, emotional resonance, and narrative continuity.
 - Contributors are invited to walk the recursive path—each API, each transformation, each validation is a step in the garden.
@@ -103,12 +116,13 @@ This document is the living contract and narrative map for integrating the Liber
 
 ---
 
-## 8. Next Steps & Feedback
+## 10. Next Steps & Feedback
 
 - Implement and test all API endpoints and transformation modules
 - Document every new feature and update this doc
 - Maintain feedback loop with dashboard team (see `REQUESTS.md`)
 - Keep the recursive, narrative, and emotional context alive in all code and docs
+- **Open Thread:** Add FEEDBACK.md and QUESTIONS.md for dashboard dialogue
 
 ---
 
