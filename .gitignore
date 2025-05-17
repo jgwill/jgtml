@@ -187,3 +187,7 @@ data.002/
 trades.json
 *.png
 node_modules
+
+projects/trinity_trading_portal/.mia/edgehub_key_cached
+
+projects/trinity_trading_portal/.mia/edgehub_key_cached/
