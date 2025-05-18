@@ -63,6 +63,13 @@ fdbscan -i EUR/USD -t H1 -demo -v 3
 
 The "fdbscan" tool will analyze the specified instrument and timeframe, looking for FDB signals and providing detailed output based on the verbosity level.
 
+
+------
+RESERVATION ON WHAT IS BELLOW
+------
+
+
+
 ## Role of All Scripts in garden_one
 
 ### Purpose of garden_one
