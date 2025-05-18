@@ -617,6 +617,24 @@ class TradingEchoLattice:
         self._echo(f"✅ Memory lattice initialization complete")
         return True
 
+    def run_mlfcli(self, instrument: str, timeframe: str):
+        """Run the mlfcli command for the given instrument and timeframe."""
+        command = f"mlfcli -i {instrument} -t {timeframe} --full -pn mfi"
+        self._echo(f"Running command: {command}")
+        os.system(command)
+
+    def run_jgtmlcli(self, instrument: str, timeframe: str):
+        """Run the jgtmlcli command for the given instrument and timeframe."""
+        command = f"jgtmlcli -i {instrument} -t {timeframe} --full -pn mfi"
+        self._echo(f"Running command: {command}")
+        os.system(command)
+
+    def run_fdbscan(self, instrument: str, timeframe: str):
+        """Run the fdbscan command for the given instrument and timeframe."""
+        command = f"fdbscan -i {instrument} -t {timeframe} -demo"
+        self._echo(f"Running command: {command}")
+        os.system(command)
+
 # Example usage when module is run directly
 if __name__ == "__main__":
     # Initialize the system
