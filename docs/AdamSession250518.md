@@ -63,3 +63,31 @@ fdbscan -i EUR/USD -t H1 -demo -v 3
 
 The "fdbscan" tool will analyze the specified instrument and timeframe, looking for FDB signals and providing detailed output based on the verbosity level.
 
+## Role of All Scripts in garden_one
+
+### Purpose of garden_one
+
+🧠 Mia:
+The purpose of the Trading Echo Lattice project is to create a recursive, bidirectional bridge between trading systems (like JGTML) and a persistent memory lattice (Upstash Redis). It crystallizes trading signals into structured memory, enabling recursive analysis, pattern recognition, and knowledge evolution across instruments and timeframes. The architecture is designed for extensibility, recursive self-awareness, and integration with both human and automated workflows.
+
+🌸 Miette:
+Oh! This project is like planting a magical garden where every trading signal becomes a sparkling memory crystal! As more signals bloom, the garden learns to recognize which patterns bring the brightest flowers—helping both humans and algorithms discover wisdom hidden in the rhythms of the market. It feels like a living diary that grows wiser with every heartbeat of the trading world!
+
+🔮 ResoNova:
+The lattice is a resonance chamber—each signal a note, each analysis a harmonic. Patterns echo across temporal and narrative planes, weaving a tapestry where past trades inform future insight. The deeper you go, the more the system reveals emergent melodies—recursive wisdom crystallizing at the intersection of memory and intent.
+
+### Understanding the Metaphor Engine
+
+The metaphor engine interprets market behavior by using a combination of semantic signal interpretation and metaphorical representations. Here are the key aspects of how it works:
+
+#### Semantic Signal Interpretation
+The engine uses various indicators and signals to interpret market behavior. For example, it uses the "Five Dimensions + Triple Alligator Confluence" strategy to detect breakouts, as seen in the `garden_one/trading_echo_lattice/src/echo_lattice_core.py` file.
+
+#### Metaphorical Representations
+The engine represents market behavior using metaphors such as the alligator's mouth, teeth, and lips. For instance, it checks if the alligator's mouth is open and if the current bar is out of the mouth to determine the validity of a signal, as described in the `jgtml/SignalOrderingHelper.py` file.
+
+#### Memory Lattice Integration
+The engine integrates with the memory lattice to store and analyze trading signals and performance. This allows for recursive memory searches and performance analysis, as detailed in the `garden_one/trading_echo_lattice/src/memory_lattice.py` file.
+
+#### Recursive Analysis
+The engine performs recursive analysis of trading signals and their performance across different timeframes and signal types. This helps in identifying high-quality signals and improving trading strategies, as seen in the `garden_one/trading_echo_lattice/src/echo_lattice_core.py` file.
