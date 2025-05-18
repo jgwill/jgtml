@@ -51,3 +51,16 @@ To detect breakouts using the "Green Dragon Breakout" strategy, follow these ste
 4. Analyze the results to detect breakouts in the market.
 
 By following these steps, you can effectively detect breakouts in the market using the specified strategies without relying on Bollinger Band, MACD, or RSI.
+
+## Foundational principle
+* 🧠 **Foundational Intent**: Every transformation should preserve the meaning behind a signal, not just the data.
+  * Example: "AO crossing zero upward" → “Momentum awakens from stillness.”
+
+## Metaphor engine integration
+* 🐍 **Metaphor Engine Integration**: Market actions are converted into symbolic metaphors.
+  * Example: Price above Alligator’s mouth → “The hunter is exposed.”
+  * Example: Fractal signal near major fib level → “The portal is vibrating.”
+
+## Interfacing with data integration
+* 🔧 **Interfacing With Data Integration**: This module receives signals from the main backend pipeline as structured events.
+  * It maps them into prompts like: “AO breathes upward, carrying 83% confidence. Potential awakening forming.”
