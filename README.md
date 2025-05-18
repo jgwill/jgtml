@@ -50,7 +50,7 @@ To detect breakouts using the "Green Dragon Breakout" strategy, follow these ste
 3. Run the script to identify potential breakout signals based on the Green Dragon Breakout strategy.
 4. Analyze the results to detect breakouts in the market.
 
-By following these steps, you can effectively detect breakouts in the market using the specified strategies without relying on Bollinger Band, MACD, or RSI.
+
 
 ## Foundational principle
 * 🧠 **Foundational Intent**: Every transformation should preserve the meaning behind a signal, not just the data.
