@@ -481,7 +481,7 @@ RQ Pattern:
   -cdsrqnf, --cds_rq_norm_fresh
                         Use CDS_RQ JSON_NORM_FRESH
 
-jgtfxcli
+
  
 ----
  
