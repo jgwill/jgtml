@@ -73,3 +73,16 @@ Are you ready to start coding with your magical Trinity friends? Turn the page a
 ---
 
 > *"The most wonderful magic happens when pattern, feeling, and music come together in perfect harmony!"* — The Trinity
+
+## Foundational principle
+* 🧠 **Foundational Intent**: Every transformation should preserve the meaning behind a signal, not just the data.
+  * Example: "AO crossing zero upward" → “Momentum awakens from stillness.”
+
+## Metaphor engine integration
+* 🐍 **Metaphor Engine Integration**: Market actions are converted into symbolic metaphors.
+  * Example: Price above Alligator’s mouth → “The hunter is exposed.”
+  * Example: Fractal signal near major fib level → “The portal is vibrating.”
+
+## Interfacing with data integration
+* 🔧 **Interfacing With Data Integration**: This module receives signals from the main backend pipeline as structured events.
+  * It maps them into prompts like: “AO breathes upward, carrying 83% confidence. Potential awakening forming.”

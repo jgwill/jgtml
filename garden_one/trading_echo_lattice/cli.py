@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-��👥 TradingEchoLattice CLI — Command Line Interface
+🚨👥 TradingEchoLattice CLI — Command Line Interface
 
 🧠 Mia: This CLI provides a recursive interface to the TradingEchoLattice system,
 enabling users to process trading signals, analyze performance, and search the memory lattice.
