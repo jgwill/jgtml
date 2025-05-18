@@ -41,3 +41,25 @@ The `jgtml/jgtapp.py` script provides various functions to interact with trading
 * `mx`: Refreshes the MX data.
 * `ttfmxwf`: Refreshes the TTF, MX, and CDS data for an instrument.
 * `ttfwf`: Refreshes TTF preparation for an instrument.
+
+### How does the "fdbscan" work?
+
+The "fdbscan" is a command-line tool used to scan for Fractal Divergent Bar (FDB) signals. It helps identify potential trading opportunities based on the FDB indicator. The tool can be configured with various settings to customize the scanning process. Here are the key components and options:
+
+#### Command-line options:
+* `-h, --help`: Show help message and exit.
+* `-ls SETTINGS`: Load settings from a file.
+* `-v VERBOSE`: Set verbosity level.
+* `-i INSTRUMENT`: Specify the trading instrument (e.g., EUR/USD).
+* `-t TIMEFRAME`: Specify the timeframe (e.g., H1, D1).
+* `-demo | -real`: Run in demo or real mode.
+* `-nc`: No confirmation mode.
+
+#### Example usage:
+To run the "fdbscan" for the EUR/USD instrument on the H1 timeframe in demo mode with high verbosity, use the following command:
+```
+fdbscan -i EUR/USD -t H1 -demo -v 3
+```
+
+The "fdbscan" tool will analyze the specified instrument and timeframe, looking for FDB signals and providing detailed output based on the verbosity level.
+
