@@ -3,8 +3,8 @@ import subprocess
 import sys
 import os
 
-from jgtml import jgtapp, mlfcli, ttfcli
-from jgtml.fdb_scanner_2408 import main as fdbscan_main
+#from jgtml import jgtapp, mlfcli, ttfcli
+#from jgtml.fdb_scanner_2408 import main as fdbscan_main
 
 def run_mlfcli(instrument, timeframe):
     subprocess.run(['mlfcli', '-i', instrument, '-t', timeframe, '--full', '-pn', 'mfi'], check=True)
