@@ -29,12 +29,22 @@
       "args": "",
     },
     {
-      "name": "FDBSCan02_TF",
+      "name": "FDBSCan02_TF_H1",
+      "consoleName": "FDBSCan02_TF_H1",
       "type": "debugpy",
       "request": "launch",
       "program": "jgtml/fdb_scanner_2408.py",
       "console": "integratedTerminal",
       "args": "-t H1",
+    },
+    {
+      "name": "FDBSCan02_TF_m5",
+      "consoleName": "FDB_m5",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "jgtml/fdb_scanner_2408.py",
+      "console": "integratedTerminal",
+      "args": "-t m5",
     },
     {
       "name": "FDBSCan02_II",
@@ -339,6 +349,15 @@
       "program": "jgtml/ttfcli.py",
       "console": "integratedTerminal",
       "args": "-i SPX500 -t D1 --full -pn mfi",
+    },
+    {
+      "name": "jgtml_agent",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "_jgtagents/jgtml_agent.py",
+      "console": "integratedTerminal",
+      "consoleName": "jgtAgent",
+      "args": "",
     }
   ]
 }
