@@ -8,4 +8,5 @@ jgtpy
 seaborn
 dash
 aiohttp
-python-dotenv>=1.0.0
+python-dotenv
+
