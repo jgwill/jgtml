@@ -1,4 +1,3 @@
- 
 # jgtapp
  
 usage: jgtapp [-h] {tide,pds,cds,ocds,ttf,mlf,ttfmxwf,mx,ttfwf,fxaddorder,fxrmorder,entryvalidate,fxrmtrade,fxtr,fxmvstop,ids,fxmvstopgator,fxmvstopfdb} ...
@@ -514,7 +513,3 @@ RQ Pattern:
   -cdsrqnf, --cds_rq_norm_fresh
                         Use CDS_RQ JSON_NORM_FRESH
 
-
- 
-----
- 
