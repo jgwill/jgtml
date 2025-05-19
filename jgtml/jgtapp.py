@@ -136,35 +136,49 @@ def order_became_a_trade(orderid, demo=False):
         #if o has a property 'open_order_id' == orderid, it is a trade
         if hasattr(o,"open_order_id") and o["open_order_id"]==orderid:
             return True
+          
     return False
 
 def _get_instrument_from_orderid(orderid, demo=False):
+    # First, it is possible that we already have that file : ./data/jgt/fxaddorder_170492374.json   
+    #Case  where the order is still in the orders and has not became a trade yet
     o=_get_order_data(orderid, demo)
     if o:
       return o.get("instrument")
     raise ValueError(f"No matching order found for {orderid}.")
 
 def _get_buysell_from_orderid(orderid, demo=False):
-    o=_get_order_data(orderid, demo)
-    if o:
-      return o.get("buy_sell")
-    raise ValueError(f"No matching order found for {orderid}.")
+  #get the buysell from the orderid
+  #fxtr -id 68782480 --demo
+  #get the buysell from the orderid
+  o=_get_order_data(orderid, demo)
+  if o:
+    return o.get("buy_sell")
+  raise ValueError(f"No matching order found for {orderid}.")
 
 def _get_stop_rate_from_orderid(orderid, demo=False):
-    o=_get_order_data(orderid, demo)
-    if o:
-      return o.get("stop")
-    raise ValueError(f"No matching order found for {orderid}.")
+  #get the stop rate from the orderid
+  #fxtr -id 68782480 --demo
+  #get the stop rate from the orderid
+  o=_get_order_data(orderid, demo)
+  if o:
+    return o.get("stop")
+  raise ValueError(f"No matching order found for {orderid}.")
 
-def entryvalidate(orderid,timeframe, demo=False):
+
+def entryvalidate(orderid,timeframe, demo=False): #@STCIssue At a Higher Level, ya we run this but we should have a better design and a STATE for the CAMPAIGN (entering, trading, exiting)
   """Validate that an entry order is still valid and remove it if not.
   
   Used when the timeframe of the entry order is updated to validate that the order is still valid.
   """
   demo_arg = '--demo' if demo else '--real'
-  instrument=_get_instrument_from_orderid(orderid)#@STCIssue Does that needs to Get the instrument from the OrderID ?
-  bs=_get_buysell_from_orderid(orderid)
-  stop_rate=_get_stop_rate_from_orderid(orderid)
+  instrument=_get_instrument_from_orderid(orderid, demo)
+  bs=_get_buysell_from_orderid(orderid, demo)
+  stop_rate=_get_stop_rate_from_orderid(orderid,demo)#@STCIssue What happens from here when it became a trade ???? How do we know it became a trade ?? - STATE for the CAMPAIGN (entering, trading, exiting)
+  became_a_trade=order_became_a_trade(orderid, demo)
+  if became_a_trade:
+    print("The order became a trade, we are not validating it anymore")
+    return
   df = _get_ids_updated(instrument, timeframe)
   cb=get_bar_at_index(df,-1)
   clow=cb[LOW]
