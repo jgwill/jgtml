@@ -92,6 +92,35 @@ def fxaddorder( instrument, lots, rate, buysell, stop, demo=False,flag_pips=Fals
   demo_arg = '--demo' if demo else '--real'
   subprocess.run([CLI_FXADDORDER_PROG_NAME, '-i', instrument, '-n', lots, '-r', rate, '-d', buysell, '-x',stop,pips_arg , demo_arg], check=True)
 
+def _get_order_data_fresh(orderid, demo=False):
+    #Case  where the order is still in the orders and has not became a trade yet
+    fxtr(orderid=orderid,demo=demo)
+    fx_file_path = os.path.join("data","jgt", f"fxtransact_{orderid}.json")
+    if os.path.exists(fx_file_path):
+      with open(fx_file_path, "r") as f:
+          fxdata = json.load(f)
+      for o in fxdata.get("orders", []):
+          if o.get("order_id") == orderid:
+              return o
+    
+    #Case where we did not find the instrument because it might have became a trade
+    fxtr(demo=demo) 
+    # We will find the instrument under the property 'contingent_order_id' in the orders or in 'open_order_id' in the trades
+    fx_file_path = os.path.join("data","jgt", "fxtransact.json")
+    if os.path.exists(fx_file_path):
+        with open(fx_file_path, "r") as f:
+            fxdata = json.load(f)
+        for t in fxdata.get("trades", []):
+            if t.get("open_order_id") == orderid:
+                return t
+        for o in fxdata.get("orders", []):
+            if o.get("order_id") == orderid:
+                return o
+        for o in fxdata.get("orders", []):
+            if o.get("contingent_order_id") == orderid:
+                return o
+    return None
+
 def _get_order_data(orderid, demo=False):
     fx_file_path = os.path.join("data","jgt", f"fxtransact_{orderid}.json")
     if os.path.exists(fx_file_path):
@@ -100,71 +129,57 @@ def _get_order_data(orderid, demo=False):
       for o in fxdata.get("orders", []):
           if o.get("order_id") == orderid:
               return o
-    #Case  where the order is still in the orders and has not became a trade yet
-    fxtr(orderid=orderid,demo=demo)
-    fx_file_path = os.path.join("data","jgt", f"fxtransact_{orderid}.json")
-    if os.path.exists(fx_file_path):
-      with open(fx_file_path, "r") as f:
-          fxdata = json.load(f)
-      for o in fxdata.get("orders", []):
-          if o.get("order_id") == orderid:
-              return o
+    return _get_order_data_fresh(orderid, demo)
+
+def order_became_a_trade(orderid, demo=False):
+    o=_get_order_data(orderid, demo)
+    if o:
+        #if o has a property 'open_order_id' == orderid, it is a trade
+        if hasattr(o,"open_order_id") and o["open_order_id"]==orderid:
+            return True
+          
+    return False
+
 def _get_instrument_from_orderid(orderid, demo=False):
-    # First, it is possible that we already have that file : ./data/jgt/fxaddorder_170492374.json
-    fx_file_path = os.path.join("data","jgt", f"fxaddorder_{orderid}.json")
-    if os.path.exists(fx_file_path):
-      with open(fx_file_path, "r") as f:
-          fxdata = json.load(f)
-      return fxdata.get("instrument")
-    
+    # First, it is possible that we already have that file : ./data/jgt/fxaddorder_170492374.json   
     #Case  where the order is still in the orders and has not became a trade yet
-    fxtr(orderid=orderid,demo=demo)
-    fx_file_path = os.path.join("data","jgt", f"fxtransact_{orderid}.json")
-    if os.path.exists(fx_file_path):
-      with open(fx_file_path, "r") as f:
-          fxdata = json.load(f)
-      for o in fxdata.get("orders", []):
-          if o.get("order_id") == orderid:
-              return o.get("instrument")
-    #Case where we did not find the instrument because it might have became a trade
-    fxtr(demo=demo) 
-    # We will find the instrument under the property 'contingent_order_id' in the orders or in 'open_order_id' in the trades
-    fx_file_path = os.path.join("data","jgt", "fxtransact.json")
-    if os.path.exists(fx_file_path):
-      with open(fx_file_path, "r") as f:
-          fxdata = json.load(f)
-      for o in fxdata.get("orders", []):
-          if o.get("order_id") == orderid:
-              return o.get("instrument")
-      for o in fxdata.get("orders", []):
-          if o.get("contingent_order_id") == orderid:
-              return o.get("instrument")
-      for t in fxdata.get("trades", []):
-          if t.get("open_order_id") == orderid:
-              return t.get("instrument")
+    o=_get_order_data(orderid, demo)
+    if o:
+      return o.get("instrument")
     raise ValueError(f"No matching order found for {orderid}.")
 
-def _get_buysell_from_orderid(orderid):
+def _get_buysell_from_orderid(orderid, demo=False):
   #get the buysell from the orderid
   #fxtr -id 68782480 --demo
   #get the buysell from the orderid
-  raise NotImplementedError("get the buysell from the orderid")
+  o=_get_order_data(orderid, demo)
+  if o:
+    return o.get("buy_sell")
+  raise ValueError(f"No matching order found for {orderid}.")
 
-def _get_stop_rate_from_orderid(orderid):
+def _get_stop_rate_from_orderid(orderid, demo=False):
   #get the stop rate from the orderid
   #fxtr -id 68782480 --demo
   #get the stop rate from the orderid
-  raise NotImplementedError("get the stop rate from the orderid")
+  o=_get_order_data(orderid, demo)
+  if o:
+    return o.get("stop")
+  raise ValueError(f"No matching order found for {orderid}.")
 
-def entryvalidate(orderid,timeframe, demo=False):
+
+def entryvalidate(orderid,timeframe, demo=False): #@STCIssue At a Higher Level, ya we run this but we should have a better design and a STATE for the CAMPAIGN (entering, trading, exiting)
   """Validate that an entry order is still valid and remove it if not.
   
   Used when the timeframe of the entry order is updated to validate that the order is still valid.
   """
   demo_arg = '--demo' if demo else '--real'
-  instrument=_get_instrument_from_orderid(orderid)#@STCIssue Does that needs to Get the instrument from the OrderID ?
-  bs=_get_buysell_from_orderid(orderid)
-  stop_rate=_get_stop_rate_from_orderid(orderid)
+  instrument=_get_instrument_from_orderid(orderid, demo)
+  bs=_get_buysell_from_orderid(orderid, demo)
+  stop_rate=_get_stop_rate_from_orderid(orderid,demo)#@STCIssue What happens from here when it became a trade ???? How do we know it became a trade ?? - STATE for the CAMPAIGN (entering, trading, exiting)
+  became_a_trade=order_became_a_trade(orderid, demo)
+  if became_a_trade:
+    print("The order became a trade, we are not validating it anymore")
+    return
   df = _get_ids_updated(instrument, timeframe)
   cb=get_bar_at_index(df,-1)
   clow=cb[LOW]
