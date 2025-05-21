@@ -39,7 +39,7 @@ flowchart TD
     D --> E{For Each Timeframe}
     E --> F[Check Cache Validity]
     F -- Valid --> G[Load DataFrame from Cache]
-    F -- Invalid --> H[Fetch Data via svc.get()]
+    F -- Invalid --> H[Fetch Data]
     H --> I[Save DataFrame to Cache]
     G --> J[Analyze Signals]
     I --> J
