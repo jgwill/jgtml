@@ -147,7 +147,7 @@ def _make_cached_filepath(i, t,subdir="fdb_scanners",ext="csv",suffix=""):
   cache_dir_fullpath=os.path.join(jgt_cache_root_dir,subdir)
   os.makedirs(cache_dir_fullpath,exist_ok=True)
   fpath=os.path.join(cache_dir_fullpath,fn)
-  return fpath.replace("..",".")
+  return fpath.replace("..", ".")
 
 def generate_fresh_and_cache(_i,_t,_quotescount=300,cache_filepath=None):
     global cds_cache_file_suffix
@@ -160,7 +160,8 @@ def generate_fresh_and_cache(_i,_t,_quotescount=300,cache_filepath=None):
 def get_jgt_cache_root_dir():
     env_val = os.environ.get("JGT_CACHE")
     if env_val:
-        return os.path.abspath(env_val)
+        # Always join subdirs relative to this, so ensure it's absolute and normalized
+        return os.path.abspath(os.path.expanduser(env_val))
     return os.path.join(os.path.expanduser("~"), ".cache/jgt")
 
 jgt_cache_root_dir = get_jgt_cache_root_dir()
