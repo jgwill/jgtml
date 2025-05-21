@@ -157,21 +157,25 @@ def generate_fresh_and_cache(_i,_t,_quotescount=300,cache_filepath=None):
     dfsrc.to_csv(cache_filepath)
     return dfsrc
 
+def get_jgt_cache_root_dir():
+    env_val = os.environ.get("JGT_CACHE")
+    if env_val:
+        return env_val
+    return os.path.join(os.getenv("HOME", "~"), ".cache/jgt")
+
 def _ini_cache():
   global cds_cache_file_suffix
   global jgt_cache_root_dir
   if not os.access(jgt_cache_root_dir, os.W_OK):
-    # Only fallback if not writable and not already using HOME
     home_cache = os.path.join(os.getenv("HOME", "~"), ".cache/jgt")
     if jgt_cache_root_dir != home_cache:
       jgt_cache_root_dir = home_cache
       try:
-        os.makedirs(jgt_cache_root_dir,exist_ok=True)
+        os.makedirs(jgt_cache_root_dir, exist_ok=True)
       except:
         raise Exception("Unable to create cache dir")
-      print("Using HOME cache dir")
+      # No print, keep it silent
       if not os.access(jgt_cache_root_dir, os.W_OK):
-        print("Cache dir not writable")
         raise Exception("Cache dir not writable")
 
 from jgtutils import jgtcommon
