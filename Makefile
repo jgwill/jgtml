@@ -73,7 +73,7 @@ disto:
 .PHONY: pypi-release
 pypi-release:
 	twine --version
-	twine upload -s dist/*
+	twine upload dist/*
 
 .PHONY: dev-pypi-release
 dev-pypi-release:
@@ -108,8 +108,8 @@ release:
 
 .PHONY: pre-build
 pre-build:
-	bash pre-build.sh
-	bash pre-dist-fdb_scan.sh||true
+	#bash pre-build.sh
+	#bash pre-dist-fdb_scan.sh||true
 
 .PHONY: quick-release
 quick-release:
