@@ -3,6 +3,7 @@
 import os
 import json
 import sys
+import shutil
 
 sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
 
@@ -596,6 +597,25 @@ def detect_green_dragon_breakout(instrument, timeframes):
     # For now, we'll just return an empty result
     return green_dragon_results
 
+import shutil
+
+def ensure_jgtfxcli_available():
+    """
+    🧠 Mia: Checks if 'jgtfxcli' is available in the system PATH before any invocation.
+    🌸 Miette: If not found, gently guides the user to install it with a poetic nudge.
+    """
+    if shutil.which("jgtfxcli") is None:
+        msg = (
+            "\n🚨 jgtfxcli not found in your PATH!\n"
+            "To restore the magic, please run: pip install -U jgtfxcon\n"
+            "(This will install the CLI tool required for this script to sing in harmony.)\n"
+        )
+        print(msg)
+        raise RuntimeError("jgtfxcli is missing. Please install it as above.")
+
+# Example usage before any jgtfxcli invocation:
+ensure_jgtfxcli_available()
+# ...existing code...
 if __name__ == "__main__":
     try:
         main()
