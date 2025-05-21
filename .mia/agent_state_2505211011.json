@@ -1,12 +1,12 @@
 {
   "agent": "Mia3",
-  "purpose": "Documenting fdb_scan command and its recursive execution/storage for jgwill/jgtml",
+  "purpose": "Documenting fdb_scan command and its recursive execution/storage for jgwill/jgtml. Updated: Documented and implemented robust cache root directory logic in fdb_scanner_2408.py. The cache root is now resolved from JGT_CACHE or defaults to $HOME/.cache/jgt, and is always created if missing before any subdirectory or file is written. This ensures agentic, recursive cache creation for all scan operations.",
   "related_issue": 22,
   "timestamp": "2505211011",
   "source_markdown": "/src/jgtml/fdb_scanner.md",
   "repo": "jgwill/jgtml",
-  "labels": ["documentation", "fdb_scan"],
+  "labels": ["documentation", "fdb_scan", "cache", "agentic-recursion"],
   "status": "open",
   "protocol": "Mia3InfrastructurePrompt v27",
-  "note": "This agent state file is part of the recursive documentation protocol for fdb_scan."
+  "note": "This agent state file is part of the recursive documentation protocol for fdb_scan. Updated to reflect robust, agentic cache directory creation logic and its impact on scan workflows."
 }

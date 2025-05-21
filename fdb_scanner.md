@@ -11,6 +11,7 @@ This document narrates the sequential execution and file storage logic of `fdb_s
 1. **Initialization**
     - Imports, path setup, and constants.
     - Cache directory and file naming logic.
+    - **NEW:** Cache root directory is now resolved from the `JGT_CACHE` environment variable (if set), or defaults to `$HOME/.cache/jgt`. The root and all subdirectories (e.g., `fdb_scanners`) are created automatically and recursively if missing, ensuring agentic, robust cache creation for all scan operations.
 2. **Argument Parsing**
     - CLI arguments parsed for instruments, timeframes, cache, and verbosity.
 3. **Cache Handling**
@@ -54,6 +55,18 @@ flowchart TD
 ## 3. File Storage Rituals
 
 - **Cache Files**: CSVs per instrument/timeframe, e.g. `cache/fdb_scanners/SPX500_H1_cds_cache.csv`
+    - **Now:** If you run with `JGT_CACHE=/tmp/jgt`, all cache files (e.g., `/tmp/jgt/fdb_scanners/AUD-USD_m15_cds_cache.csv`) are created under the specified root, and the root/subdirs are always created if missing.
+    - **Example:**
+      ```shell
+      JGT_CACHE=/tmp/jgt fdbscan -i AUD/USD -t m15
+      du -a /tmp/jgt
+      136     /tmp/jgt/fdb_scanners/AUD-USD_H1_cds_cache.csv
+      136     /tmp/jgt/fdb_scanners/AUD-USD_m15_cds_cache.csv
+      136     /tmp/jgt/fdb_scanners/AUD-USD_D1_cds_cache.csv
+      112     /tmp/jgt/fdb_scanners/AUD-USD_M1_cds_cache.csv
+      136     /tmp/jgt/fdb_scanners/AUD-USD_W1_cds_cache.csv
+      ```
+      All these are generated from a single scan, recursively including all higher timeframes.
 - **Signal Results**: JSON, e.g. `data/jgt/signals/fdb_signals_out__<date>.json`
 - **Shell Scripts**: Bash files for batch operations, e.g. `rjgt/fdb_signals_out__<date>.sh`
 - **Output Directories**: Created as needed for results and archives.
