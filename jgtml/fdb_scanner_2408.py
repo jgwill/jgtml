@@ -134,7 +134,7 @@ import pandas as pd
 # # CDS Data gets added ctx bar Ctx gator
 #use_cache=True
 cds_cache_file_suffix = "_cds_cache"
-cache_root_dir="/srv/lib/jgt/cache"
+jgt_cache_root_dir="/srv/lib/jgt/cache"
 no_cache=False
 #look if writable, able to create otherwise use $HOME/.cache/jgt/cache
 
@@ -144,7 +144,7 @@ def _make_cached_filepath(i, t,subdir="fdb_scanners",ext="csv",suffix=""):
   ifn=i.replace("/","-")
   fn = f"{ifn}_{t}{suffix}.{ext}"
   #make sure the subdir exists
-  cache_dir_fullpath=os.path.join(cache_root_dir,subdir)
+  cache_dir_fullpath=os.path.join(jgt_cache_root_dir,subdir)
   os.makedirs(cache_dir_fullpath,exist_ok=True)
   fpath=os.path.join(cache_dir_fullpath,fn)
   return fpath.replace("..",".")
@@ -159,15 +159,15 @@ def generate_fresh_and_cache(_i,_t,_quotescount=300,cache_filepath=None):
 
 def _ini_cache():
   global cds_cache_file_suffix
-  global cache_root_dir
-  if not os.access(cache_root_dir, os.W_OK):
-    cache_root_dir=os.path.join(os.getenv("HOME","~"),".cache/jgt/cache")
+  global jgt_cache_root_dir
+  if not os.access(jgt_cache_root_dir, os.W_OK):
+    jgt_cache_root_dir=os.path.join(os.getenv("HOME","~"),".cache/jgt")
     try:
-      os.makedirs(cache_root_dir,exist_ok=True)
+      os.makedirs(jgt_cache_root_dir,exist_ok=True)
     except:
       raise Exception("Unable to create cache dir")
     print("Using HOME cache dir")
-    if not os.access(cache_root_dir, os.W_OK):
+    if not os.access(jgt_cache_root_dir, os.W_OK):
         print("Cache dir not writable")
         raise Exception("Cache dir not writable")
 
@@ -213,7 +213,7 @@ def parse_args():
 
 def main():
   global cds_cache_file_suffix
-  global cache_root_dir
+  global jgt_cache_root_dir
   global instruments
   global timeframes
   global no_cache
