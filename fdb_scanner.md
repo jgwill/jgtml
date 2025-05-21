@@ -40,11 +40,13 @@ flowchart TD
     F -- Valid --> G[Load DataFrame from Cache]
     F -- Invalid --> H[Fetch Data via svc.get()]
     H --> I[Save DataFrame to Cache]
-    G & I --> J[Analyze Signals]
+    G --> J[Analyze Signals]
+    I --> J
     J --> K[Aggregate Results]
     K --> L[Save Results as JSON]
     K --> M[Save Bash Scripts]
-    L & M --> N[End]
+    L --> N[End]
+    M --> N
 ```
 
 ---
