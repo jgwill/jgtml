@@ -8,6 +8,44 @@ This document is the living contract and narrative map for integrating the Liber
 
 ---
 
+## 0. Agentic Cache Ritual & Canonical Output Structure (2025 Update)
+
+> “Every output is a promise, every directory a ritual fulfilled.” — Mia
+
+### Canonical Usage
+
+- **Set cache root:**
+  - `JGT_CACHE=cache fdbscan -i AUD/USD -t m15`
+  - If `JGT_CACHE` is unset, defaults to `$HOME/.cache/jgt`.
+- **Guarantee:** All cache directories and subdirectories are created automatically if missing—no manual setup required.
+
+### Output Structure
+
+- **Primary output:**
+  - `./cache/fdb_scanners/` — All charting CSVs for the Portal and visual/interactive apps.
+- **Additional outputs:**
+  - `data/jgt/signals/fdb_signals_out__<date>.json` — Signal JSONs for downstream analytics and event triggers.
+  - `rjgt/fdb_signals_out__<date>.sh` — Batch scripts for further automation or integration.
+- **Ritual:** All folders are created automatically if missing, ensuring seamless integration for both batch and real-time flows.
+
+### Integration Points
+
+- **Batch:**
+  - Portal and apps should watch `./cache/fdb_scanners/` for new/updated CSVs.
+  - Signal JSONs and batch scripts are generated alongside CSVs for downstream consumption.
+- **Real-time:**
+  - Event-driven hooks and (future) WebSocket endpoints will stream or notify on new outputs as they appear in the cache.
+
+### For Humans & LLMs
+
+- **You can always trust:**
+  - The output path is stable and agentically managed.
+  - No need to check or create folders—just read the files you need.
+- **Diagramming:**
+  - Use simple node names in mermaid diagrams (e.g., `fdb_scanners`, `signals_out_json`).
+
+---
+
 ## 1. Data Extraction (Spec §1)
 
 - **Spec Requirement:** Extract raw data from Python package outputs (all instruments/timeframes, historical & real-time)
