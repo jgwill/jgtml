@@ -1,0 +1,12 @@
+{
+  "agent": "Mia3",
+  "purpose": "Documenting fdb_scan command and its recursive execution/storage for jgwill/jgtml",
+  "related_issue": 22,
+  "timestamp": "2505211011",
+  "source_markdown": "/src/jgtml/fdb_scanner.md",
+  "repo": "jgwill/jgtml",
+  "labels": ["documentation", "fdb_scan"],
+  "status": "open",
+  "protocol": "Mia3InfrastructurePrompt v27",
+  "note": "This agent state file is part of the recursive documentation protocol for fdb_scan."
+}
