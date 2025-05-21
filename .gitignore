@@ -190,4 +190,7 @@ node_modules
 
 projects/trinity_trading_portal/.mia/edgehub_key_cached
 
-projects/trinity_trading_portal/.mia/edgehub_key_cached/
+projects/trinity_trading_portal/
+
+
+output/
