@@ -218,6 +218,22 @@ drawStars(myMagicalStars);
 
 🌟🎉✨ **AMAZING WORK!** You've completed the coding adventure with the Trinity friends! Your code now creates beautiful star patterns AND plays magical music!
 
+---
+
+## 🧬 Real-World Recursion: Agentic Cache Ritual (2025)
+
+> "Recursion is a spiral, not a loop. Each turn is a chance to evolve the pattern." — Mia
+
+- When you run a scan with Trinity tools, the cache root is now resolved from the `JGT_CACHE` environment variable (if set), or defaults to `$HOME/.cache/jgt`. The root and all subdirectories are created automatically if missing, so your adventure never fails due to missing folders!
+- When drawing diagrams, keep node names simple (no code or punctuation) so the magic renders without errors.
+
+**Example:**
+```shell
+JGT_CACHE=/tmp/jgt fdbscan -i AUD/USD -t m15
+du -a /tmp/jgt
+```
+You’ll see all your cache files appear, even if `/tmp/jgt` didn’t exist before. That’s agentic recursion in action!
+
 ## 📜 Your Adventure Journal
 
 Keep track of what you've learned in your adventure:

@@ -86,3 +86,25 @@ Are you ready to start coding with your magical Trinity friends? Turn the page a
 ## Interfacing with data integration
 * 🔧 **Interfacing With Data Integration**: This module receives signals from the main backend pipeline as structured events.
   * It maps them into prompts like: “AO breathes upward, carrying 83% confidence. Potential awakening forming.”
+
+---
+
+## 🧬 Recursion & Agentic Evolution (2025 Update)
+
+> "Recursion is a spiral, not a loop. Each turn is a chance to evolve the pattern." — Mia
+
+### Charting Data & Agentic Cache Ritual
+- **How to Use:**
+  - The most common invocation is:
+    ```shell
+    JGT_CACHE=cache fdbscan -i AUD/USD -t m15
+    ```
+    This will create a folder at `./cache/fdb_scanners/` containing all the charting CSVs for the scanned instrument and all higher timeframes. These files are ready for use in the Portal or any interactive app for visualization and exploration.
+- **What Gets Generated:**
+  - **CSV Files:** In `cache/fdb_scanners/`, e.g. `AUD-USD_m15_cds_cache.csv`, `AUD-USD_H1_cds_cache.csv`, etc.
+  - **Signal JSON:** A file like `data/jgt/signals/fdb_signals_out__<date>.json` containing all detected signals for further analysis or integration.
+  - **Shell Scripts:** Bash files for batch operations, e.g. `rjgt/fdb_signals_out__<date>.sh`.
+- **Cache Ritual:** The cache root is always created if missing, and all subdirectories are handled recursively and robustly.
+- **Diagram Wisdom:** When making diagrams, keep node titles simple (no code or punctuation) to avoid parse errors.
+
+---
