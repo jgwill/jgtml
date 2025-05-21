@@ -165,6 +165,8 @@ def get_jgt_cache_root_dir():
     return os.path.join(os.path.expanduser("~"), ".cache/jgt")
 
 jgt_cache_root_dir = get_jgt_cache_root_dir()
+# Ensure the cache root exists before any subdirectory rituals begin
+os.makedirs(jgt_cache_root_dir, exist_ok=True)
 
 def _ini_cache():
   global cds_cache_file_suffix
