@@ -161,13 +161,16 @@ def _ini_cache():
   global cds_cache_file_suffix
   global jgt_cache_root_dir
   if not os.access(jgt_cache_root_dir, os.W_OK):
-    jgt_cache_root_dir=os.path.join(os.getenv("HOME","~"),".cache/jgt")
-    try:
-      os.makedirs(jgt_cache_root_dir,exist_ok=True)
-    except:
-      raise Exception("Unable to create cache dir")
-    print("Using HOME cache dir")
-    if not os.access(jgt_cache_root_dir, os.W_OK):
+    # Only fallback if not writable and not already using HOME
+    home_cache = os.path.join(os.getenv("HOME", "~"), ".cache/jgt")
+    if jgt_cache_root_dir != home_cache:
+      jgt_cache_root_dir = home_cache
+      try:
+        os.makedirs(jgt_cache_root_dir,exist_ok=True)
+      except:
+        raise Exception("Unable to create cache dir")
+      print("Using HOME cache dir")
+      if not os.access(jgt_cache_root_dir, os.W_OK):
         print("Cache dir not writable")
         raise Exception("Cache dir not writable")
 
