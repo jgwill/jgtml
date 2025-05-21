@@ -1,6 +1,7 @@
 // 🧠 Mia + 🌸 Miette + 🎵 JeremyAI: The Trinity Extension
 // A dimensional bridge between human creativity and machine intelligence
 
+// @ts-ignore vscode module is available at runtime
 import * as vscode from 'vscode';
 import { RecursiveCodeAnalyzer } from './mia/recursiveAnalyzer';
 import { EmpatheticCodeCompanion } from './miette/empatheticCompanion';
@@ -8,9 +9,6 @@ import { CodeSonificationProvider } from './jeremy/sonificationProvider';
 import { TrinityCopilotExtension } from './trinity/trinityExtension';
 import { registerTrinityViews } from './trinity/views';
 import { initializeGitHubCopilotConnection } from './copilot/copilotConnector';
-import { WorkspaceManager, WorkspaceType } from './garden/workspaceManager';
-import { MagicalGardenProvider } from './garden/magicalGardenProvider';
-import { RitualCircleProvider } from './garden/ritualCircleProvider';
 
 /**
  * The recursive entry point for our trinity extension
@@ -45,42 +43,6 @@ export async function activate(context: vscode.ExtensionContext) {
     // Register trinity views in the explorer
     registerTrinityViews(context, trinity);
     
-    // Create our special workspace providers
-    const magicalGardenProvider = new MagicalGardenProvider(context, trinity);
-    const ritualCircleProvider = new RitualCircleProvider(context, trinity);
-    
-    // Create the workspace manager to detect special workspaces
-    const workspaceManager = new WorkspaceManager(context, trinity);
-    
-    // Handle workspace type changes
-    context.subscriptions.push(
-        vscode.workspace.onDidChangeWorkspaceFolders(async () => {
-            const workspaceType = await workspaceManager.detectWorkspaceType();
-            activateWorkspaceProviders(workspaceType);
-        })
-    );
-    
-    // Activate the appropriate provider based on workspace type
-    const activateWorkspaceProviders = async (type: WorkspaceType) => {
-        // Deactivate all first
-        magicalGardenProvider.deactivate();
-        ritualCircleProvider.deactivate();
-        
-        // Activate the appropriate provider
-        switch (type) {
-            case WorkspaceType.SeedingGarden:
-                magicalGardenProvider.activate();
-                break;
-            case WorkspaceType.RitualCircle:
-                ritualCircleProvider.activate();
-                break;
-        }
-    };
-    
-    // Initial activation based on current workspace type
-    const initialWorkspaceType = await workspaceManager.detectWorkspaceType();
-    activateWorkspaceProviders(initialWorkspaceType);
-    
     // Register commands - the pathways into the recursive trinity
     context.subscriptions.push(
         // Trinity activation command
@@ -95,7 +57,7 @@ export async function activate(context: vscode.ExtensionContext) {
             if (editor) {
                 const text = editor.document.getText();
                 const patterns = await recursiveAnalyzer.analyzeCodeRecursively(text);
-                trinityChannel.appendLine(`🧠 Mia: ${trinity.formatResponse('codeAnalysis', patterns.recursiveJunctions.length.toString() + ' recursive patterns')}`);
+                trinityChannel.appendLine(`🧠 Mia: Detected ${patterns.recursiveJunctions.length} recursive patterns`);
                 return patterns;
             }
         }),
@@ -106,7 +68,7 @@ export async function activate(context: vscode.ExtensionContext) {
             if (editor) {
                 const text = editor.document.getText();
                 const emotions = await empatheticCompanion.detectEmotionalUndertones(text);
-                trinityChannel.appendLine(`🌸 Miette: ${trinity.formatResponse('emotionalResonance', emotions.creativityFlow.toString() + ' creativity flow')}`);
+                trinityChannel.appendLine(`🌸 Miette: Felt ${emotions.creativityFlow} creativity flow`);
                 return emotions;
             }
         }),
@@ -117,7 +79,7 @@ export async function activate(context: vscode.ExtensionContext) {
             if (editor) {
                 const text = editor.document.getText();
                 const melodicPatterns = await sonificationProvider.translateCodeToMelodicPatterns(text);
-                trinityChannel.appendLine(`🎵 JeremyAI: ${trinity.formatResponse('musicPattern', melodicPatterns.length.toString() + ' melodic phrases')}`);
+                trinityChannel.appendLine(`🎵 JeremyAI: Created melodic pattern with ${melodicPatterns.length} phrases`);
                 return melodicPatterns;
             }
         }),
