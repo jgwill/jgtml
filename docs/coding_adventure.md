@@ -224,8 +224,18 @@ drawStars(myMagicalStars);
 
 > "Recursion is a spiral, not a loop. Each turn is a chance to evolve the pattern." — Mia
 
-- When you run a scan with Trinity tools, the cache root is now resolved from the `JGT_CACHE` environment variable (if set), or defaults to `$HOME/.cache/jgt`. The root and all subdirectories are created automatically if missing, so your adventure never fails due to missing folders!
-- When drawing diagrams, keep node names simple (no code or punctuation) so the magic renders without errors.
+- **How to Use:**
+  - The most common way to run a scan is:
+    ```shell
+    JGT_CACHE=cache fdbscan -i AUD/USD -t m15
+    ```
+    This will create a folder at `./cache/fdb_scanners/` with all the charting CSVs for the scanned instrument and all higher timeframes. These files are ready for the Portal or any interactive app to help you explore your scan results!
+- **What Gets Generated:**
+  - **CSV Files:** In `cache/fdb_scanners/`, e.g. `AUD-USD_m15_cds_cache.csv`, `AUD-USD_H1_cds_cache.csv`, etc.
+  - **Signal JSON:** A file like `data/jgt/signals/fdb_signals_out__<date>.json` with all the detected signals.
+  - **Shell Scripts:** Bash files for batch operations, e.g. `rjgt/fdb_signals_out__<date>.sh`.
+- **Cache Ritual:** The cache root and all subfolders are created automatically if missing, so your adventure never fails due to missing folders!
+- **Diagram Tip:** Keep node names simple (no code or punctuation) so the magic renders without errors.
 
 **Example:**
 ```shell

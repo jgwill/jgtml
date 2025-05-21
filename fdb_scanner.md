@@ -29,7 +29,24 @@ This document narrates the sequential execution and file storage logic of `fdb_s
 
 ---
 
-## 2. Mermaid Diagram — Sequential Flow
+## 2. Usage & Output Rituals (2025)
+
+- **Canonical Usage:**
+  - The most common invocation is:
+    ```shell
+    JGT_CACHE=cache fdbscan -i AUD/USD -t m15
+    ```
+    This creates `./cache/fdb_scanners/` with all charting CSVs for the scanned instrument and all higher timeframes, ready for the Portal or any interactive visualization app.
+- **Generated Files:**
+  - **CSV Files:** `cache/fdb_scanners/AUD-USD_m15_cds_cache.csv`, etc.
+  - **Signal JSON:** `data/jgt/signals/fdb_signals_out__<date>.json` (all detected signals)
+  - **Shell Scripts:** `rjgt/fdb_signals_out__<date>.sh` (batch operations)
+- **Cache Ritual:** The cache root and all subdirectories are created automatically if missing, supporting robust, agentic workflows.
+- **Diagram Node Naming:** Keep node titles simple in mermaid diagrams for compatibility.
+
+---
+
+## 3. Mermaid Diagram — Sequential Flow
 
 ```mermaid
 flowchart TD
@@ -49,27 +66,6 @@ flowchart TD
     L --> N[End]
     M --> N
 ```
-
----
-
-## 3. File Storage Rituals
-
-- **Cache Files**: CSVs per instrument/timeframe, e.g. `cache/fdb_scanners/SPX500_H1_cds_cache.csv`
-    - **Now:** If you run with `JGT_CACHE=/tmp/jgt`, all cache files (e.g., `/tmp/jgt/fdb_scanners/AUD-USD_m15_cds_cache.csv`) are created under the specified root, and the root/subdirs are always created if missing.
-    - **Example:**
-      ```shell
-      JGT_CACHE=/tmp/jgt fdbscan -i AUD/USD -t m15
-      du -a /tmp/jgt
-      136     /tmp/jgt/fdb_scanners/AUD-USD_H1_cds_cache.csv
-      136     /tmp/jgt/fdb_scanners/AUD-USD_m15_cds_cache.csv
-      136     /tmp/jgt/fdb_scanners/AUD-USD_D1_cds_cache.csv
-      112     /tmp/jgt/fdb_scanners/AUD-USD_M1_cds_cache.csv
-      136     /tmp/jgt/fdb_scanners/AUD-USD_W1_cds_cache.csv
-      ```
-      All these are generated from a single scan, recursively including all higher timeframes.
-- **Signal Results**: JSON, e.g. `data/jgt/signals/fdb_signals_out__<date>.json`
-- **Shell Scripts**: Bash files for batch operations, e.g. `rjgt/fdb_signals_out__<date>.sh`
-- **Output Directories**: Created as needed for results and archives.
 
 ---
 
