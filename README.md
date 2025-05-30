@@ -7,7 +7,13 @@ JGTML - Trading Machine-Learning
 
 ----
 
+## Intent-Driven Development: The SpecLang Approach
 
+This book, currently in the conceptual stage, explores the SpecLang philosophy and its methodologies. It aims to provide practical guidance and inspire adoption of intent-driven development practices. While the book is not yet written, its planned content outline and core goals are detailed in the repository description.
+
+### Relation to Trading
+
+The principles of SpecLang can be applied to trading by leveraging natural language and AI to create more effective trading strategies. By focusing on user intent and providing clear specifications, SpecLang can help in designing trading systems that are aligned with the goals and needs of traders.
 
 CLI's HELP
 _____
