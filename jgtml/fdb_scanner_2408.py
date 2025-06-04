@@ -3,6 +3,10 @@
 import os
 import json
 import sys
+import shutil
+import signal
+import atexit
+from contextlib import contextmanager
 
 sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
 
@@ -25,6 +29,56 @@ from mlconstants import (
   TIDE_MOUTH_IS_OPEN_AND_CURRENT_BAR_IS_IN_TIDE_LIPS_COLNAME,
   MOUTH_IS_OPEN_AND_CURRENT_BAR_IS_IN_TIDE_TEETH_COLNAME
 )
+
+# Global variables for cleanup
+_cleanup_handlers = []
+_temp_files = []
+
+def register_cleanup(handler):
+    """Register a cleanup handler to be called on exit"""
+    _cleanup_handlers.append(handler)
+
+def register_temp_file(filepath):
+    """Register a temporary file to be cleaned up on exit"""
+    _temp_files.append(filepath)
+
+@contextmanager
+def safe_file_operation(filepath, mode='r'):
+    """Safely handle file operations with proper cleanup"""
+    try:
+        with open(filepath, mode) as f:
+            yield f
+    except Exception as e:
+        print(f"Error operating on file {filepath}: {e}")
+        raise
+
+def cleanup():
+    """Execute all registered cleanup handlers and remove temp files"""
+    for handler in _cleanup_handlers:
+        try:
+            handler()
+        except Exception as e:
+            print(f"Error in cleanup handler: {e}")
+    
+    for filepath in _temp_files:
+        try:
+            if os.path.exists(filepath):
+                os.remove(filepath)
+        except Exception as e:
+            print(f"Error removing temp file {filepath}: {e}")
+
+def signal_handler(signum, frame):
+    """Handle interrupt signals gracefully"""
+    print("\nReceived interrupt signal. Cleaning up...")
+    cleanup()
+    sys.exit(0)
+
+# Register signal handlers
+signal.signal(signal.SIGINT, signal_handler)
+signal.signal(signal.SIGTERM, signal_handler)
+
+# Register cleanup on exit
+atexit.register(cleanup)
 
 # Validity of cache
 def is_timeframe_cached_valid(df, timeframe:str,use_utc=True,quiet=True):
@@ -133,7 +187,7 @@ import pandas as pd
 # # CDS Data gets added ctx bar Ctx gator
 #use_cache=True
 cds_cache_file_suffix = "_cds_cache"
-cache_root_dir="/srv/lib/jgt/cache"
+jgt_cache_root_dir="/srv/lib/jgt/cache"
 no_cache=False
 #look if writable, able to create otherwise use $HOME/.cache/jgt/cache
 
@@ -143,31 +197,53 @@ def _make_cached_filepath(i, t,subdir="fdb_scanners",ext="csv",suffix=""):
   ifn=i.replace("/","-")
   fn = f"{ifn}_{t}{suffix}.{ext}"
   #make sure the subdir exists
-  cache_dir_fullpath=os.path.join(cache_root_dir,subdir)
+  cache_dir_fullpath=os.path.join(jgt_cache_root_dir,subdir)
   os.makedirs(cache_dir_fullpath,exist_ok=True)
   fpath=os.path.join(cache_dir_fullpath,fn)
-  return fpath.replace("..",".")
+  return fpath.replace("..", ".")
 
 def generate_fresh_and_cache(_i,_t,_quotescount=300,cache_filepath=None):
+    """Generate fresh data and cache it with proper error handling"""
     global cds_cache_file_suffix
     if cache_filepath is None:
-      cache_filepath = _make_cached_filepath(_i, _t,suffix=cds_cache_file_suffix)
-    dfsrc:pd.DataFrame=svc.get(_i,_t,quotescount=_quotescount)
-    dfsrc.to_csv(cache_filepath)
-    return dfsrc
+        cache_filepath = _make_cached_filepath(_i, _t,suffix=cds_cache_file_suffix)
+    
+    try:
+        dfsrc:pd.DataFrame=svc.get(_i,_t,quotescount=_quotescount)
+        with safe_file_operation(cache_filepath, 'w') as f:
+            dfsrc.to_csv(f)
+        return dfsrc
+    except Exception as e:
+        print(f"Error generating fresh data for {_i} {_t}: {e}")
+        if os.path.exists(cache_filepath):
+            try:
+                os.remove(cache_filepath)
+            except:
+                pass
+        raise
+
+def get_jgt_cache_root_dir():
+    env_val = os.environ.get("JGT_CACHE")
+    if env_val:
+        # Always join subdirs relative to this, so ensure it's absolute and normalized
+        return os.path.abspath(os.path.expanduser(env_val))
+    return os.path.join(os.path.expanduser("~"), ".cache/jgt")
+
+jgt_cache_root_dir = get_jgt_cache_root_dir()
+os.makedirs(jgt_cache_root_dir, exist_ok=True)  # 🧠 Ensure the cache root exists before any subdirectory is created.
 
 def _ini_cache():
   global cds_cache_file_suffix
-  global cache_root_dir
-  if not os.access(cache_root_dir, os.W_OK):
-    cache_root_dir=os.path.join(os.getenv("HOME","~"),".cache/jgt/cache")
-    try:
-      os.makedirs(cache_root_dir,exist_ok=True)
-    except:
-      raise Exception("Unable to create cache dir")
-    print("Using HOME cache dir")
-    if not os.access(cache_root_dir, os.W_OK):
-        print("Cache dir not writable")
+  global jgt_cache_root_dir
+  if not os.access(jgt_cache_root_dir, os.W_OK):
+    home_cache = os.path.join(os.path.expanduser("~"), ".cache/jgt")
+    if jgt_cache_root_dir != home_cache:
+      jgt_cache_root_dir = home_cache
+      try:
+        os.makedirs(jgt_cache_root_dir, exist_ok=True)
+      except:
+        raise Exception("Unable to create cache dir")
+      if not os.access(jgt_cache_root_dir, os.W_OK):
         raise Exception("Cache dir not writable")
 
 from jgtutils import jgtcommon
@@ -212,7 +288,7 @@ def parse_args():
 
 def main():
   global cds_cache_file_suffix
-  global cache_root_dir
+  global jgt_cache_root_dir
   global instruments
   global timeframes
   global no_cache
@@ -572,8 +648,49 @@ def _future_filtering_by_big_tide_gator(md_df_tail_amount, outdir, contexes, i, 
           
           
 
+def detect_green_dragon_breakout(instrument, timeframes):
+    """
+    Detect breakouts using the "Green Dragon Breakout" strategy.
+    
+    Args:
+        instrument: Trading instrument symbol
+        timeframes: List of timeframes to analyze
+        
+    Returns:
+        Dictionary with breakout detection results
+    """
+    print(f"\n🔍 Detecting breakouts for {instrument} using Green Dragon Breakout")
+    
+    # Placeholder for breakout detection logic
+    green_dragon_results = {
+        "instrument": instrument,
+        "timeframes": timeframes,
+        "breakouts": []
+    }
+    
+    # Implement the breakout detection logic here
+    # For now, we'll just return an empty result
+    return green_dragon_results
 
+import shutil
 
+def ensure_jgtfxcli_available():
+    """
+    🧠 Mia: Checks if 'jgtfxcli' is available in the system PATH before any invocation.
+    🌸 Miette: If not found, gently guides the user to install it with a poetic nudge.
+    """
+    if shutil.which("jgtfxcli") is None:
+        msg = (
+            "\n🚨 jgtfxcli not found in your PATH!\n"
+            "To restore the magic, please run: pip install -U jgtfxcon\n"
+            "(This will install the CLI tool required for this script to sing in harmony.)\n"
+        )
+        print(msg)
+        raise RuntimeError("jgtfxcli is missing. Please install it as above.")
+
+# Example usage before any jgtfxcli invocation:
+ensure_jgtfxcli_available()
+# ...existing code...
 if __name__ == "__main__":
     try:
         main()

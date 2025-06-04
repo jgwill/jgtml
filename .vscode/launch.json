@@ -5,6 +5,20 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "Run Trinity Extension",
+      "type": "extensionHost",
+      "request": "launch",
+      "runtimeExecutable": "${execPath}",
+      "args": [
+        "--extensionDevelopmentPath=${workspaceFolder}/copilot-trinity-extension"
+      ],
+      "outFiles": [
+        "${workspaceFolder}/copilot-trinity-extension/dist/**/*.js"
+      ],
+      "preLaunchTask": "npm: compile",
+      "internalConsoleOptions": "openOnSessionStart"
+    },
+    {
       "name": "fxmvstopgator_DEBUG_240820",
       "type": "debugpy",
       "request": "launch",

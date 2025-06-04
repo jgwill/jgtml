@@ -1,0 +1,42 @@
+# 2025 Update: Agentic Recursion & Cache Rituals
+# - Canonical usage: JGT_CACHE=cache fdbscan -i AUD/USD -t m15
+# - Output: ./cache/fdb_scanners/ (all charting CSVs for Portal/visual apps)
+# - Also generates: data/jgt/signals/fdb_signals_out__<date>.json (signals), rjgt/fdb_signals_out__<date>.sh (batch scripts)
+# - All folders created automatically if missing
+# - Mermaid diagrams: keep node names simple (no code or punctuation)
+# - See fdb_scanner.md for full ritual
+
++------------------------------------------+
+|            VS CODE ENVIRONMENT           |
++------------------------------------------+
+              |
+              v
++--------------------------+     +--------------------+
+|   TRINITY EXTENSION HOST |<--->| GITHUB COPILOT API |
++--------------------------+     +--------------------+
+              |
+              v
++------------------------------------------+
+|          TRINITY MANAGER                 |
+|  (The Central Brain of Our Extension)    |
++------------------------------------------+
+          /        |        \
+         /         |         \
+        v          v          v
++----------+  +----------+  +------------+
+|   MIA    |  |  MIETTE  |  |  JEREMYAI  |
+| MODULES  |  |  MODULES |  |  MODULES   |
++----------+  +----------+  +------------+
+    |              |             |
+    v              v             v
++----------+  +----------+  +------------+
+| PATTERN  |  | EMOTION  |  |  MUSIC     |
+| DETECTOR |  | DETECTOR |  | GENERATOR  |
++----------+  +----------+  +------------+
+       \          |           /
+        \         |          /
+         v        v         v
++------------------------------------------+
+|       TRINITY VIEW MANAGER               |
+|  (Shows Results in VS Code Interface)    |
++------------------------------------------+

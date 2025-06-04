@@ -1,3 +1,35 @@
+# jgtapp
+ 
+usage: jgtapp [-h] {tide,pds,cds,ocds,ttf,mlf,ttfmxwf,mx,ttfwf,fxaddorder,fxrmorder,entryvalidate,fxrmtrade,fxtr,fxmvstop,ids,fxmvstopgator,fxmvstopfdb} ...
+
+CLI equivalent of bash functions
+
+positional arguments:
+  {tide,pds,cds,ocds,ttf,mlf,ttfmxwf,mx,ttfwf,fxaddorder,fxrmorder,entryvalidate,fxrmtrade,fxtr,fxmvstop,ids,fxmvstopgator,fxmvstopfdb}
+    tide                Run the pto tidealligator
+    pds                 Refresh the PDS full for an instrument and timeframe
+    cds                 Refresh the CDS
+    ocds                Refresh the CDS from old PDS
+    ttf                 Refresh the TTF for an instrument and timeframe
+    mlf                 Refresh the MLF for an instrument and timeframe
+    ttfmxwf             Refresh the TTF, MX and CDS for an instrument
+    mx                  Refresh the MX (using the TTF) for an instrument and
+                        timeframe
+    ttfwf               Refresh TTF preparation for an instrument
+    fxaddorder          Add an order
+    fxrmorder           Remove an order
+    entryvalidate       Remove an order if it became invalid (e.g. stop rate hit)
+    fxrmtrade           Remove a trade
+    fxtr                Get trade details
+    fxmvstop            Move stop
+    ids                 Refresh the IDS
+    fxmvstopgator       Move stop using gator
+    fxmvstopfdb         Move stop using fdb
+
+options:
+  -h, --help            show this help message and exit
+ 
+----
  
 # pncli
  
@@ -481,31 +513,3 @@ RQ Pattern:
   -cdsrqnf, --cds_rq_norm_fresh
                         Use CDS_RQ JSON_NORM_FRESH
 
-jgtfxcli
- 
-----
- 
-# jgtapp
- 
-usage: jgtapp [-h] {tide,pds,cds,ocds,ttf,mlf,ttfmxwf,mx,ttfwf} ...
-
-CLI equivalent of bash functions
-
-positional arguments:
-  {tide,pds,cds,ocds,ttf,mlf,ttfmxwf,mx,ttfwf}
-    tide                Run the pto tidealligator
-    pds                 Refresh the PDS full for an instrument and timeframe
-    cds                 Refresh the CDS
-    ocds                Refresh the CDS from old PDS
-    ttf                 Refresh the TTF for an instrument and timeframe
-    mlf                 Refresh the MLF for an instrument and timeframe
-    ttfmxwf             Refresh the TTF, MX and CDS for an instrument
-    mx                  Refresh the MX (using the TTF) for an instrument and
-                        timeframe
-    ttfwf               Refresh TTF preparation for an instrument
-
-options:
-  -h, --help            show this help message and exit
- 
-----
- 

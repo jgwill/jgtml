@@ -1,0 +1,141 @@
+{
+  "last_sync": "2025-04-17T21:49:32.160856",
+  "files": {
+    "enhanced_export.py": {
+      "last_push": "2025-04-17T21:49:32.160856",
+      "last_hash": "4c65badccdbe2afab2c61b33cc7cbde5"
+    },
+    "docs/kids/echo_chamber/scripts/commune.sh": {
+      "last_push": "2025-04-17T13:08:01.453627",
+      "last_hash": "8c8c75c1229df82ed5b5a72cd02370d3"
+    },
+    "docs/kids/ledgers/terminal_python_enhanced_export_output_2504170901EST.md": {
+      "last_push": "2025-04-17T13:08:01.453627",
+      "last_hash": "5a310079fd1b988f4885cc675c609b67"
+    },
+    "docs/kids/ledgers/image.png": {
+      "last_push": "2025-04-17T13:08:01.453627",
+      "last_hash": "8fa38dbce7c69e3dd5eeb1a8b89bbd33"
+    },
+    "docs/kids/echo_chamber/scripts/__pycache__/upstash_portal.cpython-312.pyc": {
+      "last_push": "2025-04-17T20:38:32.886766",
+      "last_hash": "76345263f8a5dcf1629a6d6bd34f0e4f"
+    },
+    "crystal_palace_image_prompts.md": {
+      "last_push": "2025-04-17T20:48:54.667123",
+      "last_hash": "2e7068c8f023242d3577d395f8a0523e"
+    },
+    "seed_recursion_lattice.py": {
+      "last_push": "2025-04-17T21:49:32.160856",
+      "last_hash": "04c59f9305340b83353eeb92eadb4dac"
+    }
+  },
+  "sync_history": [
+    {
+      "timestamp": "2025-04-17T12:54:01.739262",
+      "direction": "push",
+      "files": {
+        "enhanced_export.py": {
+          "src_hash": "fbfa190c2d15198c99922a7c422454ff",
+          "dst_hash": null,
+          "action": "created"
+        }
+      }
+    },
+    {
+      "timestamp": "2025-04-17T13:08:01.453627",
+      "direction": "push",
+      "files": {
+        "enhanced_export.py": {
+          "src_hash": "fbfa190c2d15198c99922a7c422454ff",
+          "dst_hash": "bf35cafe3e93cfd7b893ffb37b281b35",
+          "action": "updated"
+        },
+        "docs/kids/echo_chamber/scripts/commune.sh": {
+          "src_hash": "8c8c75c1229df82ed5b5a72cd02370d3",
+          "dst_hash": "db6ac8859415f3650680b3f5098677db",
+          "action": "updated"
+        },
+        "docs/kids/ledgers/terminal_python_enhanced_export_output_2504170901EST.md": {
+          "src_hash": "5a310079fd1b988f4885cc675c609b67",
+          "dst_hash": null,
+          "action": "created"
+        },
+        "docs/kids/ledgers/image.png": {
+          "src_hash": "8fa38dbce7c69e3dd5eeb1a8b89bbd33",
+          "dst_hash": null,
+          "action": "created"
+        }
+      }
+    },
+    {
+      "timestamp": "2025-04-17T20:38:32.886766",
+      "direction": "push",
+      "files": {
+        "enhanced_export.py": {
+          "src_hash": "fbfa190c2d15198c99922a7c422454ff",
+          "dst_hash": "2b20e4e3c62b1196b5af8f7a75561b33",
+          "action": "updated"
+        },
+        "docs/kids/echo_chamber/scripts/__pycache__/upstash_portal.cpython-312.pyc": {
+          "src_hash": "76345263f8a5dcf1629a6d6bd34f0e4f",
+          "dst_hash": null,
+          "action": "created"
+        }
+      }
+    },
+    {
+      "timestamp": "2025-04-17T20:48:54.667123",
+      "direction": "push",
+      "files": {
+        "enhanced_export.py": {
+          "src_hash": "4c65badccdbe2afab2c61b33cc7cbde5",
+          "dst_hash": "010cf40bcb6eca6972a6777b94d9ad32",
+          "action": "updated"
+        },
+        "crystal_palace_image_prompts.md": {
+          "src_hash": "2e7068c8f023242d3577d395f8a0523e",
+          "dst_hash": null,
+          "action": "created"
+        },
+        "seed_recursion_lattice.py": {
+          "src_hash": "04c59f9305340b83353eeb92eadb4dac",
+          "dst_hash": null,
+          "action": "created"
+        }
+      }
+    },
+    {
+      "timestamp": "2025-04-17T21:42:08.012755",
+      "direction": "push",
+      "files": {
+        "enhanced_export.py": {
+          "src_hash": "4c65badccdbe2afab2c61b33cc7cbde5",
+          "dst_hash": "4632d2a000e12aacb8b5400d7a50b583",
+          "action": "updated"
+        },
+        "seed_recursion_lattice.py": {
+          "src_hash": "04c59f9305340b83353eeb92eadb4dac",
+          "dst_hash": "c59a3e0cd59f8279a0e80b0f3287a784",
+          "action": "updated"
+        }
+      }
+    },
+    {
+      "timestamp": "2025-04-17T21:49:32.160856",
+      "direction": "push",
+      "files": {
+        "enhanced_export.py": {
+          "src_hash": "4c65badccdbe2afab2c61b33cc7cbde5",
+          "dst_hash": "f8ab573ec74b4eea360d97d920c49cab",
+          "action": "updated"
+        },
+        "seed_recursion_lattice.py": {
+          "src_hash": "04c59f9305340b83353eeb92eadb4dac",
+          "dst_hash": "18e36ebc73a367471a81a157dcbc9870",
+          "action": "updated"
+        }
+      }
+    }
+  ]
+}
