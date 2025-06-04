@@ -31,6 +31,8 @@ import subprocess
 from pathlib import Path
 from typing import List, Optional, Dict
 
+import pandas as pd
+
 # Add the current directory to sys.path for imports
 sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
 
