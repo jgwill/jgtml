@@ -27,6 +27,8 @@ Usage Examples:
 import argparse
 import os
 import sys
+import subprocess
+from pathlib import Path
 from typing import List, Optional, Dict
 
 # Add the current directory to sys.path for imports
@@ -120,10 +122,134 @@ def parse_alligator_types(type_arg: str) -> List[AlligatorType]:
     else:
         raise ValueError(f"Unknown alligator type: {type_arg}")
 
+def ensure_pattern_files_exist(config: AlligatorConfig) -> bool:
+    """
+    Ensure TTF pattern files exist for the given configuration.
+    Consolidates workflow logic from _fnml.sh to create self-contained initialization.
+    
+    Returns True if files exist or were created successfully, False otherwise.
+    """
+    
+    # Define pattern file paths based on JGTML data structure
+    data_path = Path(config.jgtdroot_default) / "data" / "full" / "pn"
+    required_files = [
+        data_path / "mfi.csv",
+        data_path / "ttf.csv", 
+        data_path / "zonesq.csv"
+    ]
+    
+    # Check if all required files exist
+    all_exist = all(f.exists() for f in required_files)
+    
+    if all_exist and not config.regenerate_cds:
+        if not config.quiet:
+            print("✅ Pattern files exist - proceeding with analysis")
+        return True
+    
+    if not config.quiet:
+        print("🔄 Pattern files missing or regeneration requested - initializing TTF patterns...")
+    
+    # Create data directory if it doesn't exist
+    data_path.mkdir(parents=True, exist_ok=True)
+    
+    try:
+        # Step 1: Initialize CDS (Consolidated Data Source)
+        if not config.quiet:
+            print("  📊 Initializing CDS...")
+        success = _initialize_cds(config.instrument, config.timeframe)
+        if not success:
+            return False
+            
+        # Step 2: Create TTF patterns 
+        if not config.quiet:
+            print("  🔧 Creating TTF patterns...")
+        success = _create_ttf_patterns(config.instrument, config.timeframe)
+        if not success:
+            return False
+            
+        # Step 3: Generate MX files
+        if not config.quiet:
+            print("  ⚙️  Generating MX target files...")
+        success = _generate_mx_files(config.instrument, config.timeframe)
+        if not success:
+            return False
+            
+        if not config.quiet:
+            print("✅ Pattern initialization complete!")
+        return True
+        
+    except Exception as e:
+        print(f"❌ Pattern initialization failed: {e}")
+        return False
+
+def _initialize_cds(instrument: str, timeframe: str) -> bool:
+    """Initialize CDS using jgtapp cds command"""
+    try:
+        # Equivalent to: jgtml_prep_cds_05 <instrument> <timeframe>
+        cmd = [sys.executable, "-m", "jgtml.jgtapp", "cds", 
+               "-i", instrument, "-t", timeframe, "--fresh", "--full"]
+        
+        result = subprocess.run(cmd, capture_output=True, text=True, timeout=300)
+        if result.returncode != 0:
+            print(f"❌ CDS initialization failed: {result.stderr}")
+            return False
+        return True
+    except Exception as e:
+        print(f"❌ CDS initialization error: {e}")
+        return False
+
+def _create_ttf_patterns(instrument: str, timeframe: str) -> bool:
+    """Create TTF patterns using ttfcli"""
+    try:
+        # TTF patterns from the workflow: ttf, mfi, peaks, zonesq
+        patterns = ["ttf", "mfi", "zonesq"]
+        
+        for pattern in patterns:
+            print(f"    🔨 Creating pattern: {pattern}")
+            
+            # Equivalent to: jgtmlttfcli -i <instrument> -t <timeframe> --full -pn <pattern>
+            cmd = [sys.executable, "-m", "jgtml.ttfcli", 
+                   "-i", instrument, "-t", timeframe, 
+                   "--full", "-pn", pattern]
+            
+            result = subprocess.run(cmd, capture_output=True, text=True, timeout=300)
+            if result.returncode != 0:
+                print(f"⚠️  TTF pattern creation failed for {pattern}: {result.stderr}")
+                # Continue with other patterns rather than failing completely
+                continue
+        
+        return True
+    except Exception as e:
+        print(f"❌ TTF pattern creation error: {e}")
+        return False
+
+def _generate_mx_files(instrument: str, timeframe: str) -> bool:
+    """Generate MX target files using jgtmlcli"""
+    try:
+        # Equivalent to: jgtml_post_mx_15 <instrument> <timeframe>
+        cmd = [sys.executable, "-m", "jgtml.jgtmlcli", 
+               "-i", instrument, "-t", timeframe, "--full", "-pn", "ttf"]
+        
+        result = subprocess.run(cmd, capture_output=True, text=True, timeout=300)
+        if result.returncode != 0:
+            print(f"❌ MX generation failed: {result.stderr}")
+            return False
+        return True
+    except Exception as e:
+        print(f"❌ MX generation error: {e}")
+        return False
+
 def load_market_data(config: AlligatorConfig) -> 'pd.DataFrame':
-    """Load market data using the JGTML data pipeline"""
-    # Use the existing jtc.pto_target_calculation infrastructure
-    # This replicates the data loading from the original generated files
+    """
+    Load market data using JGTML data pipeline.
+    Uses the get_pto_dataframe_mx_based_en_ttf pattern from original scripts.
+    """
+    
+    # First ensure pattern files exist
+    if not ensure_pattern_files_exist(config):
+        print("EXITING - RUN PREREQ SCRIPTS BEFORE RUNNING THIS SCRIPT")
+        print("Pattern file initialization failed. Please check your JGTML environment setup.")
+        sys.exit(1)
     
     try:
         # Get data through the consolidated jtc pipeline - pattern from original scripts
