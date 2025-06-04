@@ -126,28 +126,44 @@ def load_market_data(config: AlligatorConfig) -> 'pd.DataFrame':
     # This replicates the data loading from the original generated files
     
     try:
-        # Get data through the consolidated jtc pipeline
-        from jtc import pto_target_calculation
+        # Get data through the consolidated jtc pipeline - pattern from original scripts
+        df = None
+        try:
+            if not config.force_regenerate_mxfiles:
+                from jtc import readMXFile
+                df = readMXFile(config.instrument, config.timeframe)
+        except:
+            pass
+
+        # Set df to None if column 'mfi' is not present (force regeneration)
+        if df is not None and 'mfi' not in df.columns:
+            df = None
+
+        if df is None:
+            from jtc import pto_target_calculation
+            df, sel1, sel2 = pto_target_calculation(
+                config.instrument, 
+                config.timeframe,
+                mfi_flag=config.mfi_flag,
+                talligator_flag=AlligatorType.TIDE in config.alligator_types,
+                balligator_flag=AlligatorType.BIG in config.alligator_types,
+                regenerate_cds=config.regenerate_cds,
+                use_fresh=config.use_fresh,
+                use_ttf=True  # Use TTF (Time To Fill) data by default
+            )
         
-        # Configure data loading parameters
-        data_params = {
-            'instrument': config.instrument,
-            'timeframe': config.timeframe,
-            'force_regenerate_mxfiles': config.force_regenerate_mxfiles,
-            'mfi_flag': config.mfi_flag,
-            'regenerate_cds': config.regenerate_cds,
-            'use_fresh': config.use_fresh,
-            'balligator_flag': AlligatorType.BIG in config.alligator_types,
-            'talligator_flag': AlligatorType.TIDE in config.alligator_types,
-            'use_ttf': True,  # Use TTF (Time To Fill) data by default
-        }
+        if not config.quiet:
+            print(f"✅ Loaded {len(df) if df is not None else 0} data points for {config.instrument} {config.timeframe}")
+            if df is not None and not df.empty:
+                print(f"📊 Data range: {df.index[0]} to {df.index[-1]}")
         
-        # This would need to be implemented based on the jtc module structure
-        # For now, return a placeholder that indicates the data loading approach
-        print(f"Loading data for {config.instrument} {config.timeframe}")
-        print(f"Alligator types: {[t.value for t in config.alligator_types]}")
+        return df if df is not None else pd.DataFrame()
         
-        # Return empty DataFrame for now - actual implementation would use jtc
+    except Exception as e:
+        if not config.quiet:
+            print(f"⚠️  Error loading market data: {e}")
+            print("This may indicate a JGTML environment configuration issue.")
+        # Return empty DataFrame as fallback
         import pandas as pd
         return pd.DataFrame()
         
