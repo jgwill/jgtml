@@ -18,7 +18,7 @@ from typing import Dict, Tuple, Optional
 import os
 
 # Import the consolidated balance analyzer
-from .JGTBalanceAnalyzer import get_alligator_column_names_from_ctx_name, filter_sig_is_in_ctx_teeth, filter_sig_ctx_mouth_is_open_and_in_ctx_teeth, filter_sig_ctx_mouth_is_open_and_in_ctx_lips
+from JGTBalanceAnalyzer import get_alligator_column_names_from_ctx_name, filter_sig_is_in_ctx_teeth, filter_sig_ctx_mouth_is_open_and_in_ctx_teeth, filter_sig_ctx_mouth_is_open_and_in_ctx_lips
 
 # Use jgtconstants column names from jgtutils
 try:
