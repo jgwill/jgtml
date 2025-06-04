@@ -133,7 +133,7 @@ def ensure_pattern_files_exist(config: AlligatorConfig) -> bool:
     """
     
     # Define pattern file paths based on JGTML data structure
-    data_path = Path(config.jgtdroot_default) / "data" / "full" / "pn"
+    data_path = Path(config.jgtdroot) / "data" / "full" / "pn"
     required_files = [
         data_path / "mfi.csv",
         data_path / "ttf.csv", 
