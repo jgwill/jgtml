@@ -25,6 +25,7 @@ JGTML analyzes the effectiveness of trading signals within larger market structu
 - [`jgtml/SignalOrderingHelper.py`](jgtml/SignalOrderingHelper.py): Signal validation and risk calculation
 - [`jgtml/jtc.py`](jgtml/jtc.py): Target calculation and signal analysis core
 - [`jgtml/TideAlligatorAnalysis.py`](jgtml/TideAlligatorAnalysis.py): Alligator-based signal analysis
+- TODO add TTF (TTF != Time-To-Future but more like feature of multiple timeframe)  probably ttfcli.py
 
 #### 🚀 Command Line Tools
 - [`jgtml/jgtmlcli.py`](jgtml/jgtmlcli.py): Main CLI for data processing

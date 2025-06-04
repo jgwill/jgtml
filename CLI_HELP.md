@@ -10,7 +10,7 @@ positional arguments:
     pds                 Refresh the PDS full for an instrument and timeframe
     cds                 Refresh the CDS
     ocds                Refresh the CDS from old PDS
-    ttf                 Refresh the TTF for an instrument and timeframe
+    ttf                 Refresh the TTF for an instrument and timeframe (TTF != Time-To-Future but more like feature of multiple timeframe)
     mlf                 Refresh the MLF for an instrument and timeframe
     ttfmxwf             Refresh the TTF, MX and CDS for an instrument
     mx                  Refresh the MX (using the TTF) for an instrument and
