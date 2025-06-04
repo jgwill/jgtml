@@ -39,6 +39,10 @@ sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
 from TideAlligatorAnalysis import AlligatorAnalysis, AlligatorConfig, AlligatorType
 from jtc import pto_target_calculation
 
+# Direct imports for pattern initialization instead of subprocess calls
+from . import jgtapp
+from .ptottf import create_ttf_csv
+
 def create_parser() -> argparse.ArgumentParser:
     """Create the argument parser for the unified Alligator CLI"""
     parser = argparse.ArgumentParser(
@@ -185,40 +189,32 @@ def ensure_pattern_files_exist(config: AlligatorConfig) -> bool:
         return False
 
 def _initialize_cds(instrument: str, timeframe: str) -> bool:
-    """Initialize CDS using jgtapp cds command"""
+    """Initialize CDS using direct jgtapp.cds function call"""
     try:
-        # Equivalent to: jgtml_prep_cds_05 <instrument> <timeframe>
-        cmd = [sys.executable, "-m", "jgtml.jgtapp", "cds", 
-               "-i", instrument, "-t", timeframe, "--fresh", "--full"]
-        
-        result = subprocess.run(cmd, capture_output=True, text=True, timeout=300)
-        if result.returncode != 0:
-            print(f"❌ CDS initialization failed: {result.stderr}")
-            return False
+        # Direct call instead of subprocess: jgtapp.cds(instrument, timeframe, use_fresh=True, use_full=True)
+        jgtapp.cds(instrument, timeframe, use_fresh=True, use_full=True)
         return True
     except Exception as e:
         print(f"❌ CDS initialization error: {e}")
         return False
 
 def _create_ttf_patterns(instrument: str, timeframe: str) -> bool:
-    """Create TTF patterns using ttfcli"""
+    """Create TTF patterns using direct ptottf.create_ttf_csv function calls"""
     try:
-        # TTF patterns from the workflow: ttf, mfi, peaks, zonesq
+        # TTF patterns from the workflow: ttf, mfi, zonesq
         patterns = ["ttf", "mfi", "zonesq"]
         
         for pattern in patterns:
             print(f"    🔨 Creating pattern: {pattern}")
             
-            # Equivalent to: jgtmlttfcli -i <instrument> -t <timeframe> --full -pn <pattern>
-            cmd = [sys.executable, "-m", "jgtml.ttfcli", 
-                   "-i", instrument, "-t", timeframe, 
-                   "--full", "-pn", pattern]
-            
-            result = subprocess.run(cmd, capture_output=True, text=True, timeout=300)
-            if result.returncode != 0:
-                print(f"⚠️  TTF pattern creation failed for {pattern}: {result.stderr}")
-                # Continue with other patterns rather than failing completely
-                continue
+            # Direct call instead of subprocess: create_ttf_csv with pattern name
+            create_ttf_csv(
+                instrument, 
+                timeframe, 
+                use_full=True, 
+                use_fresh=False,  # CDS was already refreshed in _initialize_cds
+                pn=pattern
+            )
         
         return True
     except Exception as e:
@@ -226,16 +222,19 @@ def _create_ttf_patterns(instrument: str, timeframe: str) -> bool:
         return False
 
 def _generate_mx_files(instrument: str, timeframe: str) -> bool:
-    """Generate MX target files using jgtmlcli"""
+    """Generate MX target files using direct jtc.pto_target_calculation call"""
     try:
-        # Equivalent to: jgtml_post_mx_15 <instrument> <timeframe>
-        cmd = [sys.executable, "-m", "jgtml.jgtmlcli", 
-               "-i", instrument, "-t", timeframe, "--full", "-pn", "ttf"]
-        
-        result = subprocess.run(cmd, capture_output=True, text=True, timeout=300)
-        if result.returncode != 0:
-            print(f"❌ MX generation failed: {result.stderr}")
-            return False
+        # Direct call instead of subprocess: jtc.pto_target_calculation with ttf pattern
+        pto_target_calculation(
+            instrument, 
+            timeframe,
+            pto_vec_fdb_ao_vector_window_flag=True,
+            drop_calc_col=False,
+            save_outputs=True,
+            use_fresh=True,
+            use_ttf=True,
+            pn="ttf"
+        )
         return True
     except Exception as e:
         print(f"❌ MX generation error: {e}")
