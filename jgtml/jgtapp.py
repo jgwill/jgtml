@@ -501,9 +501,36 @@ def fxmvstopgator(i,t,tradeid,lips=True,teeth=False,jaw=False,demo=False,skip_tr
     #recursive call
     fxmvstopgator(i,t,tradeid,lips=lips,teeth=teeth,jaw=jaw,demo=demo,loop_action=True,skip_trade_data_update=skip_trade_data_update)
 
-def tide(instrument, timeframe, buysell):
-  raise DeprecationWarning("tide is deprecated. ")
-  #subprocess.run(['tide', instrument, timeframe, buysell])
+def tide(instrument, timeframe, buysell, type='tide', quiet=False):
+  """
+  Unified JGTML Alligator Analysis - replaces deprecated tide function
+  Now calls the consolidated alligator_cli.py for all Alligator types
+  """
+  # Import the unified alligator CLI
+  from alligator_cli import main as alligator_main
+  
+  # Map the legacy buysell parameter to direction (-d)
+  direction = 'B' if buysell.upper() in ['BUY', 'B'] else 'S'
+  
+  if not quiet:
+    print(f"🔮 Unified Alligator Analysis: {instrument} {timeframe} {direction}")
+    print(f"   Analysis Type: {type}")
+    print(f"   Legacy tide command now uses unified CLI")
+  
+  # Call the unified CLI with the specified Alligator analysis
+  import sys
+  original_argv = sys.argv
+  try:
+    # Set up argv for the unified CLI
+    cli_args = ['alligator_cli.py', '-i', instrument, '-t', timeframe, '-d', direction, '--type', type]
+    if quiet:
+      cli_args.append('--quiet')
+    
+    sys.argv = cli_args
+    alligator_main()
+  finally:
+    # Restore original argv
+    sys.argv = original_argv
 
 def pds(instrument, timeframe,use_full=True):
   use_full_arg = '--full' if use_full else ''
@@ -680,10 +707,14 @@ def main():
   parser_fxmvstopfdb.add_argument('--jaw', action='store_true', help='Use jaw (if no FDB signal is found, the jaw will be used)')
   
 
-  parser_tidealligator = subparsers.add_parser('tide', help='Run the pto tidealligator')
+  parser_tidealligator = subparsers.add_parser('tide', help='Unified JGTML Alligator Analysis (replaces legacy tide)')
   parser_tidealligator.add_argument('-i','--instrument', help='Instrument')
   parser_tidealligator.add_argument('-t','--timeframe', help='Timeframe')
-  parser_tidealligator.add_argument('buysell', help='Buy or Sell')
+  parser_tidealligator.add_argument('buysell', help='Buy or Sell (B/S or BUY/SELL)')
+  parser_tidealligator.add_argument('--type', default='tide', choices=['tide', 'big', 'regular', 'all'], 
+                                    help='Alligator type to analyze (default: tide for backward compatibility)')
+  parser_tidealligator.add_argument('--quiet', action='store_true', 
+                                    help='Suppress output messages')
 
   parser_prep_pds_01 = subparsers.add_parser('pds', help='Refresh the PDS full for an instrument and timeframe')
   parser_prep_pds_01.add_argument('-i','--instrument', help='Instrument')
@@ -785,7 +816,10 @@ def main():
   
   
   if args.command == 'tide':
-    tide(args.instrument, args.timeframe, args.buysell)
+    # Pass the new optional arguments if they exist
+    type_arg = getattr(args, 'type', 'tide')
+    quiet_arg = getattr(args, 'quiet', False)
+    tide(args.instrument, args.timeframe, args.buysell, type=type_arg, quiet=quiet_arg)
   elif args.command == 'fxaddorder' or args.command == 'add':
     fxaddorder(args.instrument, args.lots, args.rate, args.buysell, args.stop, args.demo,args.pips)
   elif args.command == 'fxrmorder' or args.command == 'rm':
