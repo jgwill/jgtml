@@ -1,0 +1,23 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "../jgtpy"
+		},
+		{
+			"path": "../jgtagentic"
+		},
+		{
+			"path": "../jgtfxcon"
+		},
+		{
+			"path": "../jgtutils"
+		},
+		{
+			"path": "../../opt/binscripts"
+		}
+	],
+	"settings": {}
+}
