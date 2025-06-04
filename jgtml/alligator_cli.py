@@ -40,8 +40,8 @@ from TideAlligatorAnalysis import AlligatorAnalysis, AlligatorConfig, AlligatorT
 from jtc import pto_target_calculation
 
 # Direct imports for pattern initialization instead of subprocess calls
-from . import jgtapp
-from .ptottf import create_ttf_csv
+import jgtapp
+from ptottf import create_ttf_csv
 
 def create_parser() -> argparse.ArgumentParser:
     """Create the argument parser for the unified Alligator CLI"""
