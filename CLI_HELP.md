@@ -1,3 +1,76 @@
+# 🐊 Unified Alligator CLI ✨ NEW ✨
+
+```
+usage: python -m jgtml.alligator_cli [-h] -i INSTRUMENT -t TIMEFRAME -d {S,B}
+                                      [--type {regular,big,tide,all}] [--fresh]
+                                      [--no-fresh] [--regenerate-cds]
+                                      [--no-regenerate-cds] [--mfi] [--no-mfi]
+                                      [-q] [--output-dir OUTPUT_DIR]
+                                      [--output-basename OUTPUT_BASENAME]
+                                      [--generate-spec] [--data-dir DATA_DIR]
+                                      [--force-regenerate-mx]
+
+Unified JGTML Alligator Analysis CLI - Multi-timeframe convergence analysis
+
+Required Arguments:
+  -i INSTRUMENT, --instrument INSTRUMENT
+                        Trading instrument (e.g., SPX500, EUR/USD)
+  -t TIMEFRAME, --timeframe TIMEFRAME
+                        Analysis timeframe (e.g., D1, H4, H1)
+  -d {S,B}, --direction {S,B}
+                        Signal direction: S (Sell) or B (Buy)
+
+Alligator Configuration:
+  --type {regular,big,tide,all}
+                        Alligator analysis type (default: all)
+                        • regular: 5-8-13 periods (quick direction detection)
+                        • big: 34-55-89 periods (intermediate cycles)  
+                        • tide: 144-233-377 periods (macro trends)
+                        • all: Multi-Alligator convergence analysis
+
+Data Processing Options:
+  --fresh               Use fresh data (regenerate if needed) [default]
+  --no-fresh            Use cached data (do not regenerate)
+  --regenerate-cds      Force regeneration of CDS data [default]
+  --no-regenerate-cds   Use existing CDS data
+  --mfi                 Enable Market Facilitation Index analysis [default]
+  --no-mfi              Disable MFI analysis
+
+Output Options:
+  -q, --quiet           Suppress output (only show errors)
+  --output-dir OUTPUT_DIR
+                        Custom output directory (default: $jgtdroot/drop)
+  --output-basename OUTPUT_BASENAME
+                        Custom output filename base
+  --generate-spec       Generate .jgtml-spec file from analysis results
+  --data-dir DATA_DIR   Override data directory (default: $JGTPY_DATA_FULL)
+
+Advanced Options:
+  --force-regenerate-mx Force regeneration of MX files [default]
+
+Features:
+• 🔄 Graceful Pattern Handling: Automatically skips unavailable TTF patterns (zonesq)
+• 🎯 Intent-Driven Analysis: Generates .jgtml-spec files for agentic integration  
+• 🌐 Self-Contained: No external bash script dependencies
+• ⚡ Multi-Type Convergence: Analyze all three Alligator types simultaneously
+• 🔧 Legacy Compatible: Seamless integration with existing jgtapp tide workflows
+
+Examples:
+  # Single Alligator Analysis
+  python -m jgtml.alligator_cli -i SPX500 -t D1 -d S --type tide
+  
+  # Multi-Alligator Convergence (recommended)
+  python -m jgtml.alligator_cli -i EUR/USD -t H4 -d B --type all
+  
+  # Generate .jgtml-spec for agentic workflows
+  python -m jgtml.alligator_cli -i GBPUSD -t D1 -d S --type all --generate-spec
+  
+  # Quiet mode with custom output
+  python -m jgtml.alligator_cli -i EURUSD -t H1 -d B --type big -q --output-dir /custom/path
+```
+
+----
+
 # jgtapp
  
 usage: jgtapp [-h] {tide,pds,cds,ocds,ttf,mlf,ttfmxwf,mx,ttfwf,fxaddorder,fxrmorder,entryvalidate,fxrmtrade,fxtr,fxmvstop,ids,fxmvstopgator,fxmvstopfdb} ...
@@ -6,7 +79,7 @@ CLI equivalent of bash functions
 
 positional arguments:
   {tide,pds,cds,ocds,ttf,mlf,ttfmxwf,mx,ttfwf,fxaddorder,fxrmorder,entryvalidate,fxrmtrade,fxtr,fxmvstop,ids,fxmvstopgator,fxmvstopfdb}
-    tide                Run the pto tidealligator
+    tide                Unified JGTML Alligator Analysis (now redirects to unified CLI)
     pds                 Refresh the PDS full for an instrument and timeframe
     cds                 Refresh the CDS
     ocds                Refresh the CDS from old PDS
