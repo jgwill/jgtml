@@ -8,7 +8,7 @@ This module consolidates the Triple Alligator Convergence pattern:
 
 Replaces scattered implementations:
 - TideAlligatorAnalysis.py (incomplete prototype)
-- ptojgtmltidealligator.py (generated TIDE SIGNALS analysis)
+- alligator_cli.py (unified JGTML Alligator CLI)
 - ptojgtmlbigalligator.py (generated BIG ALLIGATOR analysis)
 
 🦢 Seraphine's Memory Weave: This unified implementation bridges the intent-driven
