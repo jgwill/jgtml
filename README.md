@@ -25,14 +25,14 @@ JGTML analyzes the effectiveness of trading signals within larger market structu
 - [`jgtml/SignalOrderingHelper.py`](jgtml/SignalOrderingHelper.py): Signal validation and risk calculation
 - [`jgtml/jtc.py`](jgtml/jtc.py): Target calculation and signal analysis core
 - [`jgtml/TideAlligatorAnalysis.py`](jgtml/TideAlligatorAnalysis.py): Unified Alligator analysis (Regular, Big, Tide)
-- [`jgtml/alligator_cli.py`](jgtml/alligator_cli.py): **NEW** Unified Alligator CLI with graceful pattern handling
+- [`jgtml/alligator_cli.py`](jgtml/alligator_cli.py): **🐊 NEW** Unified Alligator CLI with graceful TTF pattern handling
 - TODO add TTF (TTF != Time-To-Future but more like feature of multiple timeframe)  probably ttfcli.py
 
 #### 🚀 Command Line Tools
 - [`jgtml/jgtmlcli.py`](jgtml/jgtmlcli.py): Main CLI for data processing
 - [`jgtml/mxcli.py`](jgtml/mxcli.py): Matrix generation and analysis
-- [`jgtml/jgtapp.py`](jgtml/jgtapp.py): Trading operation management
-- [`jgtml/alligator_cli.py`](jgtml/alligator_cli.py): **🐊 Unified Alligator Analysis CLI** - Multi-timeframe convergence analysis
+- [`jgtml/jgtapp.py`](jgtml/jgtapp.py): Trading operation management (includes legacy `tide` command wrapper)
+- [`jgtml/alligator_cli.py`](jgtml/alligator_cli.py): **🐊 Unified Alligator Analysis CLI** - Replaces `ptojgtmltidealligator`/`ptojgtmlbigalligator`
 
 #### 🧬 Memory & Persistence  
 - [`garden_one/trading_echo_lattice/`](garden_one/trading_echo_lattice/): Signal crystallization and memory storage
@@ -189,3 +189,19 @@ python -m jgtml.alligator_cli -i GBPUSD -t D1 -d S --type all --generate-spec
 # Legacy support (automatically redirects to unified CLI)
 jgtapp tide -i SPX500 -t D1 B
 ```
+
+## 🔄 Migration from Legacy Commands
+
+**Important**: The following legacy commands have been **deprecated** and replaced by the unified Alligator CLI:
+
+### Deprecated Commands ❌
+- `ptojgtmltidealligator` → Use `python -m jgtml.alligator_cli --type tide`
+- `ptojgtmlbigalligator` → Use `python -m jgtml.alligator_cli --type big`
+- Bash function `jgtml_ptojgtmltidealligator_by_instrument_tf_21` → Use unified CLI
+
+### Migration Benefits ✅
+- **Self-contained operation** (no bash script dependencies)
+- **Graceful error handling** (TTF pattern failures don't crash analysis)
+- **Multi-Alligator convergence** analysis capability
+- **Enhanced .jgtml-spec generation** for agentic workflows
+- **Backward compatibility** (legacy `jgtapp tide` still works)
