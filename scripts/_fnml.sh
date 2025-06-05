@@ -40,8 +40,9 @@ __functionusage__='
 	jgtml_wf_mx_by_instrument_20 <instrument>
 # Run for all instruments in I variable
 	jgtml_wf_mx_all_20    
-#run the pto tidealligator
+#run the unified alligator CLI (replaces legacy pto tidealligator)
 	jgtml_ptojgtmltidealligator_by_instrument_tf_21 <instrument> <timeframe> <buysell>
+	# RECOMMENDED: python -m jgtml.alligator_cli -i <instrument> -t <timeframe> -d <direction> --type <tide|big|regular|all>
 # Run the jgtmlfcli for an instrument and timeframe
 	jgtmlf_exec_by_instrument_tf_22 <instrument> <timeframe> 
 	'
@@ -276,10 +277,12 @@ ttfmxwf()
 	(for _i in $(echo "$I"|tr "," " ");do echo "$_i";jgtapp ttfmxwf -i "$_i";done)&
 }
 
-# 21 Run the pto tidealligator for an instrument, timeframe and buysell
+# 21 Run the unified alligator CLI for an instrument, timeframe and buysell (DEPRECATED - Use python -m jgtml.alligator_cli)
 jgtml_ptojgtmltidealligator_by_instrument_tf_21()
 {
-	ptojgtmltidealligator -i $1 -t $2 --buysell $3 -nf --dont_regenerate_cds 
+	echo "⚠️  DEPRECATED: jgtml_ptojgtmltidealligator_by_instrument_tf_21"
+	echo "    Use: python -m jgtml.alligator_cli -i $1 -t $2 -d $3 --type tide"
+	python -m jgtml.alligator_cli -i $1 -t $2 -d $3 --type tide --quiet
 }
 
 jgtmlf_exec_by_instrument_tf_22()
