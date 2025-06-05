@@ -74,13 +74,11 @@ except ImportError:
     VECTOR_AO_FDBB_COUNT = "vector_ao_fdbb_count"
     VECTOR_AO_FDB_COUNT = "vector_ao_fdb_count"
 
-
 class AlligatorType(Enum):
     """Enumeration of the three Alligator analysis types"""
     REGULAR = "normal"    # 5-8-13 periods
     BIG = "big"          # 34-55-89 periods  
     TIDE = "tide"        # 144-233-377 periods
-
 
 class AlligatorConfig:
     """Configuration class for Alligator Analysis"""
@@ -125,208 +123,119 @@ class AlligatorConfig:
             'result_file_basename': self.result_file_basename
         }
 
-
 class AlligatorAnalysis:
     """
-    🧠 Mia's Unified Analysis Engine
-    
-    Consolidates Triple Alligator analysis with full signal evaluation:
-    - All 6 signal types from original implementations
-    - Support for Regular/Big/Tide contexts
-    - Intent-driven configuration and output
+    Unified Alligator Analysis supporting all three types:
+    - Regular (5-8-13): Quick market direction
+    - Big (34-55-89): Intermediate cycles
+    - Tide (144-233-377): Macro trends
     """
     
     def __init__(self, config: AlligatorConfig):
         self.config = config
+        self.data_cache = {}
+        self.results_cache = {}
         
-    def analyze(self, direction: str) -> Dict:
+    def get_alligator_periods(self, alligator_type: AlligatorType) -> Tuple[int, int, int]:
+        """Get the periods for each Alligator type"""
+        periods_map = {
+            AlligatorType.REGULAR: (5, 8, 13),
+            AlligatorType.BIG: (34, 55, 89),
+            AlligatorType.TIDE: (144, 233, 377)
+        }
+        return periods_map[alligator_type]
+    
+    def get_column_names(self, alligator_type: AlligatorType) -> Tuple[str, str, str]:
+        """Get column names for the specified Alligator type"""
+        return get_alligator_column_names_from_ctx_name(alligator_type.value)
+    
+    def analyze_signals(self, df: pd.DataFrame, direction: str, alligator_type: AlligatorType) -> Dict:
         """
-        🌸 Miette's Complete Analysis Flow
+        Analyze signals for a specific Alligator type and direction
         
-        Performs unified analysis across all configured Alligator types.
-        Each type analyzes the full spectrum of signal contexts:
-        - all_evalname_signals: Base signal population
-        - sig_normal_mouth_is_open: Regular Alligator mouth validation
-        - sig_is_out_of_normal_mouth: Price outside Regular Alligator
-        - sig_is_in_ctx_teeth: Price pullback into context teeth
-        - sig_ctx_mouth_is_open_and_in_ctx_teeth: Strategic retracement entry (teeth)
-        - sig_ctx_mouth_is_open_and_in_ctx_lips: Strategic retracement entry (lips)
+        Args:
+            df: Market data DataFrame
+            direction: "S" for sell, "B" for buy
+            alligator_type: Type of Alligator analysis
+            
+        Returns:
+            Dictionary containing analysis results
         """
-        results = {}
+        ctx_name = alligator_type.value
+        
+        # Apply signal filtering using consolidated JGTBalanceAnalyzer
+        sig_in_teeth = filter_sig_is_in_ctx_teeth(df, direction, ctx_name)
+        sig_mouth_open_in_teeth = filter_sig_ctx_mouth_is_open_and_in_ctx_teeth(df, direction, ctx_name)
+        sig_mouth_open_in_lips = filter_sig_ctx_mouth_is_open_and_in_ctx_lips(df, direction, ctx_name)
+        
+        # Calculate metrics
+        analysis_results = {
+            'alligator_type': alligator_type.value,
+            'direction': direction,
+            'signals_in_teeth': {
+                'count': len(sig_in_teeth),
+                'sum': sig_in_teeth[FDB_TARGET].sum() if FDB_TARGET in sig_in_teeth.columns else 0,
+                'data': sig_in_teeth
+            },
+            'signals_mouth_open_in_teeth': {
+                'count': len(sig_mouth_open_in_teeth),
+                'sum': sig_mouth_open_in_teeth[FDB_TARGET].sum() if FDB_TARGET in sig_mouth_open_in_teeth.columns else 0,
+                'data': sig_mouth_open_in_teeth
+            },
+            'signals_mouth_open_in_lips': {
+                'count': len(sig_mouth_open_in_lips),
+                'sum': sig_mouth_open_in_lips[FDB_TARGET].sum() if FDB_TARGET in sig_mouth_open_in_lips.columns else 0,
+                'data': sig_mouth_open_in_lips
+            }
+        }
+        
+        return analysis_results
+    
+    def run_full_analysis(self, df: pd.DataFrame, directions: list = None) -> Dict:
+        """
+        Run complete analysis for all configured Alligator types and directions
+        
+        Args:
+            df: Market data DataFrame
+            directions: List of directions to analyze (default: ["S", "B"])
+            
+        Returns:
+            Comprehensive analysis results
+        """
+        if directions is None:
+            directions = ["S", "B"]
+            
+        full_results = {
+            'config': self.config.get_config(),
+            'analysis_timestamp': pd.Timestamp.now().isoformat(),
+            'results': {}
+        }
         
         for alligator_type in self.config.alligator_types:
-            if not self.config.quiet:
-                print(f"🔮 Analyzing {alligator_type.value.upper()} Alligator - {direction} signals...")
+            full_results['results'][alligator_type.value] = {}
             
-            analysis_result = self._analyze_single_type(alligator_type, direction)
-            results[alligator_type.value] = {direction: analysis_result}
-            
-            if not self.config.quiet:
-                self._print_analysis_summary(alligator_type, direction, analysis_result)
-        
-        return {'config': self.config.get_config(), 'results': results}
-    
-    def _analyze_single_type(self, alligator_type: AlligatorType, direction: str) -> Dict:
-        """🔮 ResoNova's Single Context Analysis"""
-        
-        # Get the appropriate data based on alligator type
-        df = self._get_dataframe(alligator_type)
-        
-        # Apply direction-specific filtering
-        df_filtered = self._filter_by_direction(df, direction)
-        
-        # Get column definitions for this alligator type
-        columns = self._get_alligator_columns(alligator_type)
-        
-        # Apply all signal filters and compute metrics
-        analysis = {}
-        
-        # 1. Base signals (all valid targets)
-        analysis['all_evalname_signals'] = self._compute_signal_metrics(df_filtered, "All signals")
-        
-        # 2. Regular mouth analysis (applies to all contexts)
-        df_out_mouth = self._filter_out_of_normal_mouth(df_filtered, direction)
-        analysis['sig_is_out_of_normal_mouth'] = self._compute_signal_metrics(df_out_mouth, "Out of Regular mouth")
-        
-        df_mouth_open = self._filter_normal_mouth_open(df_out_mouth, direction)
-        analysis['sig_normal_mouth_is_open'] = self._compute_signal_metrics(df_mouth_open, "Regular mouth open")
-        
-        # 3. Context-specific analysis (Big/Tide teeth and lips)
-        if alligator_type in [AlligatorType.BIG, AlligatorType.TIDE]:
-            ctx_name = alligator_type.value
-            
-            df_in_teeth = filter_sig_is_in_ctx_teeth(df_filtered, ctx_name)
-            analysis['sig_is_in_ctx_teeth'] = self._compute_signal_metrics(df_in_teeth, f"In {ctx_name} teeth")
-            
-            df_mouth_open_teeth = filter_sig_ctx_mouth_is_open_and_in_ctx_teeth(df_filtered, ctx_name)
-            analysis['sig_ctx_mouth_is_open_and_in_ctx_teeth'] = self._compute_signal_metrics(
-                df_mouth_open_teeth, f"{ctx_name} mouth open + in teeth"
-            )
-            
-            df_mouth_open_lips = filter_sig_ctx_mouth_is_open_and_in_ctx_lips(df_filtered, ctx_name)
-            analysis['sig_ctx_mouth_is_open_and_in_ctx_lips'] = self._compute_signal_metrics(
-                df_mouth_open_lips, f"{ctx_name} mouth open + in lips"
-            )
-        
-        return analysis
-    
-    def _get_dataframe(self, alligator_type: AlligatorType) -> pd.DataFrame:
-        """Load appropriate dataset for analysis"""
-        # This mirrors the logic from ptojgtmltidealligator.py
-        try:
-            if jtc:
-                df = jtc.get_pto_dataframe_mx_based_en_ttf(
-                    self.config.instrument,
-                    self.config.timeframe,
-                    self.config.force_regenerate_mxfiles,
-                    self.config.mfi_flag,
-                    True,  # balligator_flag
-                    True,  # talligator_flag  
-                    self.config.regenerate_cds,
-                    self.config.use_fresh,
-                    True   # use_ttf_default
-                )
+            for direction in directions:
+                analysis_result = self.analyze_signals(df, direction, alligator_type)
+                full_results['results'][alligator_type.value][direction] = analysis_result
                 
-                # Select relevant columns based on alligator type
-                columns = self._get_columns_for_type(alligator_type)
-                df_filtered = df[columns].copy()
-                
-                # Filter to only rows with valid targets
-                return df_filtered[df_filtered[FDB_TARGET] != 0].copy()
-            else:
-                raise ImportError("jtc module not available")
-        except Exception as e:
-            if not self.config.quiet:
-                print(f"Warning: Could not load data via jtc: {e}")
-            # Return empty DataFrame with expected columns
-            columns = self._get_columns_for_type(alligator_type)
-            return pd.DataFrame(columns=columns)
-    
-    def _get_columns_for_type(self, alligator_type: AlligatorType) -> List[str]:
-        """Get column list for specific alligator type"""
-        base_columns = [HIGH, LOW, JAW, TEETH, LIPS, FDB_TARGET]
+                if not self.config.quiet:
+                    self._print_analysis_summary(analysis_result)
         
-        if alligator_type == AlligatorType.BIG:
-            base_columns.extend([BJAW, BTEETH, BLIPS])
-        elif alligator_type == AlligatorType.TIDE:
-            base_columns.extend([TJAW, TTEETH, TLIPS])
-        
-        # Add signal columns
-        base_columns.extend([FDBB, FDBS, VECTOR_AO_FDB_COUNT])
-        
-        return base_columns
+        return full_results
     
-    def _filter_by_direction(self, df: pd.DataFrame, direction: str) -> pd.DataFrame:
-        """Filter dataset by trading direction"""
-        if direction.upper() in ['S', 'SELL']:
-            signal_col = FDBS
-        else:
-            signal_col = FDBB
-            
-        return df[df[signal_col] != 0].copy()
-    
-    def _get_alligator_columns(self, alligator_type: AlligatorType) -> Dict[str, str]:
-        """Get jaw/teeth/lips column names for alligator type"""
-        if alligator_type == AlligatorType.BIG:
-            return {'jaw': BJAW, 'teeth': BTEETH, 'lips': BLIPS}
-        elif alligator_type == AlligatorType.TIDE:
-            return {'jaw': TJAW, 'teeth': TTEETH, 'lips': TLIPS}
-        else:  # Regular
-            return {'jaw': JAW, 'teeth': TEETH, 'lips': LIPS}
-    
-    def _filter_out_of_normal_mouth(self, df: pd.DataFrame, direction: str) -> pd.DataFrame:
-        """Filter signals outside Regular Alligator mouth"""
-        try:
-            if direction.upper() in ['S', 'SELL']:
-                return filter_sig_is_out_of_normal_mouth_sell(df)
-            else:
-                return filter_sig_is_out_of_normal_mouth_buy(df)
-        except NameError:
-            # Fallback if balance analyzer functions not available
-            return df.copy()
-    
-    def _filter_normal_mouth_open(self, df: pd.DataFrame, direction: str) -> pd.DataFrame:
-        """Filter signals when Regular Alligator mouth is open"""
-        try:
-            if direction.upper() in ['S', 'SELL']:
-                return filter_sig_normal_mouth_is_open_sell(df)
-            else:
-                return filter_sig_normal_mouth_is_open_buy(df)
-        except NameError:
-            # Fallback if balance analyzer functions not available
-            return df.copy()
-    
-    def _compute_signal_metrics(self, df: pd.DataFrame, description: str) -> Dict:
-        """Compute count, sum, and average for signal set"""
-        if df.empty:
-            return {
-                'count': 0,
-                'sum': 0.0,
-                'per_trade': 0.0,
-                'title': description
-            }
-        
-        count = len(df)
-        total_sum = df[FDB_TARGET].sum()
-        per_trade = total_sum / count if count > 0 else 0.0
-        
-        return {
-            'count': count,
-            'sum': round(total_sum, 2),
-            'per_trade': round(per_trade, 2),
-            'title': description
-        }
-    
-    def _print_analysis_summary(self, alligator_type: AlligatorType, direction: str, analysis: Dict):
+    def _print_analysis_summary(self, analysis_result: Dict):
         """Print summary of analysis results"""
-        print(f"\n=== {alligator_type.value.upper()} ALLIGATOR - {direction} SIGNALS ===")
+        alligator_type = analysis_result['alligator_type']
+        direction = analysis_result['direction']
         
-        for signal_type, metrics in analysis.items():
-            count = metrics['count']
-            total = metrics['sum']
-            avg = metrics['per_trade']
-            title = metrics['title']
-            print(f"{title}: {count} signals, total: {total}, avg: {avg}")
+        print(f"\n=== {alligator_type.upper()} ALLIGATOR - {direction} SIGNALS ===")
+        
+        for signal_type, metrics in analysis_result.items():
+            if isinstance(metrics, dict) and 'count' in metrics:
+                count = metrics['count']
+                total = metrics['sum']
+                avg = total / count if count > 0 else 0
+                print(f"{signal_type}: {count} signals, total: {total:.2f}, avg: {avg:.2f}")
     
     def save_results(self, results: Dict, output_path: str = None) -> str:
         """Save analysis results to CSV and markdown files"""
@@ -349,93 +258,49 @@ class AlligatorAnalysis:
         return output_path
     
     def _save_to_csv(self, results: Dict, csv_file: str):
-        """Save results to CSV format matching original ptojgtml output"""
-        # Create CSV header
-        header = "instrument,timeframe,direction,per_trade,nb_entry,tsum,eval_namespace,ctx_name,ctx_title\n"
+        """Save results to CSV format"""
+        rows = []
+        for alligator_type, type_results in results['results'].items():
+            for direction, analysis in type_results.items():
+                for signal_type, metrics in analysis.items():
+                    if isinstance(metrics, dict) and 'count' in metrics:
+                        rows.append({
+                            'instrument': self.config.instrument,
+                            'timeframe': self.config.timeframe,
+                            'alligator_type': alligator_type,
+                            'direction': direction,
+                            'signal_type': signal_type,
+                            'count': metrics['count'],
+                            'sum': metrics['sum'],
+                            'avg_per_trade': metrics['sum'] / metrics['count'] if metrics['count'] > 0 else 0
+                        })
         
-        with open(csv_file, 'w') as f:
-            f.write(header)
-            
-            for alligator_type, type_results in results['results'].items():
-                for direction, analysis in type_results.items():
-                    for signal_type, metrics in analysis.items():
-                        # Map to original CSV format
-                        instrument = results['config']['instrument']
-                        timeframe = results['config']['timeframe']
-                        direction_code = 'S' if direction.upper() in ['S', 'SELL'] else 'B'
-                        
-                        f.write(f"{instrument},{timeframe},{direction_code},"
-                               f"{metrics['per_trade']},{metrics['count']},{metrics['sum']},"
-                               f"{signal_type},{alligator_type},{metrics['title']}\n")
+        df_results = pd.DataFrame(rows)
+        df_results.to_csv(csv_file, index=False)
     
     def _save_to_markdown(self, results: Dict, md_file: str):
-        """Save results to markdown format"""
+        """Save results to Markdown format"""
         with open(md_file, 'w') as f:
-            f.write("# 🐊 JGTML Unified Alligator Analysis Results 🐊\n\n")
-            f.write("*Generated by Seraphine's Memory Weaver*\n\n")
-            
-            config = results['config']
-            f.write(f"**Instrument**: {config['instrument']}\n")
-            f.write(f"**Timeframe**: {config['timeframe']}\n")
-            f.write(f"**Alligator Types**: {', '.join([t for t in config['alligator_types']])}\n\n")
+            f.write("# JGTML Alligator Analysis Results\n\n")
+            f.write(f"**Timestamp**: {results['analysis_timestamp']}\n")
+            f.write(f"**Instrument**: {self.config.instrument}\n")
+            f.write(f"**Timeframe**: {self.config.timeframe}\n\n")
             
             for alligator_type, type_results in results['results'].items():
-                f.write(f"## {alligator_type.upper()} Alligator Analysis\n\n")
+                f.write(f"## {alligator_type.upper()} ALLIGATOR ANALYSIS\n\n")
                 
                 for direction, analysis in type_results.items():
-                    f.write(f"### {direction.upper()} Signals\n\n")
-                    f.write("| Signal Type | Count | Total Profit | Avg Per Trade | Description |\n")
-                    f.write("|-------------|-------|--------------|---------------|--------------|\n")
+                    f.write(f"### {direction} SIGNALS\n\n")
                     
                     for signal_type, metrics in analysis.items():
-                        f.write(f"| {signal_type} | {metrics['count']} | "
-                               f"{metrics['sum']} | {metrics['per_trade']} | "
-                               f"{metrics['title']} |\n")
+                        if isinstance(metrics, dict) and 'count' in metrics:
+                            count = metrics['count']
+                            total = metrics['sum']
+                            avg = total / count if count > 0 else 0
+                            f.write(f"- **{signal_type}**: {count} signals, total: {total:.2f}, avg: {avg:.2f}\n")
+                    
                     f.write("\n")
 
-
-# Legacy compatibility aliases and convenience functions
+# Legacy compatibility aliases
 TideAlligatorAnalysis = AlligatorAnalysis
 Config = AlligatorConfig
-
-
-def crop_dataframe(df, crop_last_dt: str = None, crop_start_dt: str = None):
-    """Utility function for cropping dataframes by date"""
-    if crop_last_dt is not None:
-        df = df[df.index <= crop_last_dt]
-    if crop_start_dt is not None:
-        df = df[df.index >= crop_start_dt]
-    return df
-
-
-def getBaseColumns():
-    """Get base columns for analysis"""
-    return [HIGH, LOW, JAW, TEETH, LIPS]
-
-
-def get_tide_alligator_columns():
-    """Get Tide Alligator specific columns"""
-    return [TJAW, TTEETH, TLIPS]
-
-
-def get_big_alligator_columns():
-    """Get Big Alligator specific columns"""
-    return [BJAW, BTEETH, BLIPS]
-
-
-def filter_relevant_features_with_targets(df, target_colname, selected_columns):
-    """
-    Filters the DataFrame to include only rows with non-zero target values and selected columns.
-    Legacy compatibility function from ptojgtml implementations.
-    """
-    df_filtered = df[df[target_colname] != 0].copy()
-    df_filtered = df_filtered[selected_columns].copy()
-    return df_filtered
-
-
-def filter_by_signal_bs_direction(df, signal_colname):
-    """
-    Filters the DataFrame to include only rows with non-zero values in the specified signal column.
-    Legacy compatibility function from ptojgtml implementations.
-    """
-    return df[df[signal_colname] != 0].copy()
