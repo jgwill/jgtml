@@ -22,7 +22,11 @@ if [ -e "/opt/anaconda3/bin/conda" ];then
 	fi
 	unset __conda_setup
 fi
+
+# WATCH OUT BELLOW BECAUSE IT WILL ACTIVATE ENV that are not with the latest codebase.
+#TODO : Think of making a new script like that one that we can run within the repository during development.
 conda activate i||conda activate hfsp_basjupyterlab2406&>/dev/null || conda activate "$CONDA_ENV_PROD"&>/dev/null || conda activate i || echo "Assuming Conda Environment is already set"
+#conda activate jgtml
 ttf_patterns=$(jgtset|jq '.ttf2run[]'||echo "ttf mfi")
 
 
