@@ -10,19 +10,59 @@ Replaces scattered implementations:
 - TideAlligatorAnalysis.py (incomplete prototype)
 - ptojgtmltidealligator.py (generated TIDE SIGNALS analysis)
 - ptojgtmlbigalligator.py (generated BIG ALLIGATOR analysis)
+
+🦢 Seraphine's Memory Weave: This unified implementation bridges the intent-driven
+specification system with concrete analysis capabilities, enabling seamless flow
+from trader narrative to executable signals.
 """
 
 import pandas as pd
+import numpy as np
 from enum import Enum
-from typing import Dict, Tuple, Optional
+from typing import Dict, Tuple, Optional, List
 import os
+import sys
+
+# Core JGTML dependencies
+try:
+    from jgtpy import JGTCDS as cds
+except ImportError:
+    print("Warning: jgtpy not available. Some features may be limited.")
+    cds = None
+
+# Local imports
+sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
+try:
+    from jgtml import jtc
+except ImportError:
+    try:
+        import jtc
+    except ImportError:
+        print("Warning: jtc module not available. Some features may be limited.")
+        jtc = None
 
 # Import the consolidated balance analyzer
-from JGTBalanceAnalyzer import get_alligator_column_names_from_ctx_name, filter_sig_is_in_ctx_teeth, filter_sig_ctx_mouth_is_open_and_in_ctx_teeth, filter_sig_ctx_mouth_is_open_and_in_ctx_lips
+try:
+    from JGTBalanceAnalyzer import (
+        get_alligator_column_names_from_ctx_name, 
+        filter_sig_is_in_ctx_teeth, 
+        filter_sig_ctx_mouth_is_open_and_in_ctx_teeth, 
+        filter_sig_ctx_mouth_is_open_and_in_ctx_lips,
+        filter_sig_is_out_of_normal_mouth_sell,
+        filter_sig_is_out_of_normal_mouth_buy,
+        filter_sig_normal_mouth_is_open_sell,
+        filter_sig_normal_mouth_is_open_buy
+    )
+except ImportError:
+    print("Warning: JGTBalanceAnalyzer not available. Some analysis features may be limited.")
 
 # Use jgtconstants column names from jgtutils
 try:
-    from jgtutils.jgtconstants import LOW, HIGH, FDBB, FDBS, BJAW, BLIPS, BTEETH, JAW, TEETH, LIPS, FDB_TARGET, TJAW, TLIPS, TTEETH
+    from jgtutils.jgtconstants import (
+        LOW, HIGH, FDBB, FDBS, BJAW, BLIPS, BTEETH, JAW, TEETH, LIPS, 
+        FDB_TARGET, TJAW, TLIPS, TTEETH, VECTOR_AO_FDBS_COUNT, 
+        VECTOR_AO_FDBB_COUNT, VECTOR_AO_FDB_COUNT
+    )
 except ImportError:
     # Fallback if jgtutils not available
     LOW, HIGH, FDBB, FDBS = "Low", "High", "FDBB", "FDBS" 
@@ -30,6 +70,9 @@ except ImportError:
     BJAW, BTEETH, BLIPS = "bjaw", "bteeth", "blips"
     TJAW, TTEETH, TLIPS = "tjaw", "tteeth", "tlips"
     FDB_TARGET = "fdb_target"
+    VECTOR_AO_FDBS_COUNT = "vector_ao_fdbs_count"
+    VECTOR_AO_FDBB_COUNT = "vector_ao_fdbb_count"
+    VECTOR_AO_FDB_COUNT = "vector_ao_fdb_count"
 
 class AlligatorType(Enum):
     """Enumeration of the three Alligator analysis types"""
