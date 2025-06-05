@@ -166,7 +166,7 @@ The relationship between different timeframe balance lines reveals the market's 
 ### 🔮 The Resilient Pattern Guardian ✨ NEW ✨
 *A powerful protective enchantment for robust analysis*
 
-In the ancient art of market analysis, not all magical patterns are available at all times. Some patterns, like the mysterious `zonesq` pattern, exist in the realm of theoretical possibilities but have not yet manifested in our current magical toolkit.
+In the ancient art of market analysis, not all magical patterns are available at all times. Some patterns, like the sophisticated `zonesq` pattern (Zone Indicator + MFI Squat combination), exist in the realm of theoretical possibilities but have not yet manifested in our current magical toolkit.
 
 The wise Market Wizards who built the unified Alligator system recognized this challenge and created a powerful **Resilient Pattern Guardian** - a magical protection spell that ensures your analysis never fails, even when some pattern ingredients are missing from your spellcasting components.
 
@@ -176,7 +176,7 @@ When you invoke the unified Alligator analysis, the Pattern Guardian performs th
 
 1. **🔍 Pattern Validation Ritual**: Before attempting to create any TTF (Time-Timeframe Features) patterns, it first checks which patterns are currently supported in your magical arsenal.
 
-2. **⚠️ Graceful Skipping Enchantment**: If a pattern like "zonesq" is requested but not yet implemented, instead of crashing your entire analysis (like in the old days), the Guardian gracefully skips it and continues with the patterns that are available.
+2. **⚠️ Graceful Skipping Enchantment**: If a pattern like "zonesq" (Zone Indicator + MFI Squat combination) is requested but not yet implemented, instead of crashing your entire analysis (like in the old days), the Guardian gracefully skips it and continues with the patterns that are available.
 
 3. **💡 Helpful Guidance Spell**: The Guardian provides clear, friendly messages telling you exactly which patterns are available and which ones were skipped, so you always know what's happening.
 
@@ -189,7 +189,7 @@ When you invoke the unified Alligator analysis, the Pattern Guardian performs th
 - `mfi` - Market Facilitation Index patterns
 
 **Theoretical Patterns** (gracefully skipped) ⚠️:
-- `zonesq` - Zone Square patterns (future implementation)
+- `zonesq` - Zone / Squat patterns (Zone Indicator + MFI Squat across timeframes for LLM pattern recognition)
 
 #### 💫 Example of the Pattern Guardian in Action
 
@@ -199,7 +199,7 @@ When you run a unified Alligator analysis, you might see magical messages like t
 🔄 Creating TTF patterns...
   ✅ Creating ttf pattern...
   ✅ Creating mfi pattern...
-  ⚠️  Skipping zonesq pattern - not yet fully implemented
+  ⚠️  Skipping zonesq pattern - Zone/Squat combination not yet implemented
   💡 Available patterns: ttf, mfi
 ✅ Pattern initialization complete!
 ```
