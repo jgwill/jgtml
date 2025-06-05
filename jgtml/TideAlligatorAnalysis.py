@@ -54,7 +54,19 @@ try:
         filter_sig_normal_mouth_is_open_buy
     )
 except ImportError:
-    print("Warning: JGTBalanceAnalyzer not available. Some analysis features may be limited.")
+    try:
+        from jgtml.JGTBalanceAnalyzer import (
+            get_alligator_column_names_from_ctx_name,        
+            filter_sig_is_in_ctx_teeth, 
+            filter_sig_ctx_mouth_is_open_and_in_ctx_teeth, 
+            filter_sig_ctx_mouth_is_open_and_in_ctx_lips,
+            filter_sig_is_out_of_normal_mouth_sell,
+            filter_sig_is_out_of_normal_mouth_buy,
+            filter_sig_normal_mouth_is_open_sell,
+            filter_sig_normal_mouth_is_open_buy
+        )
+    except ImportError:
+        print("Warning: JGTBalanceAnalyzer not available. Some analysis features may be limited.") #TODO: Would be great to see what is that for and if we need it make it work.
 
 # Use jgtconstants column names from jgtutils
 try:
