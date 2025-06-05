@@ -585,4 +585,55 @@ RQ Pattern:
                         Use CDS_RQ JSON_FULL_FRESH
   -cdsrqnf, --cds_rq_norm_fresh
                         Use CDS_RQ JSON_NORM_FRESH
+````
+----
+
+# 🔄 Legacy Command Migration Guide
+
+## ⚠️ Deprecated Commands → Unified Replacements
+
+The following legacy commands have been **unified** into the new Alligator CLI system:
+
+### Legacy Tide Alligator Commands (DEPRECATED):
+```bash
+# ❌ OLD (deprecated)
+ptojgtmltidealligator -i SPX500 -t D1 --buysell S -nf --dont_regenerate_cds
+jgtapp tide -i SPX500 -t D1 S
+
+# ✅ NEW (unified)
+python -m jgtml.alligator_cli -i SPX500 -t D1 -d S --type tide
+```
+
+### Legacy Big Alligator Commands (DEPRECATED):
+```bash
+# ❌ OLD (deprecated)
+ptojgtmlbigalligator -i EUR/USD -t H4 --buysell B -nf --dont_regenerate_cds
+
+# ✅ NEW (unified)
+python -m jgtml.alligator_cli -i EUR/USD -t H4 -d B --type big
+```
+
+### Legacy Bash Function Migration:
+```bash
+# ❌ OLD (deprecated bash function)
+jgtml_ptojgtmltidealligator_by_instrument_tf_21 SPX500 D1 S
+
+# ✅ NEW (unified CLI - supports all Alligator types)
+python -m jgtml.alligator_cli -i SPX500 -t D1 -d S --type tide
+
+# 🚀 ENHANCED (multi-Alligator convergence analysis)
+python -m jgtml.alligator_cli -i SPX500 -t D1 -d S --type all
+```
+
+### Key Migration Benefits:
+- **🔄 Graceful Pattern Handling**: Automatically handles missing TTF patterns (zonesq)
+- **🎯 Intent-Driven Analysis**: Generate .jgtml-spec files for agentic workflows  
+- **🌐 Self-Contained**: No external bash script dependencies
+- **⚡ Multi-Type Convergence**: Analyze all three Alligator types simultaneously
+- **🔧 Backward Compatible**: Legacy `jgtapp tide` commands automatically redirect
+
+### Legacy File References:
+- `ptojgtmltidealligator.py` → **Replaced by unified `alligator_cli.py`**
+- `ptojgtmlbigalligator.py` → **Replaced by unified `alligator_cli.py`**
+- Bash wrapper scripts → **Replaced by unified Python CLI**
 
