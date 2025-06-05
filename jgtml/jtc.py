@@ -362,7 +362,7 @@ def _pov_target_calculation_n_output240223(
         msg = msg + " use fresh flag active" if use_fresh else msg
 
         print(msg)
-        print("EXITING - RUN PREREQ SCRIPTS BEFORE RUNNING THIS SCRIPT")
+        print("jtc.py:EXITING - RUN PREREQ SCRIPTS BEFORE RUNNING THIS SCRIPT") #TODO: Make sure that this wont happen down the line of what needs to generate data with this class/method.
         print("")
         sys.exit(1)
         from realityhelper import generate_mlf_feature_pattern

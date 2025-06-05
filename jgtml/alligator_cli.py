@@ -259,7 +259,7 @@ def load_market_data(config: AlligatorConfig) -> 'pd.DataFrame':
     
     # First ensure pattern files exist
     if not ensure_pattern_files_exist(config):
-        print("EXITING - RUN PREREQ SCRIPTS BEFORE RUNNING THIS SCRIPT")
+        print("EXITING - RUN PREREQ SCRIPTS BEFORE RUNNING THIS SCRIPT. (might be great to ensure that runs correctly and not always outputting that)") # FIX THAT
         print("Pattern file initialization failed. Please check your JGTML environment setup.")
         sys.exit(1)
     
