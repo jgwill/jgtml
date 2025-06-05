@@ -9,7 +9,7 @@ intent-driven command interface supporting:
 - Tide Alligator (144-233-377): Macro trend identification
 
 Replaces fragmented CLI commands:
-- ptojgtmltidealligator (generated TIDE analysis)
+- alligator_cli.py (unified JGTML Alligator CLI)
 - ptojgtmlbigalligator (generated BIG analysis)
 - jgtapp tide (basic wrapper)
 
