@@ -202,19 +202,30 @@ def _create_ttf_patterns(instrument: str, timeframe: str) -> bool:
     """Create TTF patterns using direct ptottf.create_ttf_csv function calls"""
     try:
         # TTF patterns from the workflow: ttf, mfi, zonesq
+        # Note: zonesq pattern may not be fully implemented yet
         patterns = ["ttf", "mfi", "zonesq"]
+        supported_patterns = ["ttf", "mfi"]  # Known working patterns
         
         for pattern in patterns:
             print(f"    🔨 Creating pattern: {pattern}")
             
-            # Direct call instead of subprocess: create_ttf_csv with pattern name
-            create_ttf_csv(
-                instrument, 
-                timeframe, 
-                use_full=True, 
-                use_fresh=False,  # CDS was already refreshed in _initialize_cds
-                pn=pattern
-            )
+            try:
+                # Direct call instead of subprocess: create_ttf_csv with pattern name
+                create_ttf_csv(
+                    instrument, 
+                    timeframe, 
+                    use_full=True, 
+                    use_fresh=False,  # CDS was already refreshed in _initialize_cds
+                    pn=pattern
+                )
+            except FileNotFoundError as e:
+                if pattern not in supported_patterns and ("zonesq.csv" in str(e) or pattern == "zonesq"):
+                    print(f"    ⚠️  Skipping {pattern} pattern - not yet fully implemented")
+                    print(f"    💡 Available patterns: {', '.join(supported_patterns)}")
+                    continue
+                else:
+                    # Re-raise for other FileNotFoundError cases
+                    raise
         
         return True
     except Exception as e:
