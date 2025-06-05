@@ -24,13 +24,15 @@ JGTML analyzes the effectiveness of trading signals within larger market structu
 #### 📊 Signal Processing
 - [`jgtml/SignalOrderingHelper.py`](jgtml/SignalOrderingHelper.py): Signal validation and risk calculation
 - [`jgtml/jtc.py`](jgtml/jtc.py): Target calculation and signal analysis core
-- [`jgtml/TideAlligatorAnalysis.py`](jgtml/TideAlligatorAnalysis.py): Alligator-based signal analysis
+- [`jgtml/TideAlligatorAnalysis.py`](jgtml/TideAlligatorAnalysis.py): Unified Alligator analysis (Regular, Big, Tide)
+- [`jgtml/alligator_cli.py`](jgtml/alligator_cli.py): **NEW** Unified Alligator CLI with graceful pattern handling
 - TODO add TTF (TTF != Time-To-Future but more like feature of multiple timeframe)  probably ttfcli.py
 
 #### 🚀 Command Line Tools
 - [`jgtml/jgtmlcli.py`](jgtml/jgtmlcli.py): Main CLI for data processing
 - [`jgtml/mxcli.py`](jgtml/mxcli.py): Matrix generation and analysis
 - [`jgtml/jgtapp.py`](jgtml/jgtapp.py): Trading operation management
+- [`jgtml/alligator_cli.py`](jgtml/alligator_cli.py): **🐊 Unified Alligator Analysis CLI** - Multi-timeframe convergence analysis
 
 #### 🧬 Memory & Persistence  
 - [`garden_one/trading_echo_lattice/`](garden_one/trading_echo_lattice/): Signal crystallization and memory storage
@@ -86,6 +88,14 @@ See [CLI_HELP.md](CLI_HELP.md) for complete command documentation.
 jgtmlcli -i INSTRUMENT -t TIMEFRAME [--full] [--fresh]
 mxcli -i INSTRUMENT -t TIMEFRAME [--fresh]
 
+# Unified Alligator Analysis ✨ NEW ✨
+python -m jgtml.alligator_cli -i SPX500 -t D1 -d S --type tide    # Single Alligator
+python -m jgtml.alligator_cli -i EUR/USD -t H4 -d B --type all    # Multi-Alligator convergence
+python -m jgtml.alligator_cli -i GBPUSD -t D1 -d S --generate-spec # Generate .jgtml-spec
+
+# Legacy Support (redirects to unified CLI)
+jgtapp tide -i SPX500 -t D1 B  # Legacy wrapper → unified Alligator CLI
+
 # Trading Operations  
 jgtapp fxaddorder -i EUR/USD -n 0.1 -r 1.0950 -d B -x 1.0900
 jgtapp fxmvstopgator -i EUR/USD -t H4 -tid TRADE_ID --lips
@@ -137,3 +147,45 @@ While JGTML operates as a practical trading platform, it embodies recursive prin
 🎵 **Rhythmic Patterns**: Market timing encoded in fractal mathematics
 
 *Built for traders who understand that the best signals emerge from the intersection of technical precision and pattern recognition.*
+
+## 🐊 Unified Alligator Analysis
+
+### Multi-Timeframe Convergence System ✨ NEW ✨
+The unified Alligator CLI consolidates three powerful analysis frameworks into a single, graceful interface:
+
+#### 🔍 **Regular Alligator** (5-8-13 periods)
+- **Purpose**: Quick market direction detection and entry signals
+- **Best For**: Day trading, scalping, short-term momentum
+- **Signals**: Immediate price action around Alligator mouth
+
+#### 🌊 **Big Alligator** (34-55-89 periods)  
+- **Purpose**: Intermediate cycle analysis and trend validation
+- **Best For**: Swing trading, weekly positioning
+- **Signals**: Higher timeframe context and cycle turns
+
+#### 🌀 **Tide Alligator** (144-233-377 periods)
+- **Purpose**: Macro trend identification and major support/resistance
+- **Best For**: Position trading, monthly strategic positioning
+- **Signals**: Long-term trend direction and major reversals
+
+### Key Features
+- **🔄 Graceful Pattern Handling**: Automatically handles missing TTF patterns (zonesq, mfi, ttf)
+- **🎯 Intent-Driven Analysis**: Generates .jgtml-spec files for agentic integration
+- **🌐 Self-Contained**: No external bash script dependencies
+- **⚡ Multi-Type Convergence**: Analyze all three Alligator types simultaneously
+- **🔧 Legacy Compatible**: Seamless integration with existing `jgtapp tide` workflows
+
+### Usage Examples
+```bash
+# Single Alligator Analysis
+python -m jgtml.alligator_cli -i SPX500 -t D1 -d S --type tide
+
+# Multi-Alligator Convergence (recommended)
+python -m jgtml.alligator_cli -i EUR/USD -t H4 -d B --type all
+
+# Generate .jgtml-spec for agentic workflows
+python -m jgtml.alligator_cli -i GBPUSD -t D1 -d S --type all --generate-spec
+
+# Legacy support (automatically redirects to unified CLI)
+jgtapp tide -i SPX500 -t D1 B
+```
