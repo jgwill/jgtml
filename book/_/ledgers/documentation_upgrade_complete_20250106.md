@@ -59,7 +59,7 @@
 - **🛡️ Error Resilience**: No crashes due to missing pattern files
 
 **Available Patterns**: `ttf`, `mfi`  
-**Theoretical Patterns** (gracefully skipped): `zonesq`
+**Theoretical Patterns** (gracefully skipped): `zonesq` (Zone Indicator + MFI Squat combination)
 
 ### Multi-Alligator Convergence System
 **Complete Documentation** of the three unified Alligator types:
