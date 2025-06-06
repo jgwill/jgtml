@@ -92,7 +92,9 @@ if [ "$ENVIRONMENT_NAME" == "lab" ] ;then
     export jgtmlcli_command="python jgtml/jgtmlcli.py"
 fi
 
-LOG_FILE=/tmp/batch.log
+LOG_DIR="$RUN_DIRECTORY/logs"
+mkdir -p "$LOG_DIR"
+LOG_FILE="$LOG_DIR/$(date +%Y%m%d%H%M%S)_batch.log"
 
 #fdbscan > _fdbscan.sh &
 USE_FULL=0
@@ -108,8 +110,10 @@ for p in $PATTERNS_BEING_EXPLORED;do
     for t in $TIMEFRAMES;do 
         for i in $INSTRUMENTS;do 
             echo "# $i $t" | tee -a $LOG_FILE
+            echo "$mlfcli_command -i $i -t $t -pn $p  $EXTRA_ARG" | tee -a $LOG_FILE
             $mlfcli_command -i $i -t $t -pn $p  $EXTRA_ARG  |tee -a $LOG_FILE
 
+            echo "$jgtmlcli_command -i $i -t $t -pn $p $EXTRA_ARG" | tee -a $LOG_FILE
             $jgtmlcli_command -i $i -t $t -pn $p $EXTRA_ARG |tee -a $LOG_FILE
 
 
