@@ -56,20 +56,22 @@ ENVIRONMENT_NAME=lab
 #That would make this script runnable into the production environment.
 if [ "$ENVIRONMENT_NAME" == "prod" ] ;then 
     export RUN_DIRECTORY=.
-    conda activate i
+    conda activate i #the production conda env
     export JGTPY_DATA=/workspace/data/current
     export JGTPY_DATA_FULL=/workspace/data/full
     export mlfcli_command="mlfcli"
+    export ttfcli_command="ttfcli"
     export jgtmlcli_command="jgtmlcli"
 fi
 
 #Insure we run current code into our repository sources.  Agents should understand that this is a way to run and learn about these commands into current codebase
 if [ "$ENVIRONMENT_NAME" == "lab" ] ;then 
-    conda activate jgtml
+    conda activate jgtml #the conda env for the development environemnt
     export RUN_DIRECTORY=/src/jgtml
     export JGTPY_DATA=/src/jgtml/data/current
     export JGTPY_DATA_FULL=/src/jgtml/data/full
     export mlfcli_command="python jgtml/mlfcli.py"
+    export ttfcli_command="python jgtml/ttfcli.py"
     export jgtmlcli_command="python jgtml/jgtmlcli.py"
 fi
 
@@ -90,6 +92,8 @@ for p in $PATTERNS_BEING_EXPLORED;do
         for i in $INSTRUMENTS;do 
             echo "# $i $t" | tee -a $LOG_FILE
             $mlfcli_command -i $i -t $t -pn $p  $EXTRA_ARG  |tee -a $LOG_FILE
+
+            $ttfcli_command -i $i -t $t -pn $p  $EXTRA_ARG  |tee -a $LOG_FILE
 
             $jgtmlcli_command -i $i -t $t -pn $p $EXTRA_ARG |tee -a $LOG_FILE
 
