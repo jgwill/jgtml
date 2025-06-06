@@ -76,6 +76,11 @@ fi
 LOG_FILE=/tmp/batch.log
 
 #fdbscan > _fdbscan.sh &
+USE_FULL=0
+EXTRA_ARG=""
+if [ "$USE_FULL" -eq 1 ];then
+    EXTRA_ARG="--full"
+fi
 
 cd $RUN_DIRECTORY #so we run this where we are in prod and in the codebase in lab environment.
 for p in $PATTERNS_BEING_EXPLORED;do
@@ -84,9 +89,9 @@ for p in $PATTERNS_BEING_EXPLORED;do
     for t in $TIMEFRAMES;do 
         for i in $INSTRUMENTS;do 
             echo "# $i $t" | tee -a $LOG_FILE
-            $mlfcli_command -i $i -t $t --full -pn mfi |tee -a $LOG_FILE
+            $mlfcli_command -i $i -t $t -pn $p  $EXTRA_ARG  |tee -a $LOG_FILE
 
-            $jgtmlcli_command -i $i -t $t --full -pn mfi|tee -a $LOG_FILE
+            $jgtmlcli_command -i $i -t $t -pn $p $EXTRA_ARG |tee -a $LOG_FILE
 
 
             
