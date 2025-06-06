@@ -5,6 +5,9 @@
 		},
 		{
 			"path": "../jgtagentic"
+		},
+		{
+			"path": "../jgtpy"
 		}
 	],
 	"settings": {}
