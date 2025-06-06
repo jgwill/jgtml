@@ -110,8 +110,8 @@ for p in $PATTERNS_BEING_EXPLORED;do
             
             $mlfcli_command -i $i -t $t -pn $p  $EXTRA_ARG $USE_OFFLINE_ARG  |tee -a $LOG_FILE
 
-            echo "## running $jgtmlcli_command  for$i $t $p which I dont know what it does different that TTF/MLF" | tee -a $LOG_FILE
-            
+            echo "## running $jgtmlcli_command  for $i $t $p which I dont know what it does different that TTF/MLF - UPDATE: Now I KNOW IT NEEDS TTF to be ran with -full" | tee -a $LOG_FILE
+            #@STCIssue Needs TTF --full to be ran before
             $jgtmlcli_command -i $i -t $t -pn $p $EXTRA_ARG $USE_OFFLINE_ARG |tee -a $LOG_FILE
 
 
