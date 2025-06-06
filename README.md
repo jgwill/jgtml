@@ -47,6 +47,7 @@ To detect breakouts using the "Five Dimensions + Triple Alligator Confluence" st
 2. Initialize the `TradingEchoLattice` with the desired instrument and timeframes.
 3. Use the `process_instrument` method to analyze the instrument across multiple timeframes and directions.
 4. Focus on the alignment of multiple indicators and timeframes to identify potential breakout signals.
+5. Once installed, run `trading-echo-lattice` for a ready-to-use command-line interface.
 
 ### Green Dragon Breakout
 

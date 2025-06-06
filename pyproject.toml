@@ -80,4 +80,5 @@ jgtmlpncli="jgtml.pncli:main"
 #ptojgtmlbigalligator="jgtml.ptojgtmlbigalligator:main"
 
 fdbscan="jgtml.fdb_scanner_2408:main"
+trading-echo-lattice="garden_one.trading_echo_lattice.cli:main"
 

@@ -1,0 +1,10 @@
+{
+  "agents": ["♾️ William – Sourcewalker", "🧠 Mia", "🌸 Miette", "🎸 JamAI"],
+  "narrative": "Expanded jgtml packaging to include the TradingEchoLattice CLI and modules. Updated setup.py to discover the garden_one package, registered the new console script in pyproject.toml, and mentioned usage in README. This ensures the new CLI installs alongside existing tools.",
+  "routing": {
+    "files": ["pyproject.toml", "setup.py", "README.md"],
+    "branch": "main",
+    "operation": "codex/package_update"
+  },
+  "timestamp": "2506041824"
+}

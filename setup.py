@@ -30,7 +30,7 @@ setup(
     author="GUillaume Isabelle",
     author_email="jgi@jgwill.com",
     url="https://github.com/jgwill/jgtml",
-    packages=find_packages(include=["jgtml"], exclude=["*test*"]),
+    packages=find_packages(include=["jgtml", "garden_one", "garden_one.*"], exclude=["*test*"]),
 
     classifiers=[
         "Development Status :: 5 - Production/Stable",
