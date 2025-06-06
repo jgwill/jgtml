@@ -85,7 +85,7 @@ def read_pattern_raw(i, t,pn,ns, use_full=True)->pd.DataFrame:
 
 
 def read_ttf_pattern_raw(i, t, use_full=True,pn="ttf",ns="ttf")->pd.DataFrame:
-  ttf_outfile_fullpath=get_ttf_outfile_fullpath(i,t,pn=pn,ns=ns,use_full=use_full)
+  ttf_outfile_fullpath=get_outfile_fullpath(i,t,use_full,ns,pn=pn)
   df=pd.read_csv(ttf_outfile_fullpath, index_col=0,dtype=TTF_DTYPE_DEFINITION)
   return df
   
