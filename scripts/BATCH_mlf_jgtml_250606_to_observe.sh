@@ -1,7 +1,7 @@
 #. $HOME/.bashrc &>/dev/null
 #. data/scripts/_fnml.sh
 
-TIMEFRAMES="D1 H4"
+TIMEFRAMES="D1"
 if [ "$1" != "" ];then
     TIMEFRAMES="$1"
 fi
@@ -10,6 +10,16 @@ INSTRUMENTS="SPX500 EUR/USD"
 if [ "$2" != "" ];then
     INSTRUMENTS="$2"
 fi
+
+
+USE_OFFLINE_DATA=1
+USE_OFFLINE_ARG=""
+if [ "$USE_OFFLINE_DATA" -eq 1 ];then
+    echo "# Using OFFLINE Data (Market is close or using -old to get faster results)"
+    USE_OFFLINE_ARG="-old"
+fi
+
+
 
 PATTERNS_BEING_EXPLORED="mfi zonesq aoac" #see:  $HOME/.jgt/settings.json for the property "patterns"
 # #Ex. settings.json
@@ -91,11 +101,18 @@ for p in $PATTERNS_BEING_EXPLORED;do
     for t in $TIMEFRAMES;do 
         for i in $INSTRUMENTS;do 
             echo "# $i $t" | tee -a $LOG_FILE
-            $ttfcli_command -i $i -t $t -pn $p  $EXTRA_ARG  |tee -a $LOG_FILE
 
-            $mlfcli_command -i $i -t $t -pn $p  $EXTRA_ARG  |tee -a $LOG_FILE
+            echo "## Creating the TTF for $i $t $p" | tee -a $LOG_FILE
 
-            $jgtmlcli_command -i $i -t $t -pn $p $EXTRA_ARG |tee -a $LOG_FILE
+            $ttfcli_command -i $i -t $t -pn $p  $EXTRA_ARG $USE_OFFLINE_ARG  |tee -a $LOG_FILE
+
+            echo "## Creating the MLF for $i $t $p" | tee -a $LOG_FILE
+            
+            $mlfcli_command -i $i -t $t -pn $p  $EXTRA_ARG $USE_OFFLINE_ARG  |tee -a $LOG_FILE
+
+            echo "## running $jgtmlcli_command  for$i $t $p which I dont know what it does different that TTF/MLF" | tee -a $LOG_FILE
+            
+            $jgtmlcli_command -i $i -t $t -pn $p $EXTRA_ARG $USE_OFFLINE_ARG |tee -a $LOG_FILE
 
 
             
