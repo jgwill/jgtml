@@ -80,6 +80,6 @@ jgtmlpncli="jgtml.pncli:main"
 #ptojgtmlbigalligator="jgtml.ptojgtmlbigalligator:main"
 
 fdbscan="jgtml.fdb_scanner_2408:main"
-
+fdbqualpredictor="jgtml.fdb_signal_quality_predictor:main"
 jgtalligator="jgtml.alligator_cli:main"
 
