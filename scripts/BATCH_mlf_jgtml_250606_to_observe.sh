@@ -1,4 +1,4 @@
-. $HOME/.bashrc &>/dev/null
+#. $HOME/.bashrc &>/dev/null
 #. data/scripts/_fnml.sh
 
 TIMEFRAMES="D1 H4"
