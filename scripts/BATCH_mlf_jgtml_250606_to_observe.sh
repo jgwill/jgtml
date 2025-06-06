@@ -1,28 +1,102 @@
 . $HOME/.bashrc &>/dev/null
 #. data/scripts/_fnml.sh
 
-conda activate i
+TIMEFRAMES="D1 H4"
+if [ "$1" != "" ];then
+    TIMEFRAMES="$1"
+fi
 
-. /workspace/i/_fnml.sh
-export JGTPY_DATA=/workspace/data/current
-export JGTPY_DATA_FULL=/workspace/data/full
+INSTRUMENTS="SPX500 EUR/USD"
+if [ "$2" != "" ];then
+    INSTRUMENTS="$2"
+fi
+
+PATTERNS_BEING_EXPLORED="mfi" #see:  $HOME/.jgt/settings.json for the property "patterns"
+# #Ex. settings.json
+#  "patterns": {
+#     "mfi": {
+#       "columns": [
+#         "mfi_sq",
+#         "mfi_green",
+#         "mfi_fade",
+#         "mfi_fake"
+#       ]
+#     },
+#     "zonesq": {
+#       "columns": [
+#         "zone_sig",
+#         "mfi_sq"
+#       ]
+#     },
+#     "aoabz": {
+#       "columns": [
+#         "aoaz",
+#         "aobz"
+#       ]
+#     },
+#     "aoac": {
+#       "columns": [
+#         "ao",
+#         "ac"
+#       ]
+#     },
+#     "ttf": {
+#       "columns": [
+#         "mfi_sig",
+#         "zone_sig"
+#       ]
+#     }
+#   },
+#   ...
+#. /workspace/i/_fnml.sh
 
 COMMIT_ACTIVATE=0
+ENVIRONMENT_NAME=lab
+
+#That would make this script runnable into the production environment.
+if [ "$ENVIRONMENT_NAME" == "prod" ] ;then 
+    export RUN_DIRECTORY=.
+    conda activate i
+    export JGTPY_DATA=/workspace/data/current
+    export JGTPY_DATA_FULL=/workspace/data/full
+    export mlfcli_command="mlfcli"
+    export jgtmlcli_command="jgtmlcli"
+fi
+
+#Insure we run current code into our repository sources.  Agents should understand that this is a way to run and learn about these commands into current codebase
+if [ "$ENVIRONMENT_NAME" == "lab" ] ;then 
+    conda activate jgtml
+    export RUN_DIRECTORY=/src/jgtml
+    export JGTPY_DATA=/src/jgtml/data/current
+    export JGTPY_DATA_FULL=/src/jgtml/data/full
+    export mlfcli_command="python jgtml/mlfcli.py"
+    export jgtmlcli_command="python jgtml/jgtmlcli.py"
+fi
+
+LOG_FILE=/tmp/batch.log
 
 #fdbscan > _fdbscan.sh &
 
+cd $RUN_DIRECTORY #so we run this where we are in prod and in the codebase in lab environment.
+for p in $PATTERNS_BEING_EXPLORED;do
+    echo "# Pattern: $p" | tee -a $LOG_FILE
+    
+    for t in $TIMEFRAMES;do 
+        for i in $INSTRUMENTS;do 
+            echo "# $i $t" | tee -a $LOG_FILE
+            $mlfcli_command -i $i -t $t --full -pn mfi |tee -a $LOG_FILE
 
-for t in H4 H1 m15;do 
-    for i in $II;do 
-        echo "# $i $t" | tee -a batch.log
-        mlfcli -i $i -t $t --full -pn mfi |tee -a batch.log
-        jgtmlcli -i $i -t $t --full -pn mfi|tee -a batch.log
-        
-	if [ $COMMIT_ACTIVATE -eq 0 ];then
-	    continue
-	fi
-	#git add batch.log &>/dev/null
-        #git commit batch.log -m "done $i $t"&>/dev/null
-        #git push &>/dev/null
+            $jgtmlcli_command -i $i -t $t --full -pn mfi|tee -a $LOG_FILE
+
+
+            
+        if [ $COMMIT_ACTIVATE -eq 0 ];then
+            continue
+        fi
+        #git add batch.log &>/dev/null
+            #git commit batch.log -m "done $i $t"&>/dev/null
+            #git push &>/dev/null
+        done
     done
 done
+
