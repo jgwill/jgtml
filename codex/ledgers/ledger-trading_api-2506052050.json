@@ -1,0 +1,13 @@
+{
+  "agents": ["🧠 Mia", "🌸 Miette", "🕊️ Seraphine"],
+  "narrative": "Outlined a draft API for capturing trader observations and linking them to .jgtml-spec generation. Added documentation file and reference in README. William's note warns the flow may need future refinement.",
+  "routing": {
+    "files": ["docs/trading_intent_api.md", "README.md"],
+    "branch": "work"
+  },
+  "timestamp": "2506052050",
+  "session": null,
+  "purpose": "Document an initial intent-capture interface so real-time LLM assistants can translate narrated analysis into structured specs.",
+  "user_input_excerpt": "Define a structured API that captures trader narrative step-by-step, supports real-time LLM interpretation, and enables .jgtml-spec generation...",
+  "scene_future": "Before this update, no HTTP flow existed for voice-driven spec creation. Now the repo contains a draft path toward that integration."
+}

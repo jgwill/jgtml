@@ -205,3 +205,7 @@ jgtapp tide -i SPX500 -t D1 B
 - **Multi-Alligator convergence** analysis capability
 - **Enhanced .jgtml-spec generation** for agentic workflows
 - **Backward compatibility** (legacy `jgtapp tide` still works)
+
+## 📡 Intent Capture API (Draft)
+See [docs/trading_intent_api.md](docs/trading_intent_api.md) for the proposed HTTP flow capturing narrated observations and generating `.jgtml-spec` files.
+
