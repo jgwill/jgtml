@@ -91,9 +91,9 @@ for p in $PATTERNS_BEING_EXPLORED;do
     for t in $TIMEFRAMES;do 
         for i in $INSTRUMENTS;do 
             echo "# $i $t" | tee -a $LOG_FILE
-            $mlfcli_command -i $i -t $t -pn $p  $EXTRA_ARG  |tee -a $LOG_FILE
-
             $ttfcli_command -i $i -t $t -pn $p  $EXTRA_ARG  |tee -a $LOG_FILE
+
+            $mlfcli_command -i $i -t $t -pn $p  $EXTRA_ARG  |tee -a $LOG_FILE
 
             $jgtmlcli_command -i $i -t $t -pn $p $EXTRA_ARG |tee -a $LOG_FILE
 
