@@ -29,46 +29,35 @@ from datetime import datetime
 from mlutils import get_outfile_fullpath
 from mlconstants import MX_NS
 from mldatahelper import read_mlf_for_pattern
-import jtc
 
 class FDBSignalQualityPredictor:
     """
-    Evaluates FDBSignal quality using ML-discovered patterns from TTF→MLF→MX pipeline
+    🧠🌸🔮 Mia, Miette & ResoNova's FDBSignal Quality Predictor
+    
+    Uses historical MX target data to predict the profitability potential
+    of incoming FDBSignals across multiple patterns and timeframes.
     """
     
     def __init__(self, patterns: List[str] = None):
         """
-        Initialize the predictor with available patterns
+        Initialize the predictor with pattern intelligence
         
         Args:
-            patterns: List of pattern names to use for evaluation (e.g., ['mfi', 'zonesq', 'aoac'])
+            patterns: List of patterns to analyze ['mfi', 'zonesq', 'aoac']
         """
         self.patterns = patterns or ['mfi', 'zonesq', 'aoac']
-        self.pattern_weights = {}
-        self.quality_thresholds = {
-            'excellent': 80,
-            'good': 60,
-            'fair': 40,
-            'poor': 20
-        }
-        self._load_pattern_intelligence()
+        self.pattern_intelligence = {}
+        self.load_pattern_intelligence()
     
-    def _load_pattern_intelligence(self):
+    def load_pattern_intelligence(self):
         """
-        Load historical pattern→profit intelligence from MX target files
-        This analyzes which patterns historically led to profitable signals
+        🧠 Load and analyze historical MX target data for pattern profitability
         """
-        print("📊 Loading pattern intelligence from historical MX data...")
+        print("🔮 Loading pattern intelligence from historical MX targets...")
         
         for pattern in self.patterns:
-            try:
-                # Load historical data for pattern analysis
-                pattern_intelligence = self._analyze_pattern_profitability(pattern)
-                self.pattern_weights[pattern] = pattern_intelligence
-                print(f"   ✓ {pattern}: {pattern_intelligence.get('success_rate', 0):.1%} success rate")
-            except Exception as e:
-                print(f"   ⚠️  {pattern}: Could not load intelligence - {e}")
-                self.pattern_weights[pattern] = {'success_rate': 0.5, 'avg_profit': 0.0}
+            print(f"📊 Analyzing pattern: {pattern}")
+            self.pattern_intelligence[pattern] = self._analyze_pattern_profitability(pattern)
     
     def _analyze_pattern_profitability(self, pattern: str) -> Dict:
         """
@@ -80,16 +69,24 @@ class FDBSignalQualityPredictor:
         Returns:
             Dictionary with pattern intelligence metrics
         """
-        # Try to load MX data for common instrumentss
-        instruments = ['EUR/USD', 'SPX500', 'GBP/USD']
+        # Try to load MX data for common instruments
+        instruments = ['EUR-USD', 'SPX500']
         timeframes = ['D1', 'H4']
         
         all_targets = []
+        signal_analysis = {
+            'total_signals': 0,
+            'profitable_signals': 0,
+            'profit_rate': 0.0,
+            'avg_profit': 0.0,
+            'signal_types': {},
+            'timeframe_performance': {}
+        }
         
         for instrument in instruments:
             for timeframe in timeframes:
                 try:
-                    # Load MX target data
+                    # Load MX target data - this is the historical profit data!
                     mx_file = get_outfile_fullpath(
                         instrument, timeframe, 
                         use_full=True, ns=MX_NS, 
@@ -97,292 +94,240 @@ class FDBSignalQualityPredictor:
                     )
                     
                     if os.path.exists(mx_file):
-                        df = pd.read_csv(mx_file, index_col=0, parse_dates=True)
-                        if 'target' in df.columns:
-                            targets = df['target'].dropna()
-                            all_targets.extend(targets.tolist())
+                        df = pd.read_csv(mx_file)
+                        print(f"  ✅ Loaded {len(df)} records from {instrument} {timeframe}")
+                        
+                        # Analyze FDBSignal performance in this dataset
+                        self._analyze_fdb_signals_in_mx_data(df, signal_analysis, f"{instrument}_{timeframe}")
+                        
+                        all_targets.append(df)
+                    else:
+                        print(f"  ⚠️ Missing MX file: {mx_file}")
+                        
                 except Exception as e:
-                    continue
+                    print(f"  ❌ Error loading {instrument} {timeframe}: {e}")
         
-        if not all_targets:
-            return {'success_rate': 0.5, 'avg_profit': 0.0, 'sample_size': 0}
+        # Calculate overall pattern intelligence
+        if signal_analysis['total_signals'] > 0:
+            signal_analysis['profit_rate'] = signal_analysis['profitable_signals'] / signal_analysis['total_signals']
         
-        # Calculate intelligence metrics
-        targets = np.array(all_targets)
-        profitable_signals = targets > 0
-        success_rate = profitable_signals.mean()
-        avg_profit = targets[profitable_signals].mean() if profitable_signals.any() else 0.0
+        print(f"  📈 Pattern {pattern} intelligence: {signal_analysis['total_signals']} signals, {signal_analysis['profit_rate']:.2%} profitable")
         
-        return {
-            'success_rate': success_rate,
-            'avg_profit': avg_profit,
-            'sample_size': len(targets),
-            'profit_std': targets.std()
-        }
+        return signal_analysis
     
-    def evaluate_signal(self, instrument: str, timeframe: str, 
-                       signal_data: Dict = None) -> Dict:
+    def _analyze_fdb_signals_in_mx_data(self, df: pd.DataFrame, analysis: Dict, context: str):
         """
-        Evaluate the quality of an FDBSignal using ML patterns
+        Analyze FDBSignal performance within MX target data
+        
+        The MX data contains:
+        - fh, fl: Fractal High/Low signals
+        - fdbb, fdbs: FDB Buy/Sell signals  
+        - zlcb, zlcs: Zero Line Cross Buy/Sell
+        - target: The profit/loss result
+        """
+        # Look for FDB signals (fdbb=1 for buy, fdbs=1 for sell)
+        fdb_buy_signals = df[df['fdbb'] == 1]
+        fdb_sell_signals = df[df['fdbs'] == 1]
+        
+        # Analyze buy signals
+        for _, signal_row in fdb_buy_signals.iterrows():
+            analysis['total_signals'] += 1
+            
+            # Check if this signal was profitable (positive target)
+            target_value = signal_row.get('target', 0)
+            if target_value > 0:
+                analysis['profitable_signals'] += 1
+                analysis['avg_profit'] += target_value
+            
+            # Track signal type performance
+            signal_type = 'fdb_buy'
+            if signal_type not in analysis['signal_types']:
+                analysis['signal_types'][signal_type] = {'count': 0, 'profitable': 0}
+            analysis['signal_types'][signal_type]['count'] += 1
+            if target_value > 0:
+                analysis['signal_types'][signal_type]['profitable'] += 1
+        
+        # Analyze sell signals
+        for _, signal_row in fdb_sell_signals.iterrows():
+            analysis['total_signals'] += 1
+            
+            target_value = signal_row.get('target', 0)
+            if target_value < 0:  # Sell signals profit when target is negative
+                analysis['profitable_signals'] += 1
+                analysis['avg_profit'] += abs(target_value)
+            
+            signal_type = 'fdb_sell'
+            if signal_type not in analysis['signal_types']:
+                analysis['signal_types'][signal_type] = {'count': 0, 'profitable': 0}
+            analysis['signal_types'][signal_type]['count'] += 1
+            if target_value < 0:
+                analysis['signal_types'][signal_type]['profitable'] += 1
+        
+        # Track timeframe performance
+        if context not in analysis['timeframe_performance']:
+            analysis['timeframe_performance'][context] = {
+                'signals': len(fdb_buy_signals) + len(fdb_sell_signals),
+                'profitable': 0
+            }
+    
+    def evaluate_signal(self, instrument: str, timeframe: str, signal_data: Dict) -> Dict:
+        """
+        🎯 Evaluate the quality of an incoming FDBSignal
         
         Args:
-            instrument: Trading instrument (e.g., 'EUR/USD')
-            timeframe: Timeframe (e.g., 'H4', 'D1')
-            signal_data: Optional signal context data
+            instrument: Trading instrument (e.g., 'EUR-USD')
+            timeframe: Timeframe (e.g., 'D1', 'H4')
+            signal_data: Dictionary containing signal information
             
         Returns:
-            Dictionary with quality assessment
+            Dictionary with quality assessment and recommendations
         """
-        try:
-            # Get current pattern states for the instrument/timeframe
-            pattern_states = self._get_current_pattern_states(instrument, timeframe)
-            
-            # Calculate quality score based on pattern confluence
-            quality_score = self._calculate_quality_score(pattern_states)
-            
-            # Determine quality level
-            quality_level = self._get_quality_level(quality_score)
-            
-            # Generate recommendation
-            recommendation = self._generate_recommendation(quality_score, pattern_states)
-            
-            return {
-                'quality_score': quality_score,
-                'quality_level': quality_level,
-                'recommendation': recommendation,
-                'pattern_states': pattern_states,
-                'timestamp': datetime.now().isoformat()
-            }
-            
-        except Exception as e:
-            print(f"❌ Error evaluating signal: {e}")
-            return {
-                'quality_score': 50,
-                'quality_level': 'unknown',
-                'recommendation': 'Unable to evaluate - proceed with caution',
-                'error': str(e)
-            }
-    
-    def _get_current_pattern_states(self, instrument: str, timeframe: str) -> Dict:
-        """
-        Get current states of all patterns for the instrument/timeframe
-        """
-        pattern_states = {}
-        
-        for pattern in self.patterns:
-            try:
-                # Read MLF data for the pattern
-                mlf_data = read_mlf_for_pattern(instrument, timeframe, use_full=False, pn=pattern)
-                
-                if mlf_data is not None and not mlf_data.empty:
-                    # Get the latest values for pattern analysis
-                    latest_row = mlf_data.iloc[-1]
-                    
-                    # Extract pattern-specific features
-                    pattern_features = self._extract_pattern_features(pattern, latest_row)
-                    pattern_states[pattern] = pattern_features
-                else:
-                    pattern_states[pattern] = {'status': 'no_data'}
-                    
-            except Exception as e:
-                pattern_states[pattern] = {'status': 'error', 'error': str(e)}
-        
-        return pattern_states
-    
-    def _extract_pattern_features(self, pattern: str, data_row: pd.Series) -> Dict:
-        """
-        Extract relevant features from a pattern's data row
-        """
-        features = {'status': 'active'}
-        
-        if pattern == 'mfi':
-            # MFI pattern features
-            mfi_cols = [col for col in data_row.index if 'mfi' in col.lower()]
-            for col in mfi_cols:
-                if col in data_row.index:
-                    features[col] = data_row[col]
-        
-        elif pattern == 'zonesq':
-            # Zone Squat pattern features  
-            zone_cols = [col for col in data_row.index if 'zone' in col.lower()]
-            mfi_cols = [col for col in data_row.index if 'mfi' in col.lower()]
-            for col in zone_cols + mfi_cols:
-                if col in data_row.index:
-                    features[col] = data_row[col]
-        
-        elif pattern == 'aoac':
-            # AO/AC pattern features
-            ao_ac_cols = [col for col in data_row.index if col.lower() in ['ao', 'ac']]
-            for col in ao_ac_cols:
-                if col in data_row.index:
-                    features[col] = data_row[col]
-        
-        # Add common fractal and alligator features
-        common_cols = ['fdbb', 'fdbs', 'jaw', 'teeth', 'lips']
-        for col in common_cols:
-            if col in data_row.index:
-                features[col] = data_row[col]
-        
-        return features
-    
-    def _calculate_quality_score(self, pattern_states: Dict) -> float:
-        """
-        Calculate overall quality score based on pattern confluence
-        """
-        total_score = 0.0
-        total_weight = 0.0
-        
-        for pattern, state in pattern_states.items():
-            if state.get('status') != 'active':
-                continue
-                
-            pattern_intelligence = self.pattern_weights.get(pattern, {})
-            pattern_weight = pattern_intelligence.get('success_rate', 0.5)
-            
-            # Calculate pattern-specific score
-            pattern_score = self._score_pattern_state(pattern, state)
-            
-            total_score += pattern_score * pattern_weight
-            total_weight += pattern_weight
-        
-        # Normalize to 0-100 scale
-        if total_weight > 0:
-            final_score = (total_score / total_weight) * 100
-        else:
-            final_score = 50  # Neutral score if no patterns available
-        
-        return min(100, max(0, final_score))
-    
-    def _score_pattern_state(self, pattern: str, state: Dict) -> float:
-        """
-        Score an individual pattern's current state (0-1 scale)
-        """
-        if pattern == 'mfi':
-            # MFI scoring logic
-            score = 0.5  # Base score
-            
-            # Look for MFI squat conditions (typically bullish)
-            if 'mfi_sq' in state and state['mfi_sq'] > 0:
-                score += 0.3
-            
-            # Look for MFI fade conditions
-            if 'mfi_fade' in state and state['mfi_fade'] == 0:
-                score += 0.2
-                
-        elif pattern == 'zonesq':
-            # Zone + MFI squat confluence
-            score = 0.5
-            
-            if 'zone_sig' in state and abs(state['zone_sig']) > 0:
-                score += 0.2
-            
-            if 'mfi_sq' in state and state['mfi_sq'] > 0:
-                score += 0.3
-                
-        elif pattern == 'aoac':
-            # AO/AC momentum scoring
-            score = 0.5
-            
-            if 'ao' in state and 'ac' in state:
-                ao_val = state['ao']
-                ac_val = state['ac']
-                
-                # Look for aligned momentum
-                if (ao_val > 0 and ac_val > 0) or (ao_val < 0 and ac_val < 0):
-                    score += 0.3
-        else:
-            score = 0.5  # Default neutral score
-        
-        return score
-    
-    def _get_quality_level(self, score: float) -> str:
-        """
-        Convert numeric score to quality level
-        """
-        if score >= self.quality_thresholds['excellent']:
-            return 'excellent'
-        elif score >= self.quality_thresholds['good']:
-            return 'good'
-        elif score >= self.quality_thresholds['fair']:
-            return 'fair'
-        else:
-            return 'poor'
-    
-    def _generate_recommendation(self, score: float, pattern_states: Dict) -> str:
-        """
-        Generate trading recommendation based on quality assessment
-        """
-        level = self._get_quality_level(score)
-        
-        recommendations = {
-            'excellent': f"🚀 High-quality signal (Score: {score:.1f}). Strong pattern confluence detected.",
-            'good': f"✅ Good signal quality (Score: {score:.1f}). Favorable pattern alignment.",
-            'fair': f"⚠️  Average signal quality (Score: {score:.1f}). Consider additional confirmation.",
-            'poor': f"❌ Low signal quality (Score: {score:.1f}). High risk - avoid or wait for better setup."
+        quality_assessment = {
+            'overall_quality_score': 0,
+            'pattern_scores': {},
+            'recommendation': 'HOLD',
+            'confidence': 0.0,
+            'supporting_patterns': [],
+            'risk_factors': []
         }
         
-        base_rec = recommendations[level]
+        # Evaluate signal against each pattern
+        pattern_scores = []
         
-        # Add pattern-specific insights
-        active_patterns = [p for p, s in pattern_states.items() if s.get('status') == 'active']
-        if active_patterns:
-            base_rec += f" Active patterns: {', '.join(active_patterns)}."
+        for pattern in self.patterns:
+            if pattern in self.pattern_intelligence:
+                pattern_intel = self.pattern_intelligence[pattern]
+                
+                # Calculate pattern-specific quality score
+                pattern_score = self._calculate_pattern_quality_score(
+                    pattern, pattern_intel, signal_data, instrument, timeframe
+                )
+                
+                quality_assessment['pattern_scores'][pattern] = pattern_score
+                pattern_scores.append(pattern_score)
+                
+                # Track supporting patterns
+                if pattern_score > 70:
+                    quality_assessment['supporting_patterns'].append(pattern)
+                elif pattern_score < 30:
+                    quality_assessment['risk_factors'].append(f"Low {pattern} confidence")
         
-        return base_rec
+        # Calculate overall quality score
+        if pattern_scores:
+            quality_assessment['overall_quality_score'] = np.mean(pattern_scores)
+            quality_assessment['confidence'] = min(len(quality_assessment['supporting_patterns']) / len(self.patterns), 1.0)
+        
+        # Generate recommendation
+        if quality_assessment['overall_quality_score'] > 75:
+            quality_assessment['recommendation'] = 'STRONG_BUY' if signal_data.get('signal_type') == 'buy' else 'STRONG_SELL'
+        elif quality_assessment['overall_quality_score'] > 60:
+            quality_assessment['recommendation'] = 'BUY' if signal_data.get('signal_type') == 'buy' else 'SELL'
+        elif quality_assessment['overall_quality_score'] < 40:
+            quality_assessment['recommendation'] = 'AVOID'
+        else:
+            quality_assessment['recommendation'] = 'HOLD'
+        
+        return quality_assessment
+    
+    def _calculate_pattern_quality_score(self, pattern: str, pattern_intel: Dict, 
+                                       signal_data: Dict, instrument: str, timeframe: str) -> float:
+        """
+        Calculate quality score for a specific pattern
+        """
+        base_score = pattern_intel.get('profit_rate', 0.5) * 100
+        
+        # Adjust score based on signal type performance
+        signal_type = signal_data.get('signal_type', 'unknown')
+        signal_key = f"fdb_{signal_type}"
+        
+        if signal_key in pattern_intel.get('signal_types', {}):
+            signal_performance = pattern_intel['signal_types'][signal_key]
+            if signal_performance['count'] > 0:
+                signal_profit_rate = signal_performance['profitable'] / signal_performance['count']
+                base_score = signal_profit_rate * 100
+        
+        # Adjust for timeframe-specific performance
+        context_key = f"{instrument}_{timeframe}"
+        if context_key in pattern_intel.get('timeframe_performance', {}):
+            timeframe_data = pattern_intel['timeframe_performance'][context_key]
+            if timeframe_data['signals'] > 10:  # Enough data for confidence
+                base_score *= 1.1  # Boost confidence for well-tested combinations
+        
+        return min(base_score, 100.0)  # Cap at 100
+    
+    def get_pattern_summary(self) -> Dict:
+        """
+        Get a summary of all pattern intelligence for reporting
+        """
+        summary = {
+            'total_patterns': len(self.patterns),
+            'pattern_details': {}
+        }
+        
+        for pattern, intel in self.pattern_intelligence.items():
+            summary['pattern_details'][pattern] = {
+                'total_signals': intel.get('total_signals', 0),
+                'profit_rate': intel.get('profit_rate', 0.0),
+                'avg_profit': intel.get('avg_profit', 0.0),
+                'signal_types': intel.get('signal_types', {})
+            }
+        
+        return summary
+    
+    def generate_trading_report(self, instrument: str, timeframe: str) -> str:
+        """
+        🌸 Generate a beautiful trading intelligence report
+        """
+        report = f"""
+🚀 FDBSignal Trading Intelligence Report
+═════════════════════════════════════
+📊 Instrument: {instrument}
+⏰ Timeframe: {timeframe}
+🔮 Analysis Date: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
 
-def create_signal_quality_cli():
-    """
-    Create a CLI interface for the FDBSignal Quality Predictor
-    """
-    import argparse
-    
-    parser = argparse.ArgumentParser(
-        description="Evaluate FDBSignal quality using ML patterns",
-        epilog="Example: python fdb_signal_quality_predictor.py -i EUR/USD -t H4"
-    )
-    
-    parser.add_argument('-i', '--instrument', required=True,
-                       help='Trading instrument (e.g., EUR/USD)')
-    parser.add_argument('-t', '--timeframe', required=True,
-                       help='Timeframe (e.g., H4, D1)')
-    parser.add_argument('-p', '--patterns', nargs='+', 
-                       default=['mfi', 'zonesq', 'aoac'],
-                       help='Patterns to analyze')
-    parser.add_argument('-v', '--verbose', action='store_true',
-                       help='Verbose output')
-    
-    return parser
+🧠 Pattern Intelligence Summary:
+"""
+        
+        for pattern, intel in self.pattern_intelligence.items():
+            report += f"""
+  🔹 {pattern.upper()} Pattern:
+     • Total Signals: {intel.get('total_signals', 0)}
+     • Profit Rate: {intel.get('profit_rate', 0.0):.1%}
+     • Average Profit: {intel.get('avg_profit', 0.0):.2f}
+"""
+        
+        report += """
+🌸 Ready for real-time signal evaluation!
+Use evaluate_signal() to assess incoming FDBSignals.
+"""
+        
+        return report
+
 
 def main():
     """
-    Main CLI entry point
+    🎯 Demo the FDBSignal Quality Predictor
     """
-    parser = create_signal_quality_cli()
-    args = parser.parse_args()
+    print("🚀 Initializing FDBSignal Quality Predictor...")
     
-    print(f"🔍 Evaluating FDBSignal quality for {args.instrument} {args.timeframe}")
+    predictor = FDBSignalQualityPredictor()
     
-    # Initialize predictor
-    predictor = FDBSignalQualityPredictor(patterns=args.patterns)
+    print("\n" + predictor.generate_trading_report("EUR-USD", "D1"))
     
-    # Evaluate signal quality
-    result = predictor.evaluate_signal(args.instrument, args.timeframe)
+    # Demo signal evaluation
+    demo_signal = {
+        'signal_type': 'buy',
+        'strength': 0.8,
+        'context': 'fractal_breakout'
+    }
     
-    # Display results
-    print(f"\n📊 Quality Assessment:")
-    print(f"   Score: {result['quality_score']:.1f}/100")
-    print(f"   Level: {result['quality_level'].upper()}")
-    print(f"   Recommendation: {result['recommendation']}")
-    
-    if args.verbose and 'pattern_states' in result:
-        print(f"\n🔬 Pattern Analysis:")
-        for pattern, state in result['pattern_states'].items():
-            status = state.get('status', 'unknown')
-            print(f"   {pattern}: {status}")
-            if status == 'active' and args.verbose:
-                for key, value in state.items():
-                    if key != 'status':
-                        print(f"      {key}: {value}")
+    print("🎯 Demo Signal Evaluation:")
+    quality = predictor.evaluate_signal("EUR-USD", "D1", demo_signal)
+    print(f"Quality Score: {quality['overall_quality_score']:.1f}")
+    print(f"Recommendation: {quality['recommendation']}")
+    print(f"Confidence: {quality['confidence']:.1%}")
+    print(f"Supporting Patterns: {quality['supporting_patterns']}")
+
 
 if __name__ == "__main__":
     main()
