@@ -11,7 +11,7 @@ if [ "$2" != "" ];then
     INSTRUMENTS="$2"
 fi
 
-PATTERNS_BEING_EXPLORED="mfi" #see:  $HOME/.jgt/settings.json for the property "patterns"
+PATTERNS_BEING_EXPLORED="mfi zonesq aoac" #see:  $HOME/.jgt/settings.json for the property "patterns"
 # #Ex. settings.json
 #  "patterns": {
 #     "mfi": {
