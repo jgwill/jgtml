@@ -392,7 +392,37 @@ def _pov_target_calculation_n_output240223(
         
         print("                                 jgtml is using ttf....")
         #df_cds_source:pd.DataFrame = read_ttf_csv(i, t, use_full=True,pn=pn)
-        df_cds_source:pd.DataFrame = read_mlf_for_pattern(i, t, use_full=True,pn=pn)
+        
+        # 🧠🌸 Mia & Miette's Autonomous Data Generation
+        # If MLF data doesn't exist in full namespace, generate it automatically
+        try:
+            df_cds_source:pd.DataFrame = read_mlf_for_pattern(i, t, use_full=True,pn=pn)
+        except FileNotFoundError as e:
+            print(f"🔄 MLF data missing in full namespace, generating autonomously...")
+            print(f"   Missing file: {str(e).split(': ')[-1]}")
+            
+            # Step 1: Generate TTF in full namespace if needed
+            print(f"🔮 Generating TTF data for {i} {t} {pn}...")
+            from ttfcli import generate_ttf_for_pattern
+            try:
+                generate_ttf_for_pattern(i, t, pn, use_full=True)
+                print(f"   ✅ TTF generated successfully")
+            except Exception as ttf_error:
+                print(f"   ⚠️ TTF generation issue: {ttf_error}")
+            
+            # Step 2: Generate MLF in full namespace
+            print(f"🧠 Generating MLF data for {i} {t} {pn}...")
+            from mlfcli import generate_mlf_for_pattern  
+            try:
+                generate_mlf_for_pattern(i, t, pn, use_full=True)
+                print(f"   ✅ MLF generated successfully")
+            except Exception as mlf_error:
+                print(f"   ⚠️ MLF generation issue: {mlf_error}")
+            
+            # Step 3: Try reading MLF again
+            print(f"🎯 Attempting to read MLF data again...")
+            df_cds_source:pd.DataFrame = read_mlf_for_pattern(i, t, use_full=True,pn=pn)
+            print(f"   ✅ MLF data loaded successfully! Shape: {df_cds_source.shape}")
         #@STCGoal Pattern Name -> We have the Columns list serialized
         from mldatahelper import pndata__read_new_pattern_columns_list_with_htf_and_lags_using_settings
         laggingFeatureColumns=pndata__read_new_pattern_columns_list_with_htf_and_lags_using_settings(t,pn=pn)
