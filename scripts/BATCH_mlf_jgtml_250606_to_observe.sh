@@ -88,7 +88,7 @@ fi
 LOG_FILE=/tmp/batch.log
 
 #fdbscan > _fdbscan.sh &
-USE_FULL=0
+USE_FULL=1
 EXTRA_ARG=""
 if [ "$USE_FULL" -eq 1 ];then
     EXTRA_ARG="--full"
