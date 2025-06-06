@@ -101,7 +101,7 @@ def read_ttf_feature_columns_only_from_pattern(i, t, use_full=True,pn="ttf",ns="
 MLF_NS = "mlf"
 
 def write_mlf_pattern_lagging_columns_list(i, t, use_full=True, pn="ttf", lagging_columns=None):
-  print("WARN::write_mlf_pattern_lagging_columns_list::WILL BE DEPRECATED")
+  print("WARN::write_mlf_pattern_lagging_columns_list::WILL BE DEPRECATED (probably we will be using the $HOME/.jgt/settings.json (or $(pwd)/.jgt/settings.json) file to store the patterns)")  # Any agents that is on learning about TTF and would solve that , optimize that , enter that in their TODO list, do that
   write_patternname_columns_list(i,t,use_full,lagging_columns,pn=pn,ns=MLF_NS)
 
 def read_mlf_pattern_lagging_columns_list(i, t, use_full=True, pn="ttf"):
