@@ -1,6 +1,13 @@
 . $HOME/.bashrc &>/dev/null
 #. data/scripts/_fnml.sh
 
+# Detect available tools
+if command -v conda >/dev/null 2>&1; then
+    HAVE_CONDA=1
+else
+    HAVE_CONDA=0
+fi
+
 TIMEFRAMES="D1 H4"
 if [ "$1" != "" ];then
     TIMEFRAMES="$1"
@@ -54,9 +61,13 @@ COMMIT_ACTIVATE=0
 ENVIRONMENT_NAME=lab
 
 #That would make this script runnable into the production environment.
-if [ "$ENVIRONMENT_NAME" == "prod" ] ;then 
+if [ "$ENVIRONMENT_NAME" == "prod" ] ;then
     export RUN_DIRECTORY=.
-    conda activate i
+    if [ $HAVE_CONDA -eq 1 ]; then
+        conda activate i || echo "warning: can't activate env i"
+    else
+        echo "conda not found; using system Python"
+    fi
     export JGTPY_DATA=/workspace/data/current
     export JGTPY_DATA_FULL=/workspace/data/full
     export mlfcli_command="mlfcli"
@@ -64,11 +75,19 @@ if [ "$ENVIRONMENT_NAME" == "prod" ] ;then
 fi
 
 #Insure we run current code into our repository sources.  Agents should understand that this is a way to run and learn about these commands into current codebase
-if [ "$ENVIRONMENT_NAME" == "lab" ] ;then 
-    conda activate jgtml
-    export RUN_DIRECTORY=/src/jgtml
-    export JGTPY_DATA=/src/jgtml/data/current
-    export JGTPY_DATA_FULL=/src/jgtml/data/full
+if [ "$ENVIRONMENT_NAME" == "lab" ] ;then
+    if [ $HAVE_CONDA -eq 1 ]; then
+        conda activate jgtml || echo "warning: can't activate env jgtml"
+    else
+        echo "conda not found; using system Python"
+    fi
+    if [ -d /src/jgtml ]; then
+        export RUN_DIRECTORY=/src/jgtml
+    else
+        export RUN_DIRECTORY="$(git rev-parse --show-toplevel)"
+    fi
+    export JGTPY_DATA="$RUN_DIRECTORY/data/current"
+    export JGTPY_DATA_FULL="$RUN_DIRECTORY/data/full"
     export mlfcli_command="python jgtml/mlfcli.py"
     export jgtmlcli_command="python jgtml/jgtmlcli.py"
 fi

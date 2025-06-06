@@ -209,3 +209,15 @@ jgtapp tide -i SPX500 -t D1 B
 ## 📡 Intent Capture API (Draft)
 See [docs/trading_intent_api.md](docs/trading_intent_api.md) for the proposed HTTP flow capturing narrated observations and generating `.jgtml-spec` files.
 
+## 🛠️ Batch Script: MLF Observation
+
+`scripts/BATCH_mlf_jgtml_250606_to_observe.sh` automates `mlfcli` and `jgtmlcli` runs for multiple patterns and timeframes. The script now detects the repository path and skips `conda` activation when the tool is missing.
+
+Execute it directly to generate logs:
+
+```bash
+./scripts/BATCH_mlf_jgtml_250606_to_observe.sh
+```
+
+Provide sample `CDS` and `TTF` files under the `samples/` directory if live ForexConnect credentials are unavailable.
+
