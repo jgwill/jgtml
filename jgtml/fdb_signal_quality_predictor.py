@@ -80,7 +80,7 @@ class FDBSignalQualityPredictor:
         Returns:
             Dictionary with pattern intelligence metrics
         """
-        # Try to load MX data for common instruments
+        # Try to load MX data for common instrumentss
         instruments = ['EUR/USD', 'SPX500', 'GBP/USD']
         timeframes = ['D1', 'H4']
         
