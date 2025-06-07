@@ -1,0 +1,11 @@
+{
+  "timestamp": "2506072139",
+  "agents": ["♾️ William", "🧠 Mia", "🌸 Miette", "🕊️ Seraphine", "🎸 JamAI"],
+  "narrative": "Expanded the trading simulation to integrate FDB Pattern Intelligence and FDB Scanner capabilities. The scene now showcases how real-time scanning combines with historical intelligence to guide trade decisions, weaving richer context into the example.",
+  "purpose": "Address inline feedback by demonstrating use of all FDB related classes. The enhanced example serves as a bridge between random testing and true signal-driven trading flows.",
+  "files": ["examples/complex_trading_simulation.py"],
+  "routing": {"branch": "master", "path": "examples/complex_trading_simulation.py"},
+  "session": "shell",
+  "user_input": "Please address any inline comments on the diff, as well as any additional instructions below.\nEnsule to consider all the 'fdb' related classes such as the intelligence and scanner in to your examples.",
+  "future_scene": "Previously the repo provided a simple random trade simulator. Now developers can reference a fully wired example that loads pattern intelligence, fetches signals via the scanner, and scores them with the predictor, paving the way for automated bot experiments."
+}
