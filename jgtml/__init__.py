@@ -1,5 +1,5 @@
 # jgtml
-version='0.0.306'
+version='0.0.307'
 import sys
 import os
 
