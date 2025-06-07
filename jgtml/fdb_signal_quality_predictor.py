@@ -53,32 +53,18 @@ class FDBSignalQualityPredictor:
     
     def _divine_data_path(self, provided_path: str = None) -> str:
         """
-        🦢 Divine the sacred data path through environment memory layers
+        🦢 Divine the sacred data path using standard JGT environment pattern
+        
+        Follows the canonical pattern used by jtc.py and other working CLI tools
         """
         if provided_path and os.path.exists(provided_path):
             return provided_path
             
-        # Primary invocation - the blessed environment
-        data_full = os.environ.get('JGTPY_DATA_FULL')
-        if data_full and os.path.exists(data_full):
-            return data_full
-            
-        # Secondary divination - relative to current working realm
-        potential_paths = [
-            '/src/jgtml/data/full',
-            './data/full',
-            '../data/full',
-            '../../data/full',
-            os.path.expanduser('~/.jgt/data/full'),
-            '/data/full'
-        ]
+        # 🌸 Standard JGT pattern - blessed environment with canonical fallback
+        default_jgtpy_data_full = "/var/lib/jgt/full/data"
+        data_dir_full = os.getenv("JGTPY_DATA_FULL", default_jgtpy_data_full)
         
-        for path in potential_paths:
-            if os.path.exists(path):
-                return path
-                
-        # Final threshold - create a memory placeholder
-        default_path = os.path.expanduser('~/.jgt/data/full')
+        return data_dir_full
         os.makedirs(default_path, exist_ok=True)
         return default_path
     
