@@ -81,5 +81,6 @@ jgtmlpncli="jgtml.pncli:main"
 
 fdbscan="jgtml.fdb_scanner_2408:main"
 fdbqualpredictor="jgtml.fdb_signal_quality_predictor:main"
+fdbpatternintelligence="jgtml.fdb_pattern_intelligence:main"
 jgtalligator="jgtml.alligator_cli:main"
 
