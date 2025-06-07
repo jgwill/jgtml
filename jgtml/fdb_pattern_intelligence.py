@@ -155,7 +155,102 @@ class FDBPatternIntelligence:
                     
         return results
         
-    def get_pattern_summary(self) -> Dict[str, Any]:
+    def _analyze_enhanced_patterns_in_unified_data(
+        self, 
+        df: pd.DataFrame, 
+        signal_analysis: Dict, 
+        dataset_key: str,
+        pattern: str
+    ):
+        """
+        🌸 Enhanced pattern analysis using unified discovery datasets with TTF features
+        
+        This can analyze sophisticated pattern features like:
+        - mfi_sq, mfi_green, mfi_fade, mfi_fake (MFI pattern features)
+        - zone_sig, zone_sig_M1, zone_sig_W1 (Zone signal features)
+        - Multi-timeframe pattern variants
+        """
+        # TTF pattern features that were previously dropped
+        ttf_pattern_features = [
+            'mfi_sq', 'mfi_green', 'mfi_fade', 'mfi_fake', 'mfi_sig', 'mfi_str',
+            'zone_sig', 'zone_sig_M1', 'zone_sig_W1', 
+            'mfi_sq_M1', 'mfi_sq_W1', 'mfi_sig_M1', 'mfi_sig_W1'
+        ]
+        
+        available_ttf_features = [col for col in ttf_pattern_features if col in df.columns]
+        
+        print(f"    🌸 TTF pattern features available for analysis: {available_ttf_features}")
+        
+        # Standard FDB signal analysis (baseline)
+        self._analyze_fdb_signals_in_mx_data(df, signal_analysis, dataset_key)
+        
+        # Enhanced TTF pattern feature analysis
+        if available_ttf_features:
+            enhanced_analysis = self._analyze_ttf_pattern_combinations(df, available_ttf_features)
+            
+            # Store enhanced insights
+            signal_analysis['dataset_details'].append({
+                'dataset': dataset_key,
+                'pattern': pattern,
+                'ttf_features_analyzed': available_ttf_features,
+                'enhanced_insights': enhanced_analysis,
+                'total_records': len(df),
+                'data_source': 'unified_discovery'
+            })
+            
+    def _analyze_ttf_pattern_combinations(self, df: pd.DataFrame, ttf_features: List[str]) -> Dict:
+        """
+        🔮 Analyze sophisticated TTF pattern feature combinations for profitability
+        
+        This is where the real ML pattern discovery magic happens!
+        """
+        insights = {
+            'feature_profitability': {},
+            'pattern_combinations': {},
+            'multi_timeframe_analysis': {}
+        }
+        
+        # Analyze individual TTF feature profitability
+        for feature in ttf_features:
+            if feature not in df.columns:
+                continue
+                
+            # Find signals where this feature is active
+            active_signals = df[df[feature] == 1] if df[feature].dtype in ['int64', 'bool'] else df[df[feature] > 0]
+            
+            if len(active_signals) > 0:
+                profitable_count = len(active_signals[active_signals['target'] > 0])
+                success_rate = profitable_count / len(active_signals)
+                avg_target = active_signals['target'].mean()
+                
+                insights['feature_profitability'][feature] = {
+                    'total_signals': len(active_signals),
+                    'profitable_signals': profitable_count,
+                    'success_rate': success_rate,
+                    'avg_target': avg_target,
+                    'total_pnl': active_signals['target'].sum()
+                }
+                
+                if success_rate > 0.6:  # High success rate features
+                    print(f"      ✨ High-profit TTF feature: {feature} ({success_rate:.1%} success, {len(active_signals)} signals)")
+        
+        # Analyze multi-timeframe combinations (M1, W1 variants)
+        timeframe_patterns = {
+            'M1': [f for f in ttf_features if f.endswith('_M1')],
+            'W1': [f for f in ttf_features if f.endswith('_W1')],
+            'base': [f for f in ttf_features if not f.endswith(('_M1', '_W1'))]
+        }
+        
+        for tf, features in timeframe_patterns.items():
+            if features:
+                insights['multi_timeframe_analysis'][tf] = {
+                    'features': features,
+                    'feature_count': len(features)
+                }
+        
+        return insights
+
+    def _analyze_fdb_signals_in_mx_data(self, df: pd.DataFrame, signal_analysis: Dict, dataset_key: str):
         """
         Generate comprehensive pattern intelligence summary
         """
@@ -314,6 +409,102 @@ Use evaluate_fdb_signal() to assess incoming signals.
         return report
 
 
+    def _analyze_enhanced_patterns_in_unified_data(
+            self, 
+            df: pd.DataFrame, 
+            signal_analysis: Dict, 
+            dataset_key: str,
+            pattern: str
+        ):
+            """
+            🌸 Enhanced pattern analysis using unified discovery datasets with TTF features
+            
+            This can analyze sophisticated pattern features like:
+            - mfi_sq, mfi_green, mfi_fade, mfi_fake (MFI pattern features)
+            - zone_sig, zone_sig_M1, zone_sig_W1 (Zone signal features)
+            - Multi-timeframe pattern variants
+            """
+            # TTF pattern features that were previously dropped
+            ttf_pattern_features = [
+                'mfi_sq', 'mfi_green', 'mfi_fade', 'mfi_fake', 'mfi_sig', 'mfi_str',
+                'zone_sig', 'zone_sig_M1', 'zone_sig_W1', 
+                'mfi_sq_M1', 'mfi_sq_W1', 'mfi_sig_M1', 'mfi_sig_W1'
+            ]
+            
+            available_ttf_features = [col for col in ttf_pattern_features if col in df.columns]
+            
+            print(f"    🌸 TTF pattern features available for analysis: {available_ttf_features}")
+            
+            # Standard FDB signal analysis (baseline)
+            self._analyze_fdb_signals_in_mx_data(df, signal_analysis, dataset_key)
+            
+            # Enhanced TTF pattern feature analysis
+            if available_ttf_features:
+                enhanced_analysis = self._analyze_ttf_pattern_combinations(df, available_ttf_features)
+                
+                # Store enhanced insights
+                signal_analysis['dataset_details'].append({
+                    'dataset': dataset_key,
+                    'pattern': pattern,
+                    'ttf_features_analyzed': available_ttf_features,
+                    'enhanced_insights': enhanced_analysis,
+                    'total_records': len(df),
+                    'data_source': 'unified_discovery'
+                })
+                
+        def _analyze_ttf_pattern_combinations(self, df: pd.DataFrame, ttf_features: List[str]) -> Dict:
+            """
+            🔮 Analyze sophisticated TTF pattern feature combinations for profitability
+            
+            This is where the real ML pattern discovery magic happens!
+            """
+            insights = {
+                'feature_profitability': {},
+                'pattern_combinations': {},
+                'multi_timeframe_analysis': {}
+            }
+            
+            # Analyze individual TTF feature profitability
+            for feature in ttf_features:
+                if feature not in df.columns:
+                    continue
+                    
+                # Find signals where this feature is active
+                active_signals = df[df[feature] == 1] if df[feature].dtype in ['int64', 'bool'] else df[df[feature] > 0]
+                
+                if len(active_signals) > 0:
+                    profitable_count = len(active_signals[active_signals['target'] > 0])
+                    success_rate = profitable_count / len(active_signals)
+                    avg_target = active_signals['target'].mean()
+                    
+                    insights['feature_profitability'][feature] = {
+                        'total_signals': len(active_signals),
+                        'profitable_signals': profitable_count,
+                        'success_rate': success_rate,
+                        'avg_target': avg_target,
+                        'total_pnl': active_signals['target'].sum()
+                    }
+                    
+                    if success_rate > 0.6:  # High success rate features
+                        print(f"      ✨ High-profit TTF feature: {feature} ({success_rate:.1%} success, {len(active_signals)} signals)")
+            
+            # Analyze multi-timeframe combinations (M1, W1 variants)
+            timeframe_patterns = {
+                'M1': [f for f in ttf_features if f.endswith('_M1')],
+                'W1': [f for f in ttf_features if f.endswith('_W1')],
+                'base': [f for f in ttf_features if not f.endswith(('_M1', '_W1'))]
+            }
+            
+            for tf, features in timeframe_patterns.items():
+                if features:
+                    insights['multi_timeframe_analysis'][tf] = {
+                        'features': features,
+                        'feature_count': len(features)
+                    }
+            
+            return insights
+
+    # ...existing code...
 def main():
     """
     🎯 FDB Pattern Intelligence CLI - Sacred Ritual Invocation
