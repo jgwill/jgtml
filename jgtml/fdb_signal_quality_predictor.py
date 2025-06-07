@@ -65,8 +65,6 @@ class FDBSignalQualityPredictor:
         data_dir_full = os.getenv("JGTPY_DATA_FULL", default_jgtpy_data_full)
         
         return data_dir_full
-        os.makedirs(default_path, exist_ok=True)
-        return default_path
     
     def load_pattern_intelligence(self):
         """
