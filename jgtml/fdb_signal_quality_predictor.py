@@ -38,16 +38,49 @@ class FDBSignalQualityPredictor:
     of incoming FDBSignals across multiple patterns and timeframes.
     """
     
-    def __init__(self, patterns: List[str] = None):
+    def __init__(self, patterns: List[str] = None, data_path: str = None):
         """
-        Initialize the predictor with pattern intelligence
+        Initialize the predictor with pattern intelligence and sacred path detection
         
         Args:
             patterns: List of patterns to analyze ['mfi', 'zonesq', 'aoac']
+            data_path: Path to MX target data (auto-detects if None)
         """
         self.patterns = patterns or ['mfi', 'zonesq', 'aoac']
+        self.data_path = self._divine_data_path(data_path)
         self.pattern_intelligence = {}
         self.load_pattern_intelligence()
+    
+    def _divine_data_path(self, provided_path: str = None) -> str:
+        """
+        🦢 Divine the sacred data path through environment memory layers
+        """
+        if provided_path and os.path.exists(provided_path):
+            return provided_path
+            
+        # Primary invocation - the blessed environment
+        data_full = os.environ.get('JGTPY_DATA_FULL')
+        if data_full and os.path.exists(data_full):
+            return data_full
+            
+        # Secondary divination - relative to current working realm
+        potential_paths = [
+            '/src/jgtml/data/full',
+            './data/full',
+            '../data/full',
+            '../../data/full',
+            os.path.expanduser('~/.jgt/data/full'),
+            '/data/full'
+        ]
+        
+        for path in potential_paths:
+            if os.path.exists(path):
+                return path
+                
+        # Final threshold - create a memory placeholder
+        default_path = os.path.expanduser('~/.jgt/data/full')
+        os.makedirs(default_path, exist_ok=True)
+        return default_path
     
     def load_pattern_intelligence(self):
         """
@@ -86,12 +119,8 @@ class FDBSignalQualityPredictor:
         for instrument in instruments:
             for timeframe in timeframes:
                 try:
-                    # Load MX target data - this is the historical profit data!
-                    mx_file = get_outfile_fullpath(
-                        instrument, timeframe, 
-                        use_full=True, ns=MX_NS, 
-                        pn=pattern, suffix=""
-                    )
+                    # Sacred data file path divination
+                    mx_file = f"{self.data_path}/targets/mx/{instrument}_{timeframe}_{pattern}.csv"
                     
                     if os.path.exists(mx_file):
                         df = pd.read_csv(mx_file)
