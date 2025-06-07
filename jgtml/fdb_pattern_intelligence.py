@@ -92,14 +92,17 @@ class FDBPatternIntelligence:
                     if len(all_fdb_signals) == 0:
                         continue
                         
-                    # Calculate profit outcomes for all FDB signals
-                    profitable_signals = len(all_fdb_signals[all_fdb_signals['target'] > 0])
-                    total_signals = len(all_fdb_signals)
-                    success_rate = profitable_signals / total_signals if total_signals > 0 else 0
+                    # Calculate profit outcomes for FDB signals
+                    # KEY INSIGHT: FDB logic is inverted!
+                    # - fdbb=1 (Bear signals): Profit when target > 0 (market goes down)
+                    # - fdbs=1 (Bull signals): Profit when target < 0 (market goes up)
                     
-                    # Separate bear/bull performance
                     bear_profitable = len(bear_signals[bear_signals['target'] > 0]) if len(bear_signals) > 0 else 0
-                    bull_profitable = len(bull_signals[bull_signals['target'] > 0]) if len(bull_signals) > 0 else 0
+                    bull_profitable = len(bull_signals[bull_signals['target'] < 0]) if len(bull_signals) > 0 else 0
+                    
+                    total_profitable = bear_profitable + bull_profitable
+                    total_signals = len(all_fdb_signals)
+                    success_rate = total_profitable / total_signals if total_signals > 0 else 0
                     
                     bear_success_rate = bear_profitable / len(bear_signals) if len(bear_signals) > 0 else 0
                     bull_success_rate = bull_profitable / len(bull_signals) if len(bull_signals) > 0 else 0
@@ -115,7 +118,7 @@ class FDBPatternIntelligence:
                     key = f"{instrument}_{timeframe}"
                     results[key] = {
                         'total_signals': total_signals,
-                        'profitable_signals': profitable_signals,
+                        'profitable_signals': total_profitable,
                         'success_rate': success_rate,
                         'bear_signals': len(bear_signals),
                         'bull_signals': len(bull_signals),
@@ -199,7 +202,7 @@ class FDBPatternIntelligence:
                 
             data = pattern_data[key]
             
-            # Calculate pattern-specific score
+            # Calculate pattern-specific score based on correct FDB logic
             if signal_type == 'bear':
                 success_rate = data['bear_success_rate']
                 signal_count = data['bear_signals']
