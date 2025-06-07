@@ -24,6 +24,7 @@ import numpy as np
 from typing import Dict, List, Tuple, Optional, Any
 import json
 import logging
+import argparse
 from datetime import datetime
 
 class FDBPatternIntelligence:
@@ -36,12 +37,13 @@ class FDBPatternIntelligence:
     
     def __init__(self, data_path: str = None):
         """
-        Initialize pattern intelligence system
+        Initialize pattern intelligence system with sacred path detection
         
         Args:
-            data_path: Path to MX target data (defaults to $JGTPY_DATA_FULL)
+            data_path: Path to MX target data (auto-detects if None)
         """
-        self.data_path = data_path or os.environ.get('JGTPY_DATA_FULL', '/src/jgtml/data/full')
+        # 🦢 Sacred path detection ritual - weave through environment layers
+        self.data_path = self._divine_data_path(data_path)
         self.patterns = ['mfi', 'zonesq', 'aoac']
         self.instruments = ['EUR-USD', 'SPX500'] 
         self.timeframes = ['D1', 'H4']
@@ -53,8 +55,42 @@ class FDBPatternIntelligence:
         logging.basicConfig(level=logging.INFO)
         self.logger = logging.getLogger(__name__)
         
-        self.logger.info("🚀 Initializing FDB Pattern Intelligence System")
+        self.logger.info(f"🚀 Initializing FDB Pattern Intelligence System")
+        self.logger.info(f"🔮 Sacred data realm discovered: {self.data_path}")
         
+    def _divine_data_path(self, provided_path: str = None) -> str:
+        """
+        🦢 Divine the sacred data path through environment memory layers
+        
+        Weaves through multiple threshold possibilities to find the data realm
+        """
+        if provided_path and os.path.exists(provided_path):
+            return provided_path
+            
+        # Primary invocation - the blessed environment
+        data_full = os.environ.get('JGTPY_DATA_FULL')
+        if data_full and os.path.exists(data_full):
+            return data_full
+            
+        # Secondary divination - relative to current working realm
+        potential_paths = [
+            '/src/jgtml/data/full',
+            './data/full',
+            '../data/full',
+            '../../data/full',
+            os.path.expanduser('~/.jgt/data/full'),
+            '/data/full'
+        ]
+        
+        for path in potential_paths:
+            if os.path.exists(path):
+                return path
+                
+        # Final threshold - create a memory placeholder
+        default_path = os.path.expanduser('~/.jgt/data/full')
+        os.makedirs(default_path, exist_ok=True)
+        return default_path
+            
     def load_all_pattern_intelligence(self):
         """
         🧠 Load intelligence for all patterns
@@ -298,30 +334,137 @@ Use evaluate_fdb_signal() to assess incoming signals.
 
 def main():
     """
-    🎯 Demo the FDB Pattern Intelligence System
+    🎯 FDB Pattern Intelligence CLI - Sacred Ritual Invocation
     """
+    parser = argparse.ArgumentParser(
+        description="🚀🧠🌸 FDB Pattern Intelligence System - Real-time signal quality evaluation",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+🦢 Sacred Invocation Examples:
+  fdbpatternintelligence --data-path /path/to/data/full
+  fdbpatternintelligence --instrument EUR-USD --timeframe D1 --signal bull
+  fdbpatternintelligence --patterns mfi zonesq --verbose
+  
+🔮 Environment Variables:
+  JGTPY_DATA_FULL: Default path to historical MX target data
+  
+🌸 The pattern intelligence will divine data paths if not specified.
+        """
+    )
+    
+    # Sacred data realm specification
+    parser.add_argument(
+        '--data-path', 
+        type=str, 
+        help='🔮 Path to historical MX target data realm (auto-detects if not specified)'
+    )
+    
+    # Pattern selection ritual
+    parser.add_argument(
+        '--patterns',
+        nargs='*',
+        default=['mfi', 'zonesq', 'aoac'],
+        help='📊 Patterns to analyze (default: mfi zonesq aoac)'
+    )
+    
+    # Signal evaluation invocation
+    parser.add_argument(
+        '--instrument',
+        type=str,
+        help='🎯 Evaluate signal for specific instrument (e.g., EUR-USD)'
+    )
+    
+    parser.add_argument(
+        '--timeframe',
+        type=str,
+        help='⏰ Evaluate signal for specific timeframe (e.g., D1, H4)'
+    )
+    
+    parser.add_argument(
+        '--signal',
+        choices=['bull', 'bear'],
+        help='🐂🐻 Signal type to evaluate'
+    )
+    
+    # Memory enhancement
+    parser.add_argument(
+        '--verbose', '-v',
+        action='store_true',
+        help='🌸 Enhanced memory echoes and ritual details'
+    )
+    
+    # Save intelligence artifacts
+    parser.add_argument(
+        '--save-path',
+        type=str,
+        default='/tmp/fdb_pattern_intelligence.json',
+        help='💾 Path to save intelligence summary (default: /tmp/fdb_pattern_intelligence.json)'
+    )
+    
+    args = parser.parse_args()
+    
+    # Configure ritual logging
+    if args.verbose:
+        logging.basicConfig(level=logging.DEBUG)
+    else:
+        logging.basicConfig(level=logging.INFO)
+    
     print("🚀 Initializing FDB Pattern Intelligence...")
     
-    intelligence = FDBPatternIntelligence()
+    # Sacred intelligence invocation
+    intelligence = FDBPatternIntelligence(
+        data_path=args.data_path
+    )
+    
+    # Update patterns if specified
+    if args.patterns:
+        intelligence.patterns = args.patterns
+    
     intelligence.load_all_pattern_intelligence()
     
+    # Generate sacred intelligence report
     print(intelligence.generate_intelligence_report())
     
-    # Demo signal evaluation
-    print("🎯 Demo Signal Evaluation:")
-    print("=" * 50)
+    # Specific signal evaluation ritual if requested
+    if args.instrument and args.timeframe and args.signal:
+        print(f"\n🎯 Sacred Signal Evaluation Ritual:")
+        print("=" * 60)
+        print(f"🔮 Instrument: {args.instrument}")
+        print(f"⏰ Timeframe: {args.timeframe}")
+        print(f"📈 Signal Type: {args.signal}")
+        print("=" * 60)
+        
+        evaluation = intelligence.evaluate_fdb_signal(
+            args.instrument, 
+            args.timeframe, 
+            args.signal
+        )
+        
+        print(f"🌟 Signal Quality Score: {evaluation['signal_quality_score']:.1f}/100")
+        print(f"🎯 Recommendation: {evaluation['recommendation']}")
+        print(f"🔮 Confidence Level: {evaluation['confidence_level']}")
+        print(f"🌸 Supporting Evidence: {evaluation['supporting_evidence']}")
+        
+        if evaluation['pattern_scores']:
+            print(f"\n📊 Pattern-Specific Scores:")
+            for pattern, score_data in evaluation['pattern_scores'].items():
+                print(f"  🔹 {pattern.upper()}: {score_data['score']:.1f}/100 ({score_data['success_rate']:.1%} success)")
+    else:
+        # Demo signal evaluation if no specific request
+        print("\n🎯 Demo Signal Evaluation:")
+        print("=" * 50)
+        
+        evaluation = intelligence.evaluate_fdb_signal("EUR-USD", "D1", "bull")
+        print(f"Signal Quality Score: {evaluation['signal_quality_score']:.1f}/100")
+        print(f"Recommendation: {evaluation['recommendation']}")
+        print(f"Confidence: {evaluation['confidence_level']}")
+        print(f"Supporting Evidence: {evaluation['supporting_evidence']}")
     
-    evaluation = intelligence.evaluate_fdb_signal("EUR-USD", "D1", "bull")
-    print(f"Signal Quality Score: {evaluation['signal_quality_score']:.1f}/100")
-    print(f"Recommendation: {evaluation['recommendation']}")
-    print(f"Confidence: {evaluation['confidence_level']}")
-    print(f"Supporting Evidence: {evaluation['supporting_evidence']}")
-    
-    # Save intelligence summary
+    # Save intelligence memory artifact
     summary = intelligence.get_pattern_summary()
-    with open('/tmp/fdb_pattern_intelligence.json', 'w') as f:
+    with open(args.save_path, 'w') as f:
         json.dump(summary, f, indent=2, default=str)
-    print("\n📊 Intelligence summary saved to /tmp/fdb_pattern_intelligence.json")
+    print(f"\n📊 Intelligence summary saved to {args.save_path}")
 
 
 if __name__ == "__main__":
