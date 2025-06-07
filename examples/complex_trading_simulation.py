@@ -7,6 +7,14 @@ from jgtml.fdb_signal_quality_predictor import FDBSignalQualityPredictor
 from jgtml.fdb_pattern_intelligence import FDBPatternIntelligence
 from jgtml.fdb_scanner_2408 import generate_fresh_and_cache
 
+# Import jgtpy for historical data access
+try:
+    from jgtpy import JGTPDSP as pds
+    JGTPY_AVAILABLE = True
+except ImportError:
+    JGTPY_AVAILABLE = False
+    print("⚠️ jgtpy not available, will use synthetic data")
+
 class Trade:
     def __init__(self, instrument: str, direction: str, price: float, quality: float, size: float):
         self.instrument = instrument
@@ -61,25 +69,34 @@ class ComplexTradingSimulation:
         self.total_trades = 0
 
     def _generate_market_data(self) -> Tuple[List[float], List[float], List[float]]:
-        """Generate realistic price data with OHLC values."""
-        # Start with a base price
-        base = 1.0
-        # Create a trend component (slight upward bias)
-        trend = np.cumsum(np.random.normal(0.0002, 0.001, self.days))
-        # Create a cyclical component (market regimes)
-        t = np.arange(self.days)
-        cycle = 0.005 * np.sin(2 * np.pi * t / 20)  # 20-day cycle
-        # Create a random component (daily noise)
-        noise = np.random.normal(0, 0.004, self.days)
-        
-        # Combine components
-        closes = base + trend + cycle + noise
-        
-        # Generate high/low values
-        highs = closes + np.abs(np.random.normal(0, 0.003, self.days))
-        lows = closes - np.abs(np.random.normal(0, 0.003, self.days))
-        
-        return closes.tolist(), highs.tolist(), lows.tolist()
+        """Get historical market data from jgtpy."""
+        try:
+            # Import jgtpy modules
+            from jgtpy import JGTPDSP as pds
+            
+            # Get historical data
+            df = pds.getPH(self.instrument.replace('-', '/'), self.timeframe, quote_count=self.days)
+            
+            # Extract OHLC data
+            closes = df['Close'].values.tolist()
+            highs = df['High'].values.tolist()
+            lows = df['Low'].values.tolist()
+            
+            return closes, highs, lows
+        except Exception as e:
+            print(f"⚠️ Error fetching historical data: {e} -- using synthetic data.")
+            # Fall back to synthetic data generation if jgtpy fails
+            base = 1.0
+            trend = np.cumsum(np.random.normal(0.0002, 0.001, self.days))
+            t = np.arange(self.days)
+            cycle = 0.005 * np.sin(2 * np.pi * t / 20)
+            noise = np.random.normal(0, 0.004, self.days)
+            
+            closes = base + trend + cycle + noise
+            highs = closes + np.abs(np.random.normal(0, 0.003, self.days))
+            lows = closes - np.abs(np.random.normal(0, 0.003, self.days))
+            
+            return closes.tolist(), highs.tolist(), lows.tolist()
 
     def _calculate_position_size(self, quality_score: float) -> float:
         """Calculate position size based on quality score and risk parameters."""
@@ -97,9 +114,27 @@ class ComplexTradingSimulation:
             'confidence': random.random() * 0.5  # Lower confidence for random signals
         }
 
-    def _scan_signal(self, day_index: int, prices: List[float]):
-        """Scan the latest market data using FDBScanner."""
+    def _scan_signal(self, day_index: int, prices: List[float], dates=None):
+        """Scan the market data using FDBScanner or historical data."""
         try:
+            # If we're using historical data with dates
+            if JGTPY_AVAILABLE and dates and day_index < len(dates):
+                # Get signals for the specific date from jgtpy
+                date_str = dates[day_index].strftime('%Y-%m-%d')
+                signals = pds.getSignals(self.instrument.replace('-', '/'), self.timeframe, date_str)
+                
+                if signals and len(signals) > 0:
+                    # Use the first signal from the day
+                    signal = signals[0]
+                    sig_type = 'buy' if signal.get('direction') == 'bull' else 'sell'
+                    return {
+                        'signal_type': sig_type,
+                        'strength': signal.get('strength', 0.7),
+                        'context': signal.get('context', 'historical'),
+                        'confidence': signal.get('confidence', 0.8)
+                    }
+            
+            # Otherwise use FDBScanner for real-time data
             df = generate_fresh_and_cache(self.instrument.replace('-', '/'), self.timeframe)
             last = df.iloc[-1]
             
@@ -201,15 +236,28 @@ class ComplexTradingSimulation:
                 print(f"Day {day}: CLOSE {trade.direction} at {price:.4f}, profit {trade.profit:.2f} ({exit_reason})")
 
     def run(self):
+        # Get historical market data
         closes, highs, lows = self._generate_market_data()
+        
+        # Get dates if using jgtpy
+        dates = None
+        if JGTPY_AVAILABLE:
+            try:
+                df = pds.getPH(self.instrument.replace('-', '/'), self.timeframe, quote_count=self.days)
+                dates = df.index.tolist()
+            except Exception:
+                pass
         
         for day in range(1, len(closes)):
             price = closes[day]
             high = highs[day]
             low = lows[day]
             
+            # Get date for logging
+            date_str = dates[day].strftime('%Y-%m-%d') if dates and day < len(dates) else f"Day {day}"
+            
             # Get signal and evaluate quality
-            signal = self._scan_signal(day, closes)
+            signal = self._scan_signal(day, closes, dates)
             quality = self.predictor.evaluate_signal(self.instrument, self.timeframe, signal)
             intel = self.intelligence.evaluate_fdb_signal(
                 self.instrument, 
@@ -247,10 +295,11 @@ class ComplexTradingSimulation:
                 self.active_trades.append(trade)
                 self.total_trades += 1
                 
-                print(f"Day {day}: OPEN {signal['signal_type']} at {price:.4f} "
+                print(f"{date_str}: OPEN {signal['signal_type']} at {price:.4f} "
                       f"(score {score:.1f}, size ${size:.2f})")
         
         # Close any remaining trades on the last day
+        final_date = dates[-1].strftime('%Y-%m-%d') if dates else "Final day"
         for trade in list(self.active_trades):
             trade.close(closes[-1], "simulation_end")
             self.balance += trade.profit
@@ -262,11 +311,13 @@ class ComplexTradingSimulation:
                 self.loss_count += 1
                 
             self.active_trades.remove(trade)
-            print(f"Final day: CLOSE {trade.direction} at {closes[-1]:.4f}, profit {trade.profit:.2f}")
+            print(f"{final_date}: CLOSE {trade.direction} at {closes[-1]:.4f}, profit {trade.profit:.2f}")
 
         # Print summary statistics
         win_rate = self.win_count / max(1, self.total_trades) * 100
         print(f"\n=== SIMULATION SUMMARY ===")
+        print(f"Instrument: {self.instrument} ({self.timeframe})")
+        print(f"Period: {len(closes)} days" + (f" ({dates[0].strftime('%Y-%m-%d')} to {dates[-1].strftime('%Y-%m-%d')})" if dates else ""))
         print(f"Starting balance: $10,000.00")
         print(f"Final balance: ${self.balance:.2f}")
         print(f"Total profit/loss: ${self.balance - 10000:.2f}")

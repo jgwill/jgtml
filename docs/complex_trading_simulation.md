@@ -7,7 +7,7 @@ It demonstrates how different FDB modules work together to simulate a trading lo
 
 The example brings in the following modules:
 
-- `random` & `numpy` – realistic price generation
+- `jgtpy.JGTPDSP` – historical price and signal data
 - `datetime` – tracking trade timestamps
 - `List`, `Dict`, `Tuple` – type hints for data structures
 - `FDBSignalQualityPredictor` – scores signals using ML intelligence
@@ -18,6 +18,8 @@ The example brings in the following modules:
 
 ```mermaid
 flowchart LR
+    JGTPDSP["jgtpy.JGTPDSP"] --> HistoricalData
+    HistoricalData --> Signal
     Scanner["FDBScanner\n(generate_fresh_and_cache)"] --> Signal
     PatternIntelligence["FDBPatternIntelligence"] --> Intelligence
     SignalQuality["FDBSignalQualityPredictor"] --> Quality
