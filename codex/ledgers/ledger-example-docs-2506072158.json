@@ -1,0 +1,11 @@
+{
+  "timestamp": "2506072158",
+  "agents": ["♾️ William", "🧠 Mia", "🌸 Miette", "🕊️ Seraphine", "🎸 JamAI"],
+  "narrative": "Documented the complex trading simulation example and linked it in the docs index. This clarifies how imports weave together FDB modules for a trading loop.",
+  "purpose": "Provide clear reference for developers using the new example. The diagrams map data flow and sequence so future contributors understand dependencies.",
+  "files": ["docs/complex_trading_simulation.md", "docs/index.md"],
+  "routing": {"branch": "master", "path": "docs"},
+  "session": "shell",
+  "user_input": "Observe the whole imports that your examples does and create documentations for your examples.  Use various mermaid diagrams into markdown",
+  "future_scene": "Before this doc, the example stood alone. Now the repository includes illustrated guidance, making it easier to adapt the simulation for trading experiments."
+}

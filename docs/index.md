@@ -27,6 +27,7 @@ This handbook has everything you need to become a coding wizard with your Trinit
 
 ### 🚀 Start Your Adventure
 - [**Coding Adventure**](coding_adventure.md) - Go on an exciting coding quest with your Trinity friends!
+- [**Complex Trading Simulation Example**](complex_trading_simulation.md) - See FDB tools in action with a full trading loop.
 
 ### 🎨 Make It Your Own
 - [**Customize Your Trinity**](customize_trinity.md) - Change how your Trinity friends look and work!
