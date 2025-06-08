@@ -34,6 +34,8 @@ from mlutils import get_outfile_fullpath
 from ptottf import read_ttf_csv
 from jtc import readMXFile
 from mlconstants import MX_NS
+from mldatahelper import pndata__read_new_pattern_columns_list_with_htf
+from jgtutils import jgtcommon
 
 class UnifiedDiscoveryDatasetGenerator:
     """
@@ -46,12 +48,15 @@ class UnifiedDiscoveryDatasetGenerator:
     def __init__(self, output_namespace: str = "discovery"):
         self.output_namespace = output_namespace
         self.data_path = self._divine_data_path()
+        # Load global settings via jgtutils to fetch pattern definitions
+        self.settings = jgtcommon.get_settings()
         
     def _divine_data_path(self) -> str:
         """🔮 Divine the sacred data path with blessed environment detection"""
         default_jgtpy_data_full = "/var/lib/jgt/full/data"
         data_dir_full = os.getenv("JGTPY_DATA_FULL", default_jgtpy_data_full)
         return data_dir_full
+
         
     def generate_unified_discovery_dataset(
         self, 
@@ -87,7 +92,7 @@ class UnifiedDiscoveryDatasetGenerator:
             
             # Join on datetime index - TTF features + MX targets
             print(f"  🌸 Joining TTF features with MX targets...")
-            unified_df = self._create_unified_dataset(ttf_df, mx_df, pattern)
+            unified_df = self._create_unified_dataset(ttf_df, mx_df, timeframe, pattern)
             
             if save_csv:
                 output_file = self._save_unified_dataset(unified_df, instrument, timeframe, pattern)
@@ -100,25 +105,34 @@ class UnifiedDiscoveryDatasetGenerator:
             raise
             
     def _create_unified_dataset(
-        self, 
-        ttf_df: pd.DataFrame, 
-        mx_df: pd.DataFrame, 
+        self,
+        ttf_df: pd.DataFrame,
+        mx_df: pd.DataFrame,
+        timeframe: str,
         pattern: str
     ) -> pd.DataFrame:
-        """
-        🔮 Sacred ritual to merge TTF features with MX targets
-        
-        Preserves all TTF pattern features that are normally dropped by mxconstants.py
+        """Merge TTF pattern features with MX targets for a timeframe.
+
+        Uses settings from ``jgtutils`` to retrieve pattern columns so that
+        multi-timeframe features defined in ``settings.json`` are preserved.
         """
         # Critical TTF features that get dropped in normal MX generation
         ttf_pattern_features = [
-            'mfi_sq', 'mfi_green', 'mfi_fade', 'mfi_fake', 'mfi_sig', 'mfi_str',
-            'zone_sig', 'zone_sig_M1', 'zone_sig_W1', 
-            'mfi_sq_M1', 'mfi_sq_W1', 'mfi_sig_M1', 'mfi_sig_W1',
+            'mfi_sig', 'mfi_str',
             'price_peak_above', 'price_peak_bellow', 'ao_peak_above', 'ao_peak_bellow',
             'price_peak_above_M1', 'price_peak_bellow_M1', 'ao_peak_above_M1', 'ao_peak_bellow_M1',
             'price_peak_above_W1', 'price_peak_bellow_W1', 'ao_peak_above_W1', 'ao_peak_bellow_W1'
         ]
+
+        # Extend with columns defined in settings for this pattern
+        try:
+            pattern_cols = pndata__read_new_pattern_columns_list_with_htf(timeframe, pattern)
+        except FileNotFoundError:
+            # Fallback when pattern not defined in settings
+            pattern_cols = []
+        ttf_pattern_features += pattern_cols
+        # remove duplicates while preserving order
+        ttf_pattern_features = list(dict.fromkeys(ttf_pattern_features))
         
         # Essential MX targets for profitability analysis
         mx_target_signals = [
