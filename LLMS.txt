@@ -2,7 +2,6 @@
 # This file guides language models to our documentation.
 
 GET /README.md
-GET /docs/index.md
 GET /docs/CLI_HELP.md
 GET /docs/trading_intent_api.md
 GET /docs/complex_trading_simulation.md

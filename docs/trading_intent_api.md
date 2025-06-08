@@ -2,6 +2,10 @@
 
 This document proposes a structured HTTP interface for recording trader observations and generating `.jgtml-spec` packages.
 
+## NOTICE
+
+* This is really just a first Scaffolding to work with that Specification Language that this package would receive.  see jgwill/jgtagentic repository documentation for more.
+
 ## Overview
 
 Traders narrate their market analysis across multiple instruments and timeframes. The API maintains session state so that an LLM can transform these observations into a specification. This design supports real-time voice or text input and allows a stateless LLM to recall the full context.
