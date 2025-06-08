@@ -131,6 +131,7 @@ class UnifiedDiscoveryDatasetGenerator:
         # Select available TTF features (some patterns may not have all)
         available_ttf_features = [col for col in ttf_pattern_features if col in ttf_df.columns]
         print(f"    🔮 TTF pattern features preserved: {len(available_ttf_features)}")
+        print(f"    🌟 TTF columns: are {available_ttf_features} included?")
         
         # Select available MX targets
         available_mx_targets = [col for col in mx_target_signals if col in mx_df.columns]
@@ -192,10 +193,11 @@ class UnifiedDiscoveryDatasetGenerator:
         """
         instruments = instruments or ['EUR-USD', 'SPX500']
         timeframes = timeframes or ['D1', 'H4']
-        patterns = patterns or ['mfi', 'zonesq', 'aoac']
+        patterns = patterns or ['mfi', 'zonesq', 'aoac','mfizone']
         
         results = {}
         
+        print("-----------------------------------------------------------------")
         print(f"🌸 Generating unified discovery datasets for ML pattern analysis")
         print(f"  📊 Instruments: {instruments}")
         print(f"  ⏰ Timeframes: {timeframes}")
@@ -242,8 +244,8 @@ Examples:
         """
     )
     
-    parser.add_argument('--patterns', nargs='+', default=['mfi', 'zonesq', 'aoac'],
-                       help='Patterns to process (default: mfi zonesq aoac)')
+    parser.add_argument('--patterns', nargs='+', default=['mfi', 'zonesq', 'aoac','mfizone'],
+                       help='Patterns to process (default: mfi zonesq aoac mfizone)')
     parser.add_argument('--instruments', nargs='+', default=['EUR-USD', 'SPX500'],
                        help='Instruments to process (default: EUR-USD SPX500)')
     parser.add_argument('--timeframes', nargs='+', default=['D1', 'H4'],
