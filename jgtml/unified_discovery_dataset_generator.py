@@ -34,6 +34,7 @@ from mlutils import get_outfile_fullpath
 from ptottf import read_ttf_csv
 from jtc import readMXFile
 from mlconstants import MX_NS
+from mldatahelper import load_settings
 
 class UnifiedDiscoveryDatasetGenerator:
     """
@@ -52,6 +53,27 @@ class UnifiedDiscoveryDatasetGenerator:
         default_jgtpy_data_full = "/var/lib/jgt/full/data"
         data_dir_full = os.getenv("JGTPY_DATA_FULL", default_jgtpy_data_full)
         return data_dir_full
+
+    def _get_pattern_columns(self, pattern: str, ttf_df: Optional[pd.DataFrame] = None) -> List[str]:
+        """Return list of columns associated with a pattern from settings.
+
+        If the pattern is not found in settings, attempt to infer relevant
+        columns from the provided TTF dataframe."""
+        settings = load_settings()
+        patt_dict = settings.get("patterns", {}).get(pattern, {})
+        base_cols = patt_dict.get("columns", [])
+        expansions = []
+        for col in base_cols:
+            expansions.append(f"{col}_W1")
+            expansions.append(f"{col}_M1")
+        cols = base_cols + expansions
+
+        if not cols and ttf_df is not None:
+            prefixes = ("mfi_", "zone_sig", "price_peak", "ao_peak")
+            inferred = [c for c in ttf_df.columns if c.startswith(prefixes)]
+            cols = inferred
+
+        return cols
         
     def generate_unified_discovery_dataset(
         self, 
@@ -112,13 +134,16 @@ class UnifiedDiscoveryDatasetGenerator:
         """
         # Critical TTF features that get dropped in normal MX generation
         ttf_pattern_features = [
-            'mfi_sq', 'mfi_green', 'mfi_fade', 'mfi_fake', 'mfi_sig', 'mfi_str',
-            'zone_sig', 'zone_sig_M1', 'zone_sig_W1', 
-            'mfi_sq_M1', 'mfi_sq_W1', 'mfi_sig_M1', 'mfi_sig_W1',
+            'mfi_sig', 'mfi_str',
             'price_peak_above', 'price_peak_bellow', 'ao_peak_above', 'ao_peak_bellow',
             'price_peak_above_M1', 'price_peak_bellow_M1', 'ao_peak_above_M1', 'ao_peak_bellow_M1',
             'price_peak_above_W1', 'price_peak_bellow_W1', 'ao_peak_above_W1', 'ao_peak_bellow_W1'
         ]
+
+        # Extend with columns defined in settings for this pattern
+        ttf_pattern_features += self._get_pattern_columns(pattern, ttf_df)
+        # remove duplicates while preserving order
+        ttf_pattern_features = list(dict.fromkeys(ttf_pattern_features))
         
         # Essential MX targets for profitability analysis
         mx_target_signals = [
