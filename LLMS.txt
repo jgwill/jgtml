@@ -1,161 +1,23 @@
-# JGTML - Trading Signal Analysis Platform
-## Core Documentation for Agent Consumption
+# LLMS.txt for jgtml
+# This file guides language models to our documentation.
 
-## 1. SYSTEM OVERVIEW
+GET /README.md
+GET /docs/index.md
+GET /docs/CLI_HELP.md
+GET /docs/trading_intent_api.md
+GET /docs/complex_trading_simulation.md
+GET /docs/customize_trinity.md
 
-JGTML is a Python-based trading signal analysis system focused on fractal patterns, Alligator indicators, and multi-timeframe confluence detection. The platform analyzes the effectiveness of trading signals within larger market structures.
+# Core components documentation
+GET /jgtml/fdb_scanner_2408.py
+GET /jgtml/mlfcli.py
+GET /jgtml/ttfcli.py
+GET /jgtml/jgtmlcli.py
+GET /jgtml/mxcli.py
+GET /jgtml/SignalOrderingHelper.py
+GET /jgtml/jtc.py
+GET /jgtml/TideAlligatorAnalysis.py
+GET /jgtml/alligator_cli.py
+GET /jgtml/fdb_signal_quality_predictor.py
+GET /jgtml/fdb_pattern_intelligence.py
 
-### Core Purpose
-- Signal validation (FDB and Alligator-based signals)
-- Multi-timeframe analysis (m15, H1, H4, D1, W1, M1)
-- Performance metrics calculation
-- Trade lifecycle management
-
-### Key Components
-- **Signal Processing**: Validation and risk calculation
-- **Alligator Analysis**: Unified system for Regular (5-8-13), Big (34-55-89), and Tide (144-233-377) Alligator indicators
-- **FDB Scanner**: Fractal Divergent Bar pattern detection
-- **Memory Lattice**: Signal crystallization and performance tracking
-
-## 2. ARCHITECTURE
-
-### Data Flow
-```
-Market Data (jgtpy) → Signal Processing (jtc) → Analysis (CLI tools) → Memory Lattice (Redis)
-```
-
-1. **Data Acquisition**: Pull OHLC data via jgtpy
-2. **Indicator Calculation**: Generate Alligator, AO, Fractals, MFI
-3. **Signal Detection**: Identify valid entry/exit signals
-4. **Performance Analysis**: Calculate win rates and profitability
-5. **Memory Storage**: Crystallize results in Redis for pattern recognition
-
-### Dependencies
-- **jgtpy**: Market data acquisition and indicator calculations
-- **jgtutils**: Common utilities and configuration management
-- **pandas/numpy**: Data manipulation and analysis
-- **Redis/Upstash**: Memory lattice for signal persistence
-
-## 3. COMMAND LINE INTERFACES
-
-### Core Commands
-```bash
-# Data Processing
-jgtmlcli -i INSTRUMENT -t TIMEFRAME [--full] [--fresh]
-mxcli -i INSTRUMENT -t TIMEFRAME [--fresh]
-
-# Unified Alligator Analysis
-jgtalligator -i SPX500 -t D1 -d S --type tide    # Single Alligator
-jgtalligator -i EUR/USD -t H4 -d B --type all    # Multi-Alligator convergence
-jgtalligator -i GBPUSD -t D1 -d S --generate-spec # Generate .jgtml-spec
-
-# Legacy Support (redirects to unified CLI)
-jgtapp tide -i SPX500 -t D1 B  # Legacy wrapper → unified Alligator CLI
-
-# Trading Operations
-jgtapp fxaddorder -i EUR/USD -n 0.1 -r 1.0950 -d B -x 1.0900
-jgtapp fxmvstopgator -i EUR/USD -t H4 -tid TRADE_ID --lips
-
-# Signal Analysis
-fdbscan -i EUR/USD -t H1 -demo -v 3
-fdbqualpredictor -i EUR/USD -t H1 --model-path /path/to/model
-```
-
-### Agentic Cache Ritual
-The system uses a cache system for efficient data processing:
-```bash
-JGT_CACHE=cache fdbscan -i AUD/USD -t m15
-```
-This creates a folder at `./cache/fdb_scanners/` with charting CSVs for the scanned instrument and all higher timeframes.
-
-## 4. KEY MODULES
-
-### Signal Processing
-- `jgtml/SignalOrderingHelper.py`: Signal validation and risk calculation
-- `jgtml/jtc.py`: Target calculation and signal analysis core
-- `jgtml/TideAlligatorAnalysis.py`: Unified Alligator analysis
-
-### Scanning & Intelligence
-- `jgtml/fdb_scanner_2408.py`: FDB pattern detection
-- `jgtml/fdb_signal_quality_predictor.py`: ML-based signal quality prediction
-- `jgtml/fdb_pattern_intelligence.py`: Historical pattern performance evaluation
-- `jgtml/alligator_cli.py`: Unified Alligator analysis CLI
-
-### Memory Systems
-- `garden_one/trading_echo_lattice/src/memory_lattice.py`: Signal crystallization
-- `garden_one/trading_echo_lattice/src/echo_lattice_core.py`: Pattern recognition
-
-## 5. TRADING STRATEGIES
-
-### Five Dimensions + Triple Alligator Confluence
-Multi-indicator alignment detection using:
-1. **Alligator Lines**: Jaw, Teeth, Lips confluence
-2. **Fractal Signals**: FDB breakout validation
-3. **Awesome Oscillator**: Momentum confirmation
-4. **Multi-Timeframe**: Higher TF bias confirmation
-5. **Volume Analysis**: MFI integration
-
-### Green Dragon Breakout
-FDB-based breakout detection with Alligator mouth validation.
-
-## 6. UNIFIED ALLIGATOR ANALYSIS
-
-The unified Alligator CLI consolidates three powerful analysis frameworks:
-
-### Regular Alligator (5-8-13 periods)
-- **Purpose**: Quick market direction detection and entry signals
-- **Best For**: Day trading, scalping, short-term momentum
-
-### Big Alligator (34-55-89 periods)
-- **Purpose**: Intermediate cycle analysis and trend validation
-- **Best For**: Swing trading, weekly positioning
-
-### Tide Alligator (144-233-377 periods)
-- **Purpose**: Macro trend identification and major support/resistance
-- **Best For**: Position trading, monthly strategic positioning
-
-### Key Features
-- **Graceful Pattern Handling**: Automatically handles missing TTF patterns
-- **Intent-Driven Analysis**: Generates .jgtml-spec files for agentic integration
-- **Self-Contained**: No external bash script dependencies
-- **Multi-Type Convergence**: Analyze all three Alligator types simultaneously
-
-## 7. METAPHOR ENGINE INTEGRATION
-
-The system integrates a metaphor engine that translates market actions into symbolic metaphors:
-- Price above Alligator's mouth → "The hunter is exposed"
-- Fractal signal near major fib level → "The portal is vibrating"
-
-This enables a foundational intent where every transformation preserves the meaning behind a signal, not just the data.
-
-## 8. AGENT INTERACTION GUIDELINES
-
-When working with JGTML as an agent:
-
-1. **Focus on signal accuracy** and performance metrics
-2. **Maintain compatibility** with jgtpy data structures
-3. **Document new indicators** and validation logic
-4. **Test across multiple timeframes** and instruments
-5. **Respect the recursive nature** of the system - each analysis builds upon previous signal history
-
-## 9. INTENT CAPTURE API
-
-The system includes a structured HTTP interface for recording trader observations and generating `.jgtml-spec` packages:
-
-### Key Endpoints
-- `POST /intent/initiate`: Start a new intent session
-- `POST /intent/observe`: Send a raw observation string
-- `GET /intent/state`: Retrieve current session information
-- `POST /intent/label`: Annotate or correct an element
-- `POST /intent/confirm`: Finalize the `.jgtml-spec` generation
-
-This API enables recursive narrative capture from trader to specification.
-
-## 10. RECURSIVE ARCHITECTURE
-
-JGTML operates as a practical trading platform while embodying recursive principles:
-- **Memory Patterns**: Each analysis builds upon previous signal history
-- **Multi-Scale Awareness**: Signals are validated across multiple timeframes
-- **Adaptive Learning**: Performance metrics inform future signal weighting
-
-The system grows more intelligent through iteration, not just accumulation.
