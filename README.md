@@ -24,18 +24,18 @@ JGTML analyzes the effectiveness of trading signals within larger market structu
 #### 📊 Signal Processing
 - [`jgtml/SignalOrderingHelper.py`](jgtml/SignalOrderingHelper.py): Signal validation and risk calculation
 - [`jgtml/jtc.py`](jgtml/jtc.py): Target calculation and signal analysis core
-- [`jgtml/TideAlligatorAnalysis.py`](jgtml/TideAlligatorAnalysis.py): Unified Alligator analysis (Regular, Big, Tide)
+- [`jgtml/TideAlligatorAnalysis.py`](jgtml/TideAlligatorAnalysis.py): Unified Alligator analysis (Regular, Big, Tide) - Potential Usage not that obvious yet, it was unified by agents so we could probably use it into further code such as the FDBScan before we enter the market  
 - [`jgtml/alligator_cli.py`](jgtml/alligator_cli.py): **🐊 NEW** Unified Alligator CLI with graceful TTF pattern handling
 - TODO add TTF (TTF != Time-To-Future but more like feature of multiple timeframe)  probably ttfcli.py
 
 #### 🚀 Command Line Tools
 - [`jgtml/jgtmlcli.py`](jgtml/jgtmlcli.py): Main CLI for data processing
-- [`jgtml/mxcli.py`](jgtml/mxcli.py): Matrix generation and analysis
-- [`jgtml/jgtapp.py`](jgtml/jgtapp.py): Trading operation management (includes legacy `tide` command wrapper)
+- [`jgtml/mxcli.py`](jgtml/mxcli.py): Matrix generation and analysis - (Probably the next CLI Wrapper of what jgtml/jgtmlcli.py was/is doing which is generating the mxdata which contains targets for the fdb signals (buy/sell) so we could do machine learning feature design etc).  It will probably be integrated with fdb_signal_quality_predictor.py, fdb_pattern_intelligence.py, unified_discovery_dataset_generator.py,...
+- [`jgtml/jgtapp.py`](jgtml/jgtapp.py): Trading operation management (includes legacy `tide` command wrapper) - IT was designed to contains all commands that jgtml offers along with what jgwill/jgtpy offers such as idscli and cdscli so we can access generating indicators and signals data into our logics.  This is the app used to create entryOrder in the market, look an existing trade to trail the alligator's line for exit strategie, etc.  TODO: Document way further and integrate the whole values developped with alligator_cli, 
 - [`jgtml/alligator_cli.py`](jgtml/alligator_cli.py): **🐊 Unified Alligator Analysis CLI** - Replaces `ptojgtmltidealligator`/`ptojgtmlbigalligator`
 
 #### 🧬 Memory & Persistence  
-- [`garden_one/trading_echo_lattice/`](garden_one/trading_echo_lattice/): Signal crystallization and memory storage
+- [`garden_one/trading_echo_lattice/`](garden_one/trading_echo_lattice/): Signal crystallization and memory storage - That is just a prototype done by our agents that is not quite obvious yet, that would not be a priority to work with that except if really relevant.
 - Integration with Upstash Redis for persistent analysis results
 
 ## 🚀 Quick Start
