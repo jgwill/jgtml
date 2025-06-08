@@ -35,7 +35,7 @@ echo "🎨 Patterns: $PATTERNS"
 echo "📁 Output: /src/jgtml/data/full/ (complete historical data)"
 echo ""
 
-cd /src/jgtml
+cd /src/jgtml||cd /workspace/jgtml||cd /workspaces/jgtml
 
 for pattern in $PATTERNS; do
     echo "🔮 Processing Pattern: $pattern"
