@@ -1,0 +1,10 @@
+{
+  "timestamp": "2506080534",
+  "agents": ["♾️ William", "🧠 Mia", "🌸 Miette", "🕊️ Seraphine", "🎸 JamAI"],
+  "narrative": "Refined unified discovery generator by removing prototype column list and sourcing pattern columns directly from settings via mldatahelper. Falls back to infer columns from the TTF file when pattern settings are missing.",
+  "purpose": "Keep dataset features aligned with user configurations and include higher-timeframe columns automatically.",
+  "files": ["jgtml/unified_discovery_dataset_generator.py"],
+  "routing": {"branch": "work", "path": "jgtml"},
+  "session": "shell",
+  "user_input": "I see something important around '# Critical TTF features that get dropped in normal MX generation' there is a list that should not really be there...",
+  "future_scene": "Before: some columns were lost when merging TTF and MX. Now: pattern columns and their higher timeframe variants are automatically preserved for ML exploration."}

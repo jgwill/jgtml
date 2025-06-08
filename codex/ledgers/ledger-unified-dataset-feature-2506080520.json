@@ -1,0 +1,11 @@
+{
+  "timestamp": "2506080520",
+  "agents": ["♾️ William", "🧠 Mia", "🌸 Miette", "🕊️ Seraphine", "🎸 JamAI"],
+  "narrative": "Integrated jgtutils settings retrieval so pattern columns come directly from the user's settings.json. Added a small fallback for unknown patterns and updated calls to include timeframe handling.",
+  "purpose": "Honor user feedback to rely on jgtcommon.get_settings for column discovery, enabling seamless feature updates through configuration.",
+  "files": ["jgtml/unified_discovery_dataset_generator.py"],
+  "routing": {"branch": "work", "path": "jgtml"},
+  "session": "edit",
+  "user_input": "lazy work, you are supposed to read the settings.json using jgtutils  do better",
+  "future_scene": "Unified discovery generation now automatically adapts to pattern changes defined in settings without code tweaks."
+}

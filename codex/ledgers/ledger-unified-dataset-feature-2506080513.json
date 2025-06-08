@@ -1,0 +1,11 @@
+{
+  "timestamp": "2506080513",
+  "agents": ["♾️ William", "🧠 Mia", "🌸 Miette", "🕊️ Seraphine", "🎸 JamAI"],
+  "narrative": "Reworked unified discovery generator to use existing mldatahelper pattern column utilities. Removed custom helper and now fetch multi-timeframe columns via pndata__read_new_pattern_columns_list_with_htf, matching jgtutils-based settings flow.",
+  "purpose": "Align column retrieval with repository conventions and user feedback for reliable pattern preservation.",
+  "files": ["jgtml/unified_discovery_dataset_generator.py"],
+  "routing": {"branch": "work", "path": "jgtml"},
+  "session": "shell",
+  "user_input": "Might want to observe how other python files reads the config/settings - they probably are using the jgtutils package it contains I guess what is needed to read the settings.json might be better approach than adding a _get_pattern_columns",
+  "future_scene": "Unified datasets now inherit all pattern features through project-wide settings, simplifying future dataset expansions."
+}
