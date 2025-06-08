@@ -40,10 +40,20 @@ def get_basedir(use_full:bool,ns:str)->str:
     if use_full:
         bd=os.getenv("JGTPY_DATA_FULL")
         if bd is None:
-            raise Exception("JGTPY_DATA_FULL environment variable is not set.")
+            import dotenv
+            dotenv.load_dotenv()
+            bd=os.getenv("JGTPY_DATA_FULL")
+            if  bd is None:
+              raise Exception("JGTPY_DATA_FULL environment variable is not set.")
     else:
         bd=os.getenv("JGTPY_DATA")
         if bd is None:
+          import dotenv
+          
+          dotenv.load_dotenv()
+          
+          bd=os.getenv("JGTPY_DATA")
+          if bd is None:
             raise Exception("JGTPY_DATA environment variable is not set.")
     fulldir=os.path.join(bd,ns)
     #mkdir -p fulldir
