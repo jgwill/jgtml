@@ -1,9 +1,13 @@
 #!/bin/bash
 # 🔮🧠 ResoNova & Mia's Discovery Target Generation Workflow  
 # Purpose: Historical analysis and ML pattern discovery (full datasets)
-# Namespace: /src/jgtml/data/full/ (JGTPY_DATA_FULL)
+# Namespace: ./data/full/ (JGTPY_DATA_FULL)
 
 set -e  # Exit on any error
+
+# Find the project root directory (where this script is run from)
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 
 # Default parameters
 TIMEFRAMES="D1"
@@ -32,10 +36,10 @@ echo "🧠 Generating full historical datasets for ML pattern discovery"
 echo "🔧 Instruments: $INSTRUMENTS"
 echo "⏱️  Timeframes: $TIMEFRAMES" 
 echo "🎨 Patterns: $PATTERNS"
-echo "📁 Output: /src/jgtml/data/full/ (complete historical data)"
+echo "📁 Output: ${PROJECT_ROOT}/data/full/ (complete historical data)"
 echo ""
 
-cd /src/jgtml||cd /workspace/jgtml||cd /workspaces/jgtml
+cd "${PROJECT_ROOT}"
 
 for pattern in $PATTERNS; do
     echo "🔮 Processing Pattern: $pattern"
@@ -65,8 +69,8 @@ done
 
 echo "🎉 DISCOVERY Target Generation Complete!"
 echo "🔮 Full historical datasets ready for ML analysis"
-echo "📁 TTF/MLF: /src/jgtml/data/full/ttf/, /src/jgtml/data/full/mlf/"
-echo "📁 MX Targets: /src/jgtml/data/full/targets/mx/"
+echo "📁 TTF/MLF: ./data/full/ttf/, ./data/full/mlf/"
+echo "📁 MX Targets: ./data/full/targets/mx/"
 echo ""
 echo "🧠 Next: Train ML models to discover which patterns predict profitable FDBSignals"
 echo "💎 Goal: Create FDBSignal Quality Predictor using discovered patterns"
