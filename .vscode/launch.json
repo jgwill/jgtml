@@ -19,6 +19,14 @@
       "internalConsoleOptions": "openOnSessionStart"
     },
     {
+      "name": "unif_1",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "jgtml/unified_discovery_dataset_generator.py",
+      "console": "integratedTerminal",
+      "args": "--pattern mfizone --instrument AUD-USD --timeframe D1",
+    },
+    {
       "name": "fxmvstopgator_DEBUG_240820",
       "type": "debugpy",
       "request": "launch",
