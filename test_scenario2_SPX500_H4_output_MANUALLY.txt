@@ -1,0 +1,50 @@
+Warning: JGTBalanceAnalyzer not available. Some analysis features may be limited.
+🐊 JGTML Unified Alligator Analysis
+Instrument: SPX500
+Timeframe: H4
+Direction: S
+Types: ['tide']
+
+🔄 Pattern files missing or regeneration requested - initializing TTF patterns...
+  📊 Initializing CDS...
+  🔧 Creating TTF patterns...
+    🔨 Creating pattern: ttf
+TTF Columns : ['mfi_sig', 'zone_sig']
+   CDSSvc Read:  SPX500   W1 / H4 :f 
+
+   CDSSvc Read:  SPX500   M1 / H4 :f 
+
+   CDSSvc Read:  SPX500   H4 / H4 :f 
+
+   CDSSvc Read:  SPX500   D1 / H4 :f 
+
+    Pattern:ttf Output columns :'/workspace/data/full/ttf/SPX500_H4_ttf_columns.csv'
+    TTF Output full:'/workspace/data/full/ttf/SPX500_H4_ttf.csv'
+    🔨 Creating pattern: mfi
+TTF Columns : ['mfi_sq', 'mfi_green', 'mfi_fade', 'mfi_fake']
+   CDSSvc Read:  SPX500   W1 / H4 :f 
+
+   CDSSvc Read:  SPX500   M1 / H4 :f 
+
+   CDSSvc Read:  SPX500   D1 / H4 :f 
+
+   CDSSvc Read:  SPX500   H4 / H4 :f 
+
+    Pattern:mfi Output columns :'/workspace/data/full/ttf/SPX500_H4_mfi_columns.csv'
+    TTF Output full:'/workspace/data/full/ttf/SPX500_H4_mfi.csv'
+    🔨 Creating pattern: zonesq
+TTF Columns : ['zone_sig', 'mfi_sq']
+   CDSSvc Read:  SPX500   M1 / H4 :f 
+
+   CDSSvc Read:  SPX500   W1 / H4 :f 
+
+   CDSSvc Read:  SPX500   D1 / H4 :f 
+
+   CDSSvc Read:  SPX500   H4 / H4 :f 
+
+    Pattern:zonesq Output columns :'/workspace/data/full/ttf/SPX500_H4_zonesq_columns.csv'
+    TTF Output full:'/workspace/data/full/ttf/SPX500_H4_zonesq.csv'
+  ⚙️  Generating MX target files...
+JTC is generating the CDS file:  use fresh flag active
+EXITING - RUN PREREQ SCRIPTS BEFORE RUNNING THIS SCRIPT
+

@@ -57,7 +57,7 @@ def parse_args():
     # dont drop calculated columns
     parser.add_argument('-ddcc', '--dont_drop_calc_col', action='store_true', help='Dont drop calculated columns')
     
-    parser=jgtcommon.add_patterns_arguments(parser)
+    parser=jgtcommon.add_patterns_arguments(parser) # -pn "<pattern> <pattern2> ..."
     #parser.add_argument("-pn", "--patternname", help="Pattern Name", default="ttf")
   
     # jgtcommon.add_cds_argument(parser)

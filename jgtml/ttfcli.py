@@ -7,7 +7,7 @@ sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
 
 
 from mlclicommon import (add_patterns_arguments,
-                         check_arguments)
+                         check_arguments) # -pn "<pattern> <pattern> <pattern> ..."
 
 from mlcliconstants import TTFCLI_DESCRIPTION, TTFCLI_EPILOG, TTFCLI_PROG_NAME
 from ptottf import create_ttf_csv # type: ignore
