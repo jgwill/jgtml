@@ -28,7 +28,7 @@ export const CSVUploader: React.FC<CSVUploaderProps> = ({ onDataUploaded, onErro
         if (!text) {
           throw new Error("File content is empty.");
         }
-        const lines = text.split(/\r\n|\n/).filter(line => line.trim() !== ''); // Filter empty lines
+        const lines = text.split(/\r\n|\n/).filter(line => line.trim() !== '');
         if (lines.length < 2) {
           throw new Error("CSV must have at least a header and one data row.");
         }
@@ -50,10 +50,9 @@ export const CSVUploader: React.FC<CSVUploaderProps> = ({ onDataUploaded, onErro
             message = err.message;
         }
         onError(message);
-        setFileName(null); // Reset filename on error
+        setFileName(null);
       } finally {
         setIsLoading(false);
-        // Reset file input to allow re-uploading the same file
         if (event.target) {
             event.target.value = ''; 
         }
@@ -71,10 +70,10 @@ export const CSVUploader: React.FC<CSVUploaderProps> = ({ onDataUploaded, onErro
   }, [onDataUploaded, onError, setIsLoading]);
 
   return (
-    <div className="bg-slate-800 p-6 rounded-xl shadow-2xl border border-slate-700">
+    <div className="flex items-center space-x-2">
       <label 
         htmlFor="csv-upload" 
-        className="block mb-3 text-lg font-medium text-sky-300"
+        className="sr-only" // Visually hidden but accessible
       >
         Upload CSV File
       </label>
@@ -83,16 +82,24 @@ export const CSVUploader: React.FC<CSVUploaderProps> = ({ onDataUploaded, onErro
         type="file"
         accept=".csv"
         onChange={handleFileUpload}
-        className="block w-full text-sm text-slate-300
-                   file:mr-4 file:py-2 file:px-4
-                   file:rounded-lg file:border-0
-                   file:text-sm file:font-semibold
+        className="w-auto text-xs text-slate-300 max-w-[180px] sm:max-w-[200px]
+                   file:mr-2 file:py-1.5 file:px-2.5
+                   file:rounded-md file:border-0
+                   file:text-xs file:font-semibold
                    file:bg-sky-500 file:text-white
                    hover:file:bg-sky-600
-                   focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 focus:ring-offset-slate-800
+                   focus:outline-none focus:ring-1 focus:ring-sky-500 focus:ring-offset-1 focus:ring-offset-slate-700
                    cursor-pointer"
+        aria-label="Upload CSV File"
       />
-      {fileName && <p className="mt-3 text-xs text-slate-400">Selected file: {fileName}</p>}
+      {fileName && (
+        <p 
+            className="text-xs text-slate-400 truncate max-w-[70px] sm:max-w-[100px]" 
+            title={fileName}
+        >
+            {fileName}
+        </p>
+      )}
     </div>
   );
 };
