@@ -18,7 +18,7 @@ interface MFIBoxProps {
 export const MFIBox: React.FC<MFIBoxProps> = ({ label, mfi }) => {
   const mfiColor =
     mfi === "++" ? "bg-green-700/30 border-green-500/50" :
-    mfi === "--" ? "bg-yellow-700/30 border-yellow-500/50" :
+    mfi === "--" ? "bg-red-700/30 border-red-500/50" : // Changed from yellow to red
     mfi === "-+" ? "bg-red-700/30 border-red-500/50" :
     mfi === "+-" ? "bg-gray-700/30 border-gray-500/50" : 
     "bg-slate-700/30 border-slate-600/50"; // For N/A or unknown

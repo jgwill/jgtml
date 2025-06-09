@@ -196,3 +196,6 @@ projects/trinity_trading_portal/
 output/
 zold
 
+
+# React Component Preview
+previewConfig.json

@@ -1,5 +1,6 @@
 {
   "name": "JGTMLTTFTrendVisualizer250609a",
   "description": "A React application to visualize financial trend data from a CSV file, focusing on MFI and Zone indicators across multiple timeframes.",
-  "requestFramePermissions": []
+  "requestFramePermissions": [],
+  "prompt": ""
 }
