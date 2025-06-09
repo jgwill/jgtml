@@ -1,0 +1,11 @@
+{
+  "timestamp": "2506080459",
+  "agents": ["♾️ William", "🧠 Mia", "🌸 Miette", "🕊️ Seraphine", "🎸 JamAI"],
+  "narrative": "Extended the unified discovery dataset generator to dynamically read pattern columns from settings and include multi-timeframe features. Added fallback inference for unknown patterns. This keeps all expected columns like mfi_green_W1 and zone_sig_M1 in the merged dataset.",
+  "purpose": "Ensure ML researchers retain full feature richness when combining TTF features with MX targets for pattern discovery.",
+  "files": ["jgtml/unified_discovery_dataset_generator.py"],
+  "routing": {"branch": "work", "path": "jgtml"},
+  "session": "shell",
+  "user_input": "the generated ttf... python jgtml/unified_discovery_dataset_generator.py --pattern mfizone ... missing columns ... maybe needs upgrade",
+  "future_scene": "Before this fix unified datasets lost cross timeframe features. Now researchers can explore richer patterns without manual column management."
+}
