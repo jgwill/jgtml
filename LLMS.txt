@@ -3,9 +3,6 @@
 
 GET /README.md
 GET /docs/CLI_HELP.md
-GET /docs/trading_intent_api.md
-GET /docs/complex_trading_simulation.md
-GET /docs/customize_trinity.md
 
 # Core components documentation
 GET /jgtml/fdb_scanner_2408.py
@@ -14,9 +11,10 @@ GET /jgtml/ttfcli.py
 GET /jgtml/jgtmlcli.py
 GET /jgtml/mxcli.py
 GET /jgtml/SignalOrderingHelper.py
-GET /jgtml/jtc.py
-GET /jgtml/TideAlligatorAnalysis.py
 GET /jgtml/alligator_cli.py
 GET /jgtml/fdb_signal_quality_predictor.py
 GET /jgtml/fdb_pattern_intelligence.py
 
+# Some Prototype and still in intention state
+GET /docs/trading_intent_api.md
+GET /docs/complex_trading_simulation.md
