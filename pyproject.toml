@@ -29,6 +29,9 @@ dependencies = [
   'jinja2',
   'scikit-learn',
   'aiohttp',
+  'tlid',
+  'jgtutils',
+  'jgtfxcon',
 ]	
 
 optional-dependencies = {  dev-lint = [

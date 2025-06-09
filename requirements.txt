@@ -5,6 +5,8 @@ scikit-learn
 tlid
 jgtutils
 jgtpy
+jgtapy
+jgtfxcon
 seaborn
 dash
 aiohttp
