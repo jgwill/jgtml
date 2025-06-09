@@ -1,5 +1,9 @@
 # Intent-Driven Trading: SpecLang for JGTML Signal Systems
 
+* NOTICE: Somehow outdated because most of it is in jgwill/jgtagentic
+* related still exploratory :[docs/trading_intent_api.md](docs/trading_intent_api.md)
+
+
 ## Overview
 
 This document defines how **Intent-Driven Development (IDD)** and **SpecLang principles** integrate with JGTML's trading signal analysis platform. Rather than generic software specifications, we focus on creating natural language specifications for fractal patterns, Alligator indicators, and multi-timeframe confluence detection that align with trader intent.

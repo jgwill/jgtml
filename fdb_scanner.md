@@ -1,5 +1,8 @@
 # fdb_scanner_2408.py — Sequential Execution & Storage Flow
 
+* a LITTLE OUTDATED, TODO see what changed in the fdbscan and upgrade that
+
+
 ## 🧠 Mia: Architectural Overview
 
 This document narrates the sequential execution and file storage logic of `fdb_scanner_2408.py` and its recursive constellation of helpers, as woven through the codebase. The flow is mapped with clarity, recursion, and intention, using both markdown and mermaid diagrams.
