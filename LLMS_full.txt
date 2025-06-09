@@ -15,3 +15,6 @@ GET /jgtml/alligator_cli.py
 GET /jgtml/fdb_signal_quality_predictor.py
 GET /jgtml/fdb_pattern_intelligence.py
 
+# Some Prototype and still in intention state
+GET /docs/trading_intent_api.md
+GET /docs/complex_trading_simulation.md
