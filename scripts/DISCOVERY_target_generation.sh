@@ -50,11 +50,17 @@ for pattern in $PATTERNS; do
             
             # Generate TTF (Time-To-Feature) - Full historical dataset
             echo "## Creating FULL TTF for $instrument $timeframe $pattern"
-            python jgtml/ttfcli.py -i "$instrument" -t "$timeframe" -pn "$pattern" --full $USE_OFFLINE_ARG
+            python - <<EOF
+from jgtml.ttfcli import generate_ttf_for_pattern
+generate_ttf_for_pattern("$instrument", "$timeframe", pn="$pattern", use_full=True)
+EOF
             
             # Generate MLF (Machine Learning Features) - Full historical dataset
             echo "## Creating FULL MLF for $instrument $timeframe $pattern" 
-            python jgtml/mlfcli.py -i "$instrument" -t "$timeframe" -pn "$pattern" --full $USE_OFFLINE_ARG
+            python - <<EOF
+from jgtml.mlfcli import generate_mlf_for_pattern
+generate_mlf_for_pattern("$instrument", "$timeframe", pn="$pattern", use_full=True)
+EOF
             
             # Generate MX Targets - This is AUTONOMOUS and will create TTF if missing!
             echo "## Creating MX Targets for $instrument $timeframe $pattern"
