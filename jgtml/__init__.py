@@ -27,6 +27,8 @@ from jgtapp import (fxtr,
                     fxrmtrade,
                     ids,mlf,ttf,cds,pds,mx)
 
+from . import fdb_scanner_2408
+
 def __init__():
     """
     Initialize the jgtml module.
