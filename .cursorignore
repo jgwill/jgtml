@@ -11,4 +11,8 @@ arch
 codex
 garden_one
 docs/ledgers
+jgtml/tst*
+jgtml/*.ipynb
+jgtml/TEST*
 
+weekly_report.txt
