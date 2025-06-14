@@ -16,21 +16,55 @@ from mlclicommon import (add_patterns_arguments,
 import realityhelper
 
 
-def generate_mlf_for_pattern(instrument, timeframe, pn="ttf", use_full=True, lag_period=1, total_lagging_periods=5, use_fresh=False, columns_to_keep=None, columns_to_drop=None, drop_bid_ask=False):
+def generate_mlf_for_pattern(
+    instrument,
+    timeframe,
+    pn="ttf",
+    use_full=True,
+    lag_period=1,
+    total_lagging_periods=5,
+    use_fresh=False,
+    columns_to_keep=None,
+    columns_to_drop=None,
+    drop_bid_ask=False,
+):
     """Programmatic helper used by other modules to create MLF data."""
-    return realityhelper.generate_mlf_feature_pattern(
-        instrument,
-        timeframe,
-        lag_period=lag_period,
-        total_lagging_periods=total_lagging_periods,
-        dropna=True,
-        use_full=use_full,
-        columns_to_keep=columns_to_keep,
-        columns_to_drop=columns_to_drop,
-        drop_bid_ask=drop_bid_ask,
-        force_refresh=use_fresh,
-        pn=pn,
-    )
+    try:
+        return realityhelper.generate_mlf_feature_pattern(
+            instrument,
+            timeframe,
+            lag_period=lag_period,
+            total_lagging_periods=total_lagging_periods,
+            dropna=True,
+            use_full=use_full,
+            columns_to_keep=columns_to_keep,
+            columns_to_drop=columns_to_drop,
+            drop_bid_ask=drop_bid_ask,
+            force_refresh=use_fresh,
+            pn=pn,
+        )
+    except FileNotFoundError:
+        from ttfcli import generate_ttf_for_pattern
+        generate_ttf_for_pattern(
+            instrument,
+            timeframe,
+            pn=pn,
+            use_full=use_full,
+            use_fresh=use_fresh,
+        )
+        return realityhelper.generate_mlf_feature_pattern(
+            instrument,
+            timeframe,
+            lag_period=lag_period,
+            total_lagging_periods=total_lagging_periods,
+            dropna=True,
+            use_full=use_full,
+            columns_to_keep=columns_to_keep,
+            columns_to_drop=columns_to_drop,
+            drop_bid_ask=drop_bid_ask,
+            force_refresh=use_fresh,
+            pn=pn,
+        )
 
 def create_app_arguments()->argparse.Namespace:
   from jgtutils import jgtcommon

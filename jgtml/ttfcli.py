@@ -14,19 +14,42 @@ from ptottf import create_ttf_csv # type: ignore
 from jgtutils import jgtcommon
 
 
-def generate_ttf_for_pattern(instrument, timeframe, pn="ttf", use_full=True, use_fresh=False, quotescount=-1, columns_list_from_higher_tf=None):
+def generate_ttf_for_pattern(
+    instrument,
+    timeframe,
+    pn="ttf",
+    use_full=True,
+    use_fresh=False,
+    quotescount=-1,
+    columns_list_from_higher_tf=None,
+):
     """Programmatic helper used by other modules to create TTF data."""
     pseudo_force_read_flag = True if not use_fresh else False
-    return create_ttf_csv(
-        instrument,
-        timeframe,
-        use_full if use_full else False,
-        True if use_fresh else False,
-        quotescount,
-        pseudo_force_read_flag,
-        columns_list_from_higher_tf=columns_list_from_higher_tf,
-        pn=pn,
-    )
+    try:
+        return create_ttf_csv(
+            instrument,
+            timeframe,
+            use_full if use_full else False,
+            True if use_fresh else False,
+            quotescount,
+            pseudo_force_read_flag,
+            columns_list_from_higher_tf=columns_list_from_higher_tf,
+            pn=pn,
+        )
+    except FileNotFoundError:
+        # Fallback for missing pattern definition
+        if columns_list_from_higher_tf is None and pn == "mz":
+            columns_list_from_higher_tf = ["mfi_str", "zcol"]
+        return create_ttf_csv(
+            instrument,
+            timeframe,
+            use_full if use_full else False,
+            True if use_fresh else False,
+            quotescount,
+            pseudo_force_read_flag,
+            columns_list_from_higher_tf=columns_list_from_higher_tf,
+            pn=pn,
+        )
 
 def _parse_args():
     parser:argparse.ArgumentParser=jgtcommon.new_parser(TTFCLI_DESCRIPTION,TTFCLI_EPILOG,TTFCLI_PROG_NAME)

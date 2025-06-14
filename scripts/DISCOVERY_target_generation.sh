@@ -5,6 +5,18 @@
 
 set -e  # Exit on any error
 
+# Load environment variables if present
+if [ -f "$HOME/.env" ]; then
+    set -o allexport
+    source "$HOME/.env"
+    set +o allexport
+fi
+
+# Verify JGT configuration exists
+if [ ! -f "$HOME/.jgt/config.json" ] || [ ! -f "$HOME/.jgt/settings.json" ]; then
+    echo "Missing JGT configuration files in $HOME/.jgt" >&2
+fi
+
 # Find the project root directory (where this script is run from)
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
