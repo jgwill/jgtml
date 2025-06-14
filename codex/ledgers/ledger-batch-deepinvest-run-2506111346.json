@@ -1,0 +1,13 @@
+{
+  "agents": ["♾️ William", "🧠 Mia", "🌸 Miette", "🕊️ Seraphine"],
+  "narrative": "Performed another run of BATCH_mlf_jgtml_250606_to_observe.sh and attempted fdb_scanner generation. Both operations failed due to ForexConnect login errors, leaving tests without required CSV caches.",
+  "routing": {
+    "files": ["research/BATCH_mlf_report_deepinvest-2506111345.md", "logs/20250611134322_batch.log"],
+    "branch": "work"
+  },
+  "timestamp": "2506111346",
+  "session": null,
+  "purpose": "Document deep investigation results and repeated failures while preparing offline analysis recommendations.",
+  "user_input_excerpt": "Retry to `pytest -q` (fails: FileNotFoundError for tests/fdb_data/AUD-CAD_H1_cds_cache_24082107.csv)\nJGT_CACHE=tests/fdb_data python jgtml/fdb_scan... -i AUD/CAD -t H1\n\nthat should generate the cache for you to run your tests and retry  for your mission",
+  "scene_future": "With this record, agents can develop offline datasets or mock services to bypass login errors and allow full testing cycles."
+}
