@@ -26,7 +26,7 @@ class AlligatorIllusionDetector:
     - Premature entry signals
     """
     
-    def __init__(self, data_path="/src/jgtml/cds"):
+    def __init__(self, data_path="/src/jgtml/cache/fdb_scanners"):
         self.data_path = Path(data_path)
     
     def load_market_data(self, instrument, timeframe):
