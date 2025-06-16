@@ -1,0 +1,9 @@
+{
+  "timestamp": "2506161606",
+  "agents": ["♾️ William", "🧠 Mia", "🌸 Miette", "🕊️ Seraphine"],
+  "narrative": "Patched enhanced FDB scanner to avoid KeyError when illusion detection fails, added CLI entrypoint and bumped package version to 0.0.318.",
+  "purpose": "Ensure scanner runs gracefully without data and integrate new command line interface.",
+  "files": ["jgtml/enhanced_fdb_scanner_with_illusion_detection.py", "pyproject.toml", "jgtml/__init__.py", "package.json"],
+  "routing": {"branch": "work", "path": "jgtml/enhanced_fdb_scanner_with_illusion_detection.py"},
+  "session": "shell"
+}

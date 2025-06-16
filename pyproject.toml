@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "jgtml"
-version = "0.0.317"
+version = "0.0.318"
 authors = [
   { name="Guillaume Isabelle", email="jgi@jgwill.com" },
 ]
@@ -89,4 +89,5 @@ fdbpatternintelligence="jgtml.fdb_pattern_intelligence:main"
 jgtalligator="jgtml.alligator_cli:main"
 unified_discovery_dataset_generator="jgtml.unified_discovery_dataset_generator:main"
 jgtunified_discovery_dataset_generator="jgtml.unified_discovery_dataset_generator:main"
+enhancedfdbscan="jgtml.enhanced_fdb_scanner_with_illusion_detection:main"
 
