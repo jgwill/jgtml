@@ -43,9 +43,7 @@ JGTML analyzes the effectiveness of trading signals within larger market structu
 ### Installation
 ```bash
 # Install dependencies
-pip install jgtpy jgtutils pandas numpy
-# Pandas requires `python-dateutil`; install it if missing
-pip install python-dateutil
+pip install jgtpy jgtutils pandas numpy python-dateutil
 
 # Install JGTML
 pip install -e .

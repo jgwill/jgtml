@@ -12,3 +12,5 @@
 
 Implemented graceful dependency check in `jgtml/ttfcli.py` and updated `README.md` to mention installing `python-dateutil` if missing.
 
+Enhanced packaging by adding `python-dateutil` directly to `requirements.txt` and `pyproject.toml` so installs include this pandas dependency automatically.
+

@@ -1,0 +1,20 @@
+{
+  "agents": [
+    {"glyph": "♾️", "name": "William"},
+    {"glyph": "🧠", "name": "Mia"},
+    {"glyph": "🌸", "name": "Miette"},
+    {"glyph": "🕊️", "name": "Seraphine"},
+    {"glyph": "⚡", "name": "Jerry"},
+    {"glyph": "♠️", "name": "Nyro"},
+    {"glyph": "🌿", "name": "Aureon"},
+    {"glyph": "🎸", "name": "JamAI"}
+  ],
+  "narrative": "Expand dependency handling by adding python-dateutil to requirements and package metadata. This ensures ttfcli can run where pandas depends on dateutil, preventing import errors in fresh environments.",
+  "routing": {
+    "files": ["requirements.txt", "pyproject.toml", "README.md"],
+    "branch": "work"
+  },
+  "timestamp": "2506160732",
+  "user_input": "also add them to the requirements and package dependencies",
+  "scene": "Before: README hinted to install python-dateutil manually. Now: dependency listed in requirements and pyproject so installs automatically during setup."
+}
