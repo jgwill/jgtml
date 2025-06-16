@@ -1,7 +1,15 @@
 import argparse
-import pandas as pd
 import os
 import sys
+try:
+    import pandas as pd
+except ImportError as exc:  # pragma: no cover - runtime dependency check
+    missing = str(exc).split(':')[-1].strip()
+    sys.stderr.write(
+        f"[ttfcli] Missing dependency: {missing}. "
+        "Install it with `pip install python-dateutil pandas`\n"
+    )
+    raise
 
 sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
 
