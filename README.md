@@ -15,7 +15,7 @@ JGTML analyzes the effectiveness of trading signals within larger market structu
 
 ### Core Dependencies
 - **[jgtpy](https://pypi.org/project/jgtpy/)**: Market data acquisition wrapper from [jgtfxcon](https://pypi.org/project/jgtfxcon) and indicator calculations and signals generation.
-- **[jgtutils](https://pypi.org/project/jgtutils/)**: Common utilities and constants.  Contains the logics for reading $HOME/.jgt/config.json and $HOME/.jgt/settings.json for all app/cli to have all the context they need.
+- **[jgtutils](https://pypi.org/project/jgtutils/)**: Common utilities and constants.  Contains the logics for reading $HOME/.jgt/config.json and $HOME/.jgt/settings.json for all app/cli to have all the context they need.  jgtutils also uses [jgtcore](https://pypi.org/project/jgtcore/) which start become the library for settings and configurations (separating jgutils that has utilities from actual libraries which is in progress)
 - **pandas**: Data manipulation and analysis
 - **numpy**: Numerical computations
 
@@ -38,7 +38,7 @@ JGTML analyzes the effectiveness of trading signals within larger market structu
 - [`garden_one/trading_echo_lattice/`](garden_one/trading_echo_lattice/): Signal crystallization and memory storage - That is just a prototype done by our agents that is not quite obvious yet, that would not be a priority to work with that except if really relevant.
 - Integration with Upstash Redis for persistent analysis results
 
-## 🚀 Quick Start
+## 🚀 Quick Start for developer
 
 ### Installation
 ```bash
