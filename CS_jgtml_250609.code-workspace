@@ -23,6 +23,9 @@
 		},
 		{
 			"path": "../jgtpy"
+		},
+		{
+			"path": "../TrinityTrading"
 		}
 	],
 	"settings": {
