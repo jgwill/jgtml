@@ -33,6 +33,7 @@ dependencies = [
   'tlid',
   'jgtutils',
   'jgtfxcon',
+  'pyarrow',
 ]	
 
 optional-dependencies = {  dev-lint = [

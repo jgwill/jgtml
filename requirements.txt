@@ -12,4 +12,5 @@ seaborn
 dash
 aiohttp
 python-dotenv
+pyarrow
 
