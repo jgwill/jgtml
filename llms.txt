@@ -6,5 +6,10 @@ GET /docs/CLI_HELP.md
 
 # Core components documentation
 
-GET /jgtml/fdb_scanner_2408.py
-GET /jgtml/jgtapp.py
+* todo add them here
+
+
+# Additional documentation
+
+GET /SPECLANG_TRADING.md
+
