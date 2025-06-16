@@ -12,7 +12,7 @@ PROJECT_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 # Default parameters
 TIMEFRAMES="D1"
 INSTRUMENTS="SPX500 EUR-USD"
-PATTERNS="mfi zonesq aoac"  # All patterns for discovery
+PATTERNS="mfi mz zonesq aoac"  # All patterns for discovery
 
 # Override with command line arguments
 if [ "$1" != "" ]; then
