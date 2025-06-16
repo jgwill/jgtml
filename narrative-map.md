@@ -14,3 +14,5 @@ Implemented graceful dependency check in `jgtml/ttfcli.py` and updated `README.m
 
 Enhanced packaging by adding `python-dateutil` directly to `requirements.txt` and `pyproject.toml` so installs include this pandas dependency automatically.
 
+- **caea33f** `fix: handle missing illusion count` – improved resilience of enhanced FDB scanner and added CLI entrypoint.
+Updated CLI offerings with 'enhancedfdbscan' command and improved error handling.

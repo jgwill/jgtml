@@ -308,8 +308,8 @@ class EnhancedFDBScanner:
             print("-" * 30)
             
             illusion_results = self.illusion_detector.scan_multi_timeframe(instrument, timeframes)
-            
-            if illusion_results['status'] == 'success':
+
+            if illusion_results.get('status') == 'success':
                 print(f"Analyzed {len(illusion_results['timeframes_analyzed'])} timeframes")
                 
                 if illusion_results['illusions']:
@@ -319,13 +319,15 @@ class EnhancedFDBScanner:
                         print(f"     {illusion['description']}")
                 else:
                     print("✅ NO ILLUSIONS DETECTED - Clear signal environment")
+            else:
+                print(f"❌ Illusion detection error: {illusion_results.get('message', 'Unknown error')}")
         
         # Step 3: Integrated Analysis & Recommendation
         print(f"\n🎯 STEP 3: INTEGRATED ANALYSIS")
         print("-" * 30)
         
         total_fdb_signals = sum(result['total_signals'] for result in fdb_results.values())
-        illusion_count = illusion_results['illusion_count'] if illusion_results else 0
+        illusion_count = illusion_results.get('illusion_count', 0) if illusion_results else 0
         
         # Calculate signal quality score
         signal_quality_score = self.calculate_signal_quality_score(
@@ -376,7 +378,7 @@ class EnhancedFDBScanner:
         
         # Bonus for multi-timeframe alignment
         if illusion_results and illusion_results.get('status') == 'success':
-            if illusion_results['illusion_count'] == 0:
+            if illusion_results.get('illusion_count', 0) == 0:
                 score += 1.0  # Bonus for clean alignment
         
         return max(0.0, min(10.0, score))
