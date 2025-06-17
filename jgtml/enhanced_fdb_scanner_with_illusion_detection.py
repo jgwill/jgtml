@@ -232,7 +232,7 @@ class EnhancedFDBScanner:
             print(f"Error loading FDB data: {e}")
             return None
     
-    def analyze_fdb_signals_with_direction(self, data, timeframe):
+    def analyze_fdb_signals_with_direction(self, data, timeframe, instrument):
         """Analyze FDB signals and determine trade direction"""
         if not data or len(data) == 0:
             return None
@@ -255,9 +255,9 @@ class EnhancedFDBScanner:
             
             # Validate signal using SignalOrderingHelper
             entry_order, msg = create_fdb_entry_order(
-                instrument="TEST", 
-                signal_bar=signal_bar, 
-                current_bar=current_bar,
+                instrument, 
+                signal_bar, 
+                current_bar,
                 lots=1,
                 t=timeframe,
                 quiet=True,
@@ -278,9 +278,9 @@ class EnhancedFDBScanner:
             
             # Validate signal using SignalOrderingHelper
             entry_order, msg = create_fdb_entry_order(
-                instrument="TEST",
-                signal_bar=signal_bar,
-                current_bar=current_bar,
+                instrument,
+                signal_bar,
+                current_bar,
                 lots=1,
                 t=timeframe,
                 quiet=True,
@@ -323,7 +323,7 @@ class EnhancedFDBScanner:
         for tf in timeframes:
             data = self.load_fdb_signals(instrument, tf)
             if data:
-                fdb_analysis = self.analyze_fdb_signals_with_direction(data, tf)
+                fdb_analysis = self.analyze_fdb_signals_with_direction(data, tf, instrument)
                 if fdb_analysis:
                     fdb_results[tf] = fdb_analysis
                     
