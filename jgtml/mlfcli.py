@@ -15,6 +15,38 @@ from mlclicommon import (add_patterns_arguments,
                          check_arguments)
 import realityhelper
 
+
+def generate_mlf_for_pattern(
+    instrument,
+    timeframe,
+    patternname="ttf",
+    use_full=True,
+    use_fresh=False,
+    lag_period=1,
+    total_lagging_periods=5,
+    columns_to_keep=None,
+    columns_to_drop=None,
+    drop_bid_ask=False,
+    dropna=True,
+    args=None,
+):
+    """Generate an MLF dataset for the given pattern."""
+
+    return realityhelper.generate_mlf_feature_pattern(
+        instrument,
+        timeframe,
+        lag_period=lag_period,
+        total_lagging_periods=total_lagging_periods,
+        dropna=dropna,
+        use_full=use_full,
+        columns_to_keep=columns_to_keep,
+        columns_to_drop=columns_to_drop,
+        drop_bid_ask=drop_bid_ask,
+        force_refresh=use_fresh,
+        pn=patternname,
+        args=args,
+    )
+
 def create_app_arguments()->argparse.Namespace:
   from jgtutils import jgtcommon
   
