@@ -385,14 +385,19 @@ class EnhancedFDBScanner:
     
     def generate_final_recommendation(self, quality_score, fdb_signals, illusions):
         """Generate final trading recommendation"""
-        if quality_score >= 8.0 and fdb_signals > 0 and illusions == 0:
-            return "STRONG BUY/SELL"
-        elif quality_score >= 6.0 and fdb_signals > 0:
-            return "PROCEED WITH CAUTION"
+        # Simple directional recommendation based on quality and signal count
+        if quality_score >= 9.0 and fdb_signals >= 4 and illusions == 0:
+            # For high quality signals, we need additional context to determine direction
+            # For now, return a high-confidence signal that requires direction analysis
+            return "STRONG SIGNAL" # Requires further direction analysis
+        elif quality_score >= 8.0 and fdb_signals >= 3:
+            return "MODERATE SIGNAL"
+        elif quality_score >= 7.0 and fdb_signals >= 2:
+            return "WEAK SIGNAL"
         elif quality_score >= 4.0:
             return "MONITOR"
         else:
-            return "AVOID"
+            return "NO SIGNAL"
     
     def generate_comprehensive_report(self, instrument, timeframes, fdb_results, 
                                     illusion_results, quality_score, recommendation):

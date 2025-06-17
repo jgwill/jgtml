@@ -91,10 +91,10 @@ python enhanced_trading_cli.py enhanced -i EUR-USD -t H1 M1 --no-illusion-detect
 ```
 
 ### Quality Score Interpretation
-- **9.0-10.0**: STRONG BUY/SELL - Immediate entry consideration
-- **7.0-8.9**: PROCEED WITH CAUTION - Reduced position size
-- **5.0-6.9**: MONITOR - Wait for improvement
-- **0.0-4.9**: AVOID - Poor signal quality
+- **9.0-10.0**: STRONG BUY or STRONG SELL - Immediate entry consideration
+- **7.0-8.9**: MODERATE BUY or MODERATE SELL - Reduced position size
+- **5.0-6.9**: WEAK BUY or WEAK SELL - Monitor for improvement
+- **0.0-4.9**: NO SIGNAL - Avoid trading
 
 ---
 
@@ -143,12 +143,12 @@ risk_management:
 ## 🚀 PHASE 4: AUTOMATED MARKET ENTRY
 
 ### Entry Decision Matrix
-| Quality Score | Illusions | FDB Signals | Action |
-|---------------|-----------|-------------|---------|
-| 9.0-10.0 | 0 | ≥3 | **IMMEDIATE ENTRY** (Full position) |
-| 8.0-8.9 | 0-1 | ≥2 | **STRONG ENTRY** (75% position) |
-| 7.0-7.9 | 0-1 | ≥2 | **CAUTIOUS ENTRY** (50% position) |
-| <7.0 | Any | Any | **NO ENTRY** (Monitor only) |
+| Quality Score | Illusions | FDB Signals | Recommendation | Action |
+|---------------|-----------|-------------|----------------|---------|
+| 9.0-10.0 | 0 | ≥3 | STRONG BUY or STRONG SELL | **IMMEDIATE ENTRY** (Full position) |
+| 8.0-8.9 | 0-1 | ≥2 | MODERATE BUY or MODERATE SELL | **STRONG ENTRY** (75% position) |
+| 7.0-7.9 | 0-1 | ≥2 | WEAK BUY or WEAK SELL | **CAUTIOUS ENTRY** (50% position) |
+| <7.0 | Any | Any | NO SIGNAL | **NO ENTRY** (Monitor only) |
 
 ### Automated Entry Script
 ```python
@@ -203,7 +203,7 @@ class AutomatedTradingSystem:
         """Entry decision logic"""
         return (quality_score >= self.min_quality_score and 
                 illusion_count <= self.max_illusions and
-                recommendation in ['STRONG BUY/SELL', 'PROCEED WITH CAUTION'])
+                recommendation in ['STRONG SIGNAL', 'MODERATE SIGNAL', 'WEAK SIGNAL'])
     
     def calculate_position_size(self, quality_score, illusion_count):
         """Dynamic position sizing based on signal quality"""
@@ -343,7 +343,7 @@ python enhanced_trading_cli.py enhanced -i EUR-USD -t D1 H1 H4 --summary-only
 # Output:
 # Quality Score: 9.20/10
 # Illusions: 0
-# Recommendation: STRONG BUY/SELL
+        # Recommendation: STRONG SIGNAL
 
 # 3. Automated Entry Decision: IMMEDIATE ENTRY (Full position)
 ```
