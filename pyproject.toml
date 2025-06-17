@@ -91,4 +91,5 @@ jgtalligator="jgtml.alligator_cli:main"
 unified_discovery_dataset_generator="jgtml.unified_discovery_dataset_generator:main"
 jgtunified_discovery_dataset_generator="jgtml.unified_discovery_dataset_generator:main"
 enhancedfdbscan="jgtml.enhanced_fdb_scanner_with_illusion_detection:main"
+enhancedtradingcli="jgtml.enhanced_trading_cli:main"
 
