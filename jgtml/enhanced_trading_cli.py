@@ -50,18 +50,44 @@ def run_production_fdb_scan(instrument, timeframes, options):
     print(f"📊 PRODUCTION FDB SCANNER - {instrument}")
     print("=" * 60)
     
+    results = []
+    
     try:
-        # Set environment variables for the scanner
-        os.environ['INSTRUMENTS'] = instrument
-        os.environ['TIMEFRAMES'] = ','.join(timeframes)
-        
-        # Import and run production scanner
-        from .fdb_scanner_2408 import main as fdb_main
+        import subprocess
         
         print(f"Running production FDB scan for {instrument} on {timeframes}")
-        fdb_main()
         
-        return {"status": "completed", "message": "Production scan executed"}
+        # Run fdbscan for each timeframe separately
+        for timeframe in timeframes:
+            print(f"  🔄 Scanning {instrument} on {timeframe}...")
+            
+            cmd = ['fdbscan', '-i', instrument, '-t', timeframe]
+            result = subprocess.run(cmd, capture_output=True, text=True)
+            
+            if result.returncode == 0:
+                print(f"  ✅ {timeframe}: Success")
+                results.append({
+                    'timeframe': timeframe,
+                    'status': 'success',
+                    'output': result.stdout
+                })
+            else:
+                print(f"  ❌ {timeframe}: Error - {result.stderr}")
+                results.append({
+                    'timeframe': timeframe,
+                    'status': 'error',
+                    'error': result.stderr
+                })
+        
+        successful_scans = len([r for r in results if r['status'] == 'success'])
+        print(f"\n📊 Production scan completed: {successful_scans}/{len(timeframes)} timeframes successful")
+        
+        return {
+            "status": "completed", 
+            "message": f"Production scan executed on {len(timeframes)} timeframes",
+            "results": results,
+            "successful_scans": successful_scans
+        }
         
     except Exception as e:
         print(f"❌ Error running production scan: {e}")
