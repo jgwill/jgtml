@@ -5,6 +5,24 @@
 		},
 		{
 			"path": "../jgtagentic"
+		},
+		{
+			"path": "../jgtutils"
+		},
+		{
+			"path": "../jgtcore"
+		},
+		{
+			"path": "../jgtdocs"
+		},
+		{
+			"path": "../jgtfxcon"
+		},
+		{
+			"path": "../jgtapy"
+		},
+		{
+			"path": "../jgtpy"
 		}
 	],
 	"settings": {

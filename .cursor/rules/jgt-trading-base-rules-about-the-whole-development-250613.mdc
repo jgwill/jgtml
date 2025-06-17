@@ -1,0 +1,46 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+That rule is automatically created so agents would know the basic of the whole JGT trading packaging, mostly the various dependencies and how the full stack works.
+
+
+# Project /repository / packages
+
+../jgtcore # Read config.json or settings.json for various usage
+
+
+../jgtutils # utilities for trading along with libraries that might migrate to jgtcore in the future
+
+
+../jgtapy # Library to Create indicators for our trading app
+
+
+../jgtpy # Utilities and libraries for creating indicators and signals for trading. Save them to files etc such as what we call current and full which is just what is needed to trade (current) or full (like 15,000 rows) for looking for patterns with machine learning and make predictive analysis that we would use in trading context.  Also has the ability to generate visualization such as charts that we might migrate later into its own charting and analysis package.
+
+
+../jgtml # Sets of experimentation and apps, libraries to try scan for signal and start trading campaign, take on existing trade and do some exit strategies such as moving the stop to the green alligator line.  It also contain more than that for using what "jgtpy" calls "full" and generate files with "fdbb/fdbs" signals in an attempt to learn with machine learning group of signals/indicators that could become profitable.  The jgtmlcli.py does these calculations and various utilities and libraries are still in early stages to work fine for that.
+
+
+../jgtagentic # Would be where Agents be implemented using LangChain/LangGraph and would try to achive that : Scan for FDB Signal and if an analysis of the market I have made matches to confirm a decision to trade, those agents would take the signal and execute the sequence to enter the market.
+
+
+../jgtdocs  # That just started to exist and would contain all necessary documentation (based on that rule file) so LLM agent working in any environment could load the llms.txt from address such as https://jgtdocs.jgwill.com/llms.txt and from that file, they would know all they need for the whole packaging (so we only have one single file / context to add while coding).
+
+
+
+# Environment
+
+## Where are these repositories to work with:
+
+root path for these repositories are in /src/<repo> such as /src/jgtml
+
+## When working with data
+
+### Environment variable :  JGTPY_DATA is where the "current" data is saved
+
+### Environment variable :  JGTPY_DATA_FULL is where the "full" data is saved
+
+
+
