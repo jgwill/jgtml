@@ -55,7 +55,7 @@ Analyzed 2 timeframes
 FDB Signals Found: 3
 Illusions Detected: 0
 Signal Quality Score: 9.00/10
-Final Recommendation: STRONG BUY/SELL
+Final Recommendation: STRONG SIGNAL
 
 🚀 DECISION: IMMEDIATE ENTRY APPROVED (Full 2% position)
 ```

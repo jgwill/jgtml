@@ -97,26 +97,17 @@ Timeframes: {', '.join(timeframes)}
     
     recommendation = enhanced_result.get('final_recommendation', '')
     
-    if recommendation == 'STRONG BUY/SELL':
-        summary += """  ✅ High-quality signals detected
-  ✅ No illusions found
-  🚀 Consider entering position
-  📊 Monitor for confirmation"""
-    elif recommendation == 'PROCEED WITH CAUTION':
-        summary += """  ⚠️  Signals detected with some concerns
-  🔍 Review illusion analysis
-  📊 Wait for additional confirmation
-  🎯 Consider smaller position size"""
+    # Display results
+    if recommendation == 'STRONG SIGNAL':
+        print("🚀 STRONG SIGNAL DETECTED - Requires direction analysis")
+    elif recommendation == 'MODERATE SIGNAL':
+        print("⚡ MODERATE SIGNAL - Proceed with caution")
+    elif recommendation == 'WEAK SIGNAL':
+        print("📊 WEAK SIGNAL - Monitor for improvement")
     elif recommendation == 'MONITOR':
-        summary += """  👀 Signals present but quality concerns
-  ⏳ Wait for better setup
-  📊 Continue monitoring
-  🔍 Look for pattern improvement"""
+        print("👀 MONITOR - Wait for better setup")
     else:
-        summary += """  ❌ Poor signal quality
-  🛑 Avoid trading
-  ⏳ Wait for better conditions
-  📊 Monitor for changes"""
+        print("❌ NO SIGNAL - Avoid trading")
     
     summary += f"\n\n{'='*50}\n"
     

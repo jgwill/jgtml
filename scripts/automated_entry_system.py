@@ -114,7 +114,14 @@ class AutomatedTradingSystem:
         """Determine if we should enter based on quality metrics"""
         quality_ok = quality_score >= self.min_quality_score
         illusions_ok = illusion_count <= self.max_illusions
-        recommendation_ok = recommendation in ['STRONG BUY/SELL', 'PROCEED WITH CAUTION']
+        
+        # Valid recommendations must be clearly directional
+        valid_recommendations = [
+            'STRONG BUY', 'STRONG SELL', 
+            'MODERATE BUY', 'MODERATE SELL',
+            'WEAK BUY', 'WEAK SELL'
+        ]
+        recommendation_ok = recommendation in valid_recommendations
         
         return quality_ok and illusions_ok and recommendation_ok
     
@@ -134,7 +141,14 @@ class AutomatedTradingSystem:
         recommendation = analysis['recommendation']
         quality_score = analysis['quality_score']
         
-        direction = "BUY" if "BUY" in recommendation else "SELL"
+        # Extract clear direction from recommendation
+        if 'BUY' in recommendation:
+            direction = "BUY"
+        elif 'SELL' in recommendation:
+            direction = "SELL"
+        else:
+            print(f"❌ Invalid recommendation: {recommendation}")
+            return None
         
         entry_data = {
             'timestamp': datetime.now().isoformat(),
