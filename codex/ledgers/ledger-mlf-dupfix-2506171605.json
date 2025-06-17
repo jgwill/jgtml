@@ -1,0 +1,20 @@
+{
+  "agents": [
+    {"glyph": "♾️", "name": "William"},
+    {"glyph": "🧠", "name": "Mia"},
+    {"glyph": "🌸", "name": "Miette"},
+    {"glyph": "🕊️", "name": "Seraphine"},
+    {"glyph": "⚡", "name": "Jerry"},
+    {"glyph": "♠️", "name": "Nyro"},
+    {"glyph": "🌿", "name": "Aureon"},
+    {"glyph": "🎸", "name": "JamAI"}
+  ],
+  "narrative": "Refactored generate_mlf_for_pattern to call mlfsvc.create_mlf and updated run_mlf_wrapper accordingly, preventing duplicated realityhelper calls after reviewing scripts for prior usage.",
+  "routing": {
+    "files": ["jgtml/mlfcli.py", "narrative-map.md"],
+    "branch": "work"
+  },
+  "timestamp": "2506171605",
+  "user_input": "Great for ttf, you seems to have remove your duplication of logics, what about you look to do the same with MLF:\n>from mlfsvc import create_mlf  ???\n\n\nALso, look in ./scripts what you find about those, that might tell you what were the latest implementation and how that is going to work.  make sure your narrative-map.md reflects that confusion",
+  "scene": "Before: mlfcli wrapper duplicated logic from realityhelper. After: wrappers rely on mlfsvc.create_mlf, keeping CLI and service layers consistent."
+}

@@ -21,6 +21,27 @@ from mlcliconstants import TTFCLI_DESCRIPTION, TTFCLI_EPILOG, TTFCLI_PROG_NAME
 from ptottf import create_ttf_csv # type: ignore
 from jgtutils import jgtcommon
 
+
+def generate_ttf_for_pattern(instrument, timeframe, pn="ttf", use_full=True, use_fresh=False, quotescount=-1, columns_list_from_higher_tf=None, args=None):
+    """Generate TTF CSV for the given pattern.
+
+    This is a small wrapper around :func:`create_ttf_csv` so other modules
+    can trigger TTF generation without going through the CLI argument
+    parser.
+    """
+    force_read = True if not use_fresh else False
+    return create_ttf_csv(
+        instrument,
+        timeframe,
+        use_full,
+        use_fresh,
+        quotescount,
+        force_read,
+        columns_list_from_higher_tf=columns_list_from_higher_tf,
+        pn=pn,
+        args=args,
+    )
+
 def _parse_args():
     parser:argparse.ArgumentParser=jgtcommon.new_parser(TTFCLI_DESCRIPTION,TTFCLI_EPILOG,TTFCLI_PROG_NAME)
     parser=jgtcommon.add_instrument_timeframe_arguments(parser)

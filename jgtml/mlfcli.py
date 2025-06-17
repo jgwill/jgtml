@@ -11,9 +11,43 @@ import sys
 sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
 
 from mlcliconstants import MLFCLI_DESCRIPTION,MLFCLI_EPILOG,MLFCLI_PROG_NAME
-from mlclicommon import (add_patterns_arguments,
-                         check_arguments)
-import realityhelper
+from mlclicommon import (
+    add_patterns_arguments,
+    check_arguments,
+)
+from mlfsvc import create_mlf
+
+
+def generate_mlf_for_pattern(
+    instrument,
+    timeframe,
+    patternname="ttf",
+    use_full=True,
+    use_fresh=False,
+    lag_period=1,
+    total_lagging_periods=5,
+    columns_to_keep=None,
+    columns_to_drop=None,
+    drop_bid_ask=False,
+    dropna=True,
+    args=None,
+):
+    """Generate an MLF dataset for the given pattern."""
+
+    return create_mlf(
+        instrument,
+        timeframe,
+        lag_period=lag_period,
+        total_lagging_periods=total_lagging_periods,
+        dropna=dropna,
+        use_full=use_full,
+        columns_to_keep=columns_to_keep,
+        columns_to_drop=columns_to_drop,
+        drop_bid_ask=drop_bid_ask,
+        force_refresh=use_fresh,
+        pn=patternname,
+        args=args,
+    )
 
 def create_app_arguments()->argparse.Namespace:
   from jgtutils import jgtcommon
@@ -78,20 +112,21 @@ def main():
       print("Error while running ttf.")
 
 def run_mlf_wrapper(args, force_refresh):
-    df=realityhelper.generate_mlf_feature_pattern(
-                            args.instrument,
-                            args.timeframe,
-                            use_full=args.full,
-                            force_refresh=force_refresh,
-                            lag_period=args.lag_period,
-                            total_lagging_periods=args.total_lagging_periods,
-                            dropna=True,
-                            columns_to_keep=args.columns_to_keep,
-                            columns_to_drop=args.columns_to_drop,
-                            drop_bid_ask=args.rmbidask,
-                            pn=args.patternname,
-                            args=args)
-    return df
+    """Execute MLF generation using current CLI arguments."""
+    return generate_mlf_for_pattern(
+        args.instrument,
+        args.timeframe,
+        patternname=args.patternname,
+        use_full=args.full,
+        use_fresh=force_refresh,
+        lag_period=args.lag_period,
+        total_lagging_periods=args.total_lagging_periods,
+        columns_to_keep=args.columns_to_keep,
+        columns_to_drop=args.columns_to_drop,
+        drop_bid_ask=args.rmbidask,
+        dropna=True,
+        args=args,
+    )
   #create_ttf_csv(args.instrument, args.timeframe, args.full if args.full else False, args.fresh, args.quotescount, args.force_read)
 
 if __name__ == "__main__":
