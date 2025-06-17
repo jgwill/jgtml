@@ -17,3 +17,4 @@ Enhanced packaging by adding `python-dateutil` directly to `requirements.txt` an
 - **caea33f** `fix: handle missing illusion count` – improved resilience of enhanced FDB scanner and added CLI entrypoint.
 Updated CLI offerings with 'enhancedfdbscan' command and improved error handling.
 \n- **NEWCOMMIT** `add wrappers for CLI patterns` – added generate_ttf_for_pattern and generate_mlf_for_pattern wrappers for programmatic use.
+- Verified no duplicate functions exist for new wrappers; jgtml/jtc.py now uses them.
