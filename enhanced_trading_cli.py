@@ -1,6 +1,6 @@
 import subprocess
 import argparse
-from automated_fdb_trading_system import AutomatedFDBTradingSystem
+from jgtml.automated_fdb_trading_system import AutomatedFDBTradingSystem
 
 def run_auto_trade(instruments, timeframes, demo=True, quality_threshold=8.0):
     """Run automated FDB trading with higher timeframe bias analysis"""
