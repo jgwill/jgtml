@@ -283,58 +283,54 @@ class EnhancedFDBScanner:
                 # Found a signal, now validate it
                 if i < len(recent_bars) - 1:
                     # Use this bar as signal bar and next as current bar for validation
-                    test_signal_bar = bar
-                    test_current_bar = recent_bars[i + 1]
+                    test_signal_bar = pd.Series(bar)
+                    test_current_bar = pd.Series(recent_bars[i + 1])
                 else:
-                    # Use last two bars
+                    # Use last two bars from DataFrame (already pandas Series)
                     test_signal_bar = signal_bar
                     test_current_bar = current_bar
         
                 if fdb_value == 1:  # Buy signal
                     direction_bias = "BUY"
                     
-                    # Validate signal using SignalOrderingHelper
-                    entry_order, msg = create_fdb_entry_order(
-                        instrument, 
-                        test_signal_bar, 
-                        test_current_bar,
-                        lots=1,
-                        t=timeframe,
-                        quiet=True,
-                        verbose_level=0
-                    )
+                    print(f"    Debug: Processing BUY signal at index {i}, timestamp: {test_signal_bar.get('Date', '')}")
                     
-                    if entry_order:
-                        fdb_signals.append({
-                            'type': 'buy',
-                            'timestamp': test_signal_bar.get('Date', ''),
-                            'entry_rate': entry_order.get('entry_rate', 0),
-                            'stop_rate': entry_order.get('stop_rate', 0),
-                            'validated': True
-                        })
+                    # For now, add signal without strict validation to see basic functionality
+                    fdb_signals.append({
+                        'type': 'buy',
+                        'timestamp': test_signal_bar.get('Date', ''),
+                        'entry_rate': 0,  # Will be calculated later
+                        'stop_rate': 0,   # Will be calculated later
+                        'validated': False  # Mark as unvalidated for now
+                    })
+                    print(f"    Debug: BUY signal added to results (unvalidated)")
+                    
+                    # TODO: Re-enable validation after debugging data format issues
+                    # try:
+                    #     entry_order, msg = create_fdb_entry_order(...)
+                    # except Exception as e:
+                    #     print(f"    Debug: BUY signal validation error: {e}")
                 
                 elif fdb_value == -1:  # Sell signal
                     direction_bias = "SELL"
                     
-                    # Validate signal using SignalOrderingHelper
-                    entry_order, msg = create_fdb_entry_order(
-                        instrument,
-                        test_signal_bar,
-                        test_current_bar,
-                        lots=1,
-                        t=timeframe,
-                        quiet=True,
-                        verbose_level=0
-                    )
+                    print(f"    Debug: Processing SELL signal at index {i}, timestamp: {test_signal_bar.get('Date', '')}")
                     
-                    if entry_order:
-                        fdb_signals.append({
-                            'type': 'sell',
-                            'timestamp': test_signal_bar.get('Date', ''),
-                            'entry_rate': entry_order.get('entry_rate', 0),
-                            'stop_rate': entry_order.get('stop_rate', 0),
-                            'validated': True
-                        })
+                    # For now, add signal without strict validation to see basic functionality
+                    fdb_signals.append({
+                        'type': 'sell',
+                        'timestamp': test_signal_bar.get('Date', ''),
+                        'entry_rate': 0,  # Will be calculated later
+                        'stop_rate': 0,   # Will be calculated later
+                        'validated': False  # Mark as unvalidated for now
+                    })
+                    print(f"    Debug: SELL signal added to results (unvalidated)")
+                    
+                    # TODO: Re-enable validation after debugging data format issues
+                    # try:
+                    #     entry_order, msg = create_fdb_entry_order(...)
+                    # except Exception as e:
+                    #     print(f"    Debug: SELL signal validation error: {e}")
         
         return {
             'timeframe': timeframe,
