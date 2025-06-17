@@ -1,4 +1,5 @@
 import subprocess
+import argparse
 from automated_fdb_trading_system import AutomatedFDBTradingSystem
 
 def run_auto_trade(instruments, timeframes, demo=True, quality_threshold=8.0):
@@ -61,7 +62,50 @@ def run_auto_trade(instruments, timeframes, demo=True, quality_threshold=8.0):
     
     return all_results
 
-# Add to the main CLI parser
+# Command handlers
+def handle_auto_trade(args):
+    """Handle auto-trade command"""
+    instruments = [i.strip() for i in args.instruments.split(',')]
+    demo_mode = not args.real  # Real overrides demo
+    
+    try:
+        run_auto_trade(
+            instruments=instruments,
+            timeframes=["H4", "H1", "m15"],  # Fixed trading timeframes
+            demo=demo_mode,
+            quality_threshold=args.quality_threshold
+        )
+    except Exception as e:
+        print(f"❌ Error in automated trading: {e}")
+        return 1
+    
+    return 0
+
+def handle_auto(args):
+    """Handle auto command - alias for auto-trade"""
+    return handle_auto_trade(args)
+
+def handle_enhanced(args):
+    """Handle enhanced command"""
+    print("Enhanced trading mode - feature coming soon")
+    return 0
+
+def handle_production(args):
+    """Handle production command"""
+    print("Production trading mode - feature coming soon") 
+    return 0
+
+def handle_illusion(args):
+    """Handle illusion detection command"""
+    print("Alligator Illusion Detection - feature coming soon")
+    return 0
+
+def handle_status(args):
+    """Handle status command"""
+    print("Trading system status - feature coming soon")
+    return 0
+
+# Command definitions
 def add_auto_trade_command(subparsers):
     """Add auto-trade command to CLI"""
     parser_auto = subparsers.add_parser(
@@ -93,26 +137,59 @@ def add_auto_trade_command(subparsers):
     )
     parser_auto.set_defaults(func=handle_auto_trade)
 
-def handle_auto_trade(args):
-    """Handle auto-trade command"""
-    instruments = [i.strip() for i in args.instruments.split(',')]
-    demo_mode = not args.real  # Real overrides demo
-    
-    try:
-        run_auto_trade(
-            instruments=instruments,
-            timeframes=["H4", "H1", "m15"],  # Fixed trading timeframes
-            demo=demo_mode,
-            quality_threshold=args.quality_threshold
-        )
-    except Exception as e:
-        print(f"❌ Error in automated trading: {e}")
-        return 1
-    
-    return 0
+def add_auto_command(subparsers):
+    """Add auto command to CLI (alias for auto-trade)"""
+    parser_auto = subparsers.add_parser(
+        'auto',
+        help='Automated FDB trading (alias for auto-trade)'
+    )
+    parser_auto.add_argument(
+        '-i', '--instruments',
+        type=str,
+        required=True,
+        help='Comma-separated instruments (e.g., EUR-USD,GBP-USD)'
+    )
+    parser_auto.add_argument(
+        '--demo',
+        action='store_true',
+        default=True,
+        help='Use demo mode (default)'
+    )
+    parser_auto.add_argument(
+        '--real',
+        action='store_true',
+        help='Use real trading mode'
+    )
+    parser_auto.add_argument(
+        '--quality-threshold',
+        type=float,
+        default=8.0,
+        help='Minimum quality threshold for campaign creation (default: 8.0)'
+    )
+    parser_auto.set_defaults(func=handle_auto)
 
-# Modify main() to include new command
+def add_enhanced_command(subparsers):
+    """Add enhanced command to CLI"""
+    parser = subparsers.add_parser('enhanced', help='Enhanced trading mode')
+    parser.set_defaults(func=handle_enhanced)
+
+def add_production_command(subparsers):
+    """Add production command to CLI"""
+    parser = subparsers.add_parser('production', help='Production trading mode')
+    parser.set_defaults(func=handle_production)
+
+def add_illusion_command(subparsers):
+    """Add illusion command to CLI"""
+    parser = subparsers.add_parser('illusion', help='Alligator Illusion Detection')
+    parser.set_defaults(func=handle_illusion)
+
+def add_status_command(subparsers):
+    """Add status command to CLI"""
+    parser = subparsers.add_parser('status', help='Trading system status')
+    parser.set_defaults(func=handle_status)
+
 def main():
+    """Main CLI entry point"""
     parser = argparse.ArgumentParser(
         prog='enhancedtradingcli',
         description='Enhanced Trading CLI with FDB Signal Detection and Automation',
@@ -121,14 +198,21 @@ def main():
     
     subparsers = parser.add_subparsers(dest='command', help='Available commands')
     
-    # Existing commands
+    # Add all commands
     add_enhanced_command(subparsers)
     add_production_command(subparsers) 
     add_auto_command(subparsers)
+    add_auto_trade_command(subparsers)
     add_illusion_command(subparsers)
     add_status_command(subparsers)
     
-    # New automated trading command
-    add_auto_trade_command(subparsers)
+    args = parser.parse_args()
     
-    # ... rest of existing main() code ... 
+    if not args.command:
+        parser.print_help()
+        return 1
+    
+    return args.func(args)
+
+if __name__ == "__main__":
+    exit(main()) 
