@@ -16,3 +16,7 @@ Enhanced packaging by adding `python-dateutil` directly to `requirements.txt` an
 
 - **caea33f** `fix: handle missing illusion count` – improved resilience of enhanced FDB scanner and added CLI entrypoint.
 Updated CLI offerings with 'enhancedfdbscan' command and improved error handling.
+- **WORKING** `comment: clarify standalone script purpose` – inserted header comment to explain `alligator_illusion_standalone.py` for future reference.
+- **WORKING** `docs: list required alligator data` – documented required dataset for illusion detection.
+- **da9a416** `Merge main into work` – synced recommendation logic and docs.
+- **12f1c0f** `fix: add newline at EOF in standalone tests` – removed stray prompts from test scripts.
