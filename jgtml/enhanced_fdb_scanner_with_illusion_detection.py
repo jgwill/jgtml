@@ -12,6 +12,7 @@ import sys
 import os
 import csv
 import json
+import pandas as pd
 from pathlib import Path
 from datetime import datetime
 from typing import Dict, List, Optional, Any
@@ -19,14 +20,19 @@ from typing import Dict, List, Optional, Any
 # Add jgtml to path for imports
 sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
 
+# Import signal ordering and direction detection
+from .SignalOrderingHelper import is_mouth_open, is_bar_out_of_mouth, create_fdb_entry_order
+from .SOHelper import get_last_two_bars
+from jgtutils.jgtconstants import FDB, HIGH, LOW, LIPS, TEETH, JAW
+
 class AlligatorIllusionDetector:
-    """Integrated Alligator Illusion Detection for FDB Scanner"""
+    """Detect alligator illusions across multiple timeframes"""
     
     def __init__(self, data_path="/src/jgtml/cache/fdb_scanners"):
         self.data_path = Path(data_path)
     
     def load_csv_data(self, instrument, timeframe):
-        """Load CDS cache data using basic CSV reader"""
+        """Load CDS CSV data for alligator analysis"""
         filename = f"{instrument}_{timeframe}_cds_cache.csv"
         filepath = self.data_path / filename
         
@@ -34,76 +40,77 @@ class AlligatorIllusionDetector:
             return None
         
         try:
-            data = []
-            with open(filepath, 'r') as f:
-                reader = csv.DictReader(f)
-                for row in reader:
-                    data.append(row)
-            return data
+            df = pd.read_csv(filepath, index_col=0, parse_dates=True)
+            return df
         except Exception as e:
-            print(f"Error loading {instrument} {timeframe}: {e}")
+            print(f"Error loading {filename}: {e}")
             return None
     
     def analyze_alligator_pattern(self, data, timeframe):
-        """Analyze alligator pattern from latest data"""
-        if not data or len(data) == 0:
+        """Analyze alligator mouth status and detect potential illusions"""
+        if data is None or len(data) < 2:
             return None
         
-        latest = data[-1]
+        # Get latest bar data
+        latest_bar = data.iloc[-1]
         
-        # Extract alligator values
-        jaw = self.safe_float(latest.get('jaw', 0))
-        teeth = self.safe_float(latest.get('teeth', 0))
-        lips = self.safe_float(latest.get('lips', 0))
-        
-        # Also extract big and tide alligator values
-        bjaw = self.safe_float(latest.get('bjaw', 0))
-        bteeth = self.safe_float(latest.get('bteeth', 0))
-        blips = self.safe_float(latest.get('blips', 0))
-        
-        tjaw = self.safe_float(latest.get('tjaw', 0))
-        tteeth = self.safe_float(latest.get('tteeth', 0))
-        tlips = self.safe_float(latest.get('tlips', 0))
-        
-        # Determine trends for all alligator types
-        regular_trend = self.determine_trend(jaw, teeth, lips)
-        big_trend = self.determine_trend(bjaw, bteeth, blips)
-        tide_trend = self.determine_trend(tjaw, tteeth, tlips)
-        
-        # Calculate mouth separations
-        regular_mouth_sep = self.calculate_mouth_separation(jaw, lips)
-        big_mouth_sep = self.calculate_mouth_separation(bjaw, blips)
-        tide_mouth_sep = self.calculate_mouth_separation(tjaw, tlips)
-        
-        return {
-            'timeframe': timeframe,
-            'regular': {
-                'jaw': jaw, 'teeth': teeth, 'lips': lips,
-                'trend': regular_trend,
-                'mouth_separation': regular_mouth_sep
-            },
-            'big': {
-                'jaw': bjaw, 'teeth': bteeth, 'lips': blips,
-                'trend': big_trend,
-                'mouth_separation': big_mouth_sep
-            },
-            'tide': {
-                'jaw': tjaw, 'teeth': tteeth, 'lips': tlips,
-                'trend': tide_trend,
-                'mouth_separation': tide_mouth_sep
-            },
-            'timestamp': latest.get('Date', '')
-        }
+        try:
+            # Extract alligator values
+            jaw = self.safe_float(latest_bar.get('jaw', 0))
+            teeth = self.safe_float(latest_bar.get('teeth', 0))
+            lips = self.safe_float(latest_bar.get('lips', 0))
+            
+            high = self.safe_float(latest_bar.get('High', 0))
+            low = self.safe_float(latest_bar.get('Low', 0))
+            close = self.safe_float(latest_bar.get('Close', 0))
+            
+            # Determine alligator mouth status
+            mouth_open_bull = lips > teeth > jaw
+            mouth_open_bear = lips < teeth < jaw
+            mouth_sleeping = abs(lips - jaw) < (abs(high - low) * 0.1)  # Threshold for sleeping
+            
+            # Calculate mouth separation (distance between lips and jaw)
+            mouth_separation = abs(lips - jaw)
+            
+            # Determine trend direction
+            trend = self.determine_trend(jaw, teeth, lips)
+            
+            # Check if price is outside mouth
+            price_above_mouth = low > max(jaw, teeth, lips)
+            price_below_mouth = high < min(jaw, teeth, lips)
+            price_in_mouth = not (price_above_mouth or price_below_mouth)
+            
+            return {
+                'timeframe': timeframe,
+                'jaw': jaw,
+                'teeth': teeth,
+                'lips': lips,
+                'high': high,
+                'low': low,
+                'close': close,
+                'mouth_open_bull': mouth_open_bull,
+                'mouth_open_bear': mouth_open_bear,
+                'mouth_sleeping': mouth_sleeping,
+                'mouth_separation': mouth_separation,
+                'trend': trend,
+                'price_above_mouth': price_above_mouth,
+                'price_below_mouth': price_below_mouth,
+                'price_in_mouth': price_in_mouth
+            }
+            
+        except Exception as e:
+            print(f"Error analyzing alligator pattern for {timeframe}: {e}")
+            return None
     
     def safe_float(self, value):
         """Safely convert value to float"""
         try:
-            return float(value) if value else 0.0
+            return float(value)
         except (ValueError, TypeError):
             return 0.0
     
     def determine_trend(self, jaw, teeth, lips):
-        """Determine trend direction from alligator lines"""
+        """Determine trend based on alligator line arrangement"""
         if lips > teeth > jaw:
             return "bullish"
         elif lips < teeth < jaw:
@@ -112,91 +119,79 @@ class AlligatorIllusionDetector:
             return "sideways"
     
     def calculate_mouth_separation(self, jaw, lips):
-        """Calculate mouth separation percentage"""
-        if jaw != 0:
-            return abs(lips - jaw) / abs(jaw) * 100
-        return 0.0
+        """Calculate the separation between jaw and lips"""
+        return abs(lips - jaw)
     
     def detect_illusions(self, multi_tf_readings):
-        """Detect illusion patterns across multiple timeframes"""
+        """Detect illusions by comparing different timeframe alignments"""
         illusions = []
         
-        if len(multi_tf_readings) < 2:
-            return illusions
+        # Sort timeframes by hierarchy (higher to lower)
+        tf_hierarchy = ['MN1', 'W1', 'D1', 'H4', 'H1', 'm15', 'm5', 'm1']
+        available_tfs = [tf for tf in tf_hierarchy if tf in multi_tf_readings]
         
-        timeframes = list(multi_tf_readings.keys())
-        
-        # Check for timeframe contradictions across all alligator types
-        for alligator_type in ['regular', 'big', 'tide']:
-            for i in range(len(timeframes)):
-                for j in range(i+1, len(timeframes)):
-                    tf1, tf2 = timeframes[i], timeframes[j]
-                    
-                    if tf1 not in multi_tf_readings or tf2 not in multi_tf_readings:
-                        continue
-                    
-                    r1 = multi_tf_readings[tf1].get(alligator_type, {})
-                    r2 = multi_tf_readings[tf2].get(alligator_type, {})
-                    
-                    if not r1 or not r2:
-                        continue
-                    
-                    # Check for trend contradiction
-                    if (r1.get('trend') == 'bullish' and r2.get('trend') == 'bearish') or \
-                       (r1.get('trend') == 'bearish' and r2.get('trend') == 'bullish'):
-                        
+        for i, tf in enumerate(available_tfs[:-1]):  # Don't check the lowest timeframe
+            current_reading = multi_tf_readings[tf]
+            
+            # Check against lower timeframes
+            for lower_tf in available_tfs[i+1:]:
+                lower_reading = multi_tf_readings[lower_tf]
+                
+                if current_reading and lower_reading:
+                    # Illusion 1: Higher TF mouth open, lower TF contradicts
+                    if (current_reading['mouth_open_bull'] and lower_reading['mouth_open_bear']):
                         illusions.append({
-                            'type': 'TIMEFRAME_CONTRADICTION',
-                            'alligator_type': alligator_type,
-                            'primary_tf': tf1,
-                            'conflicting_tf': tf2,
-                            'description': f"{alligator_type.upper()} alligator: {tf1} shows {r1.get('trend')} while {tf2} shows {r2.get('trend')}",
-                            'confidence': 0.8,
-                            'recommendation': 'Wait for timeframe alignment'
+                            'type': 'Contradiction Illusion',
+                            'higher_tf': tf,
+                            'lower_tf': lower_tf,
+                            'alligator_type': 'Bull/Bear Contradiction',
+                            'description': f'{tf} shows bullish mouth, {lower_tf} shows bearish mouth'
                         })
-        
-        # Check for weak signals
-        for tf, reading in multi_tf_readings.items():
-            for alligator_type in ['regular', 'big', 'tide']:
-                alligator_data = reading.get(alligator_type, {})
-                if not alligator_data:
-                    continue
-                
-                trend = alligator_data.get('trend', 'sideways')
-                mouth_sep = alligator_data.get('mouth_separation', 0)
-                
-                if trend != 'sideways' and mouth_sep < 0.05:
-                    illusions.append({
-                        'type': 'WEAK_SIGNAL',
-                        'alligator_type': alligator_type,
-                        'primary_tf': tf,
-                        'conflicting_tf': None,
-                        'description': f"Weak {alligator_type} alligator signal on {tf} - mouth separation only {mouth_sep:.3f}%",
-                        'confidence': 0.6,
-                        'recommendation': 'Wait for stronger confirmation'
-                    })
+                    
+                    elif (current_reading['mouth_open_bear'] and lower_reading['mouth_open_bull']):
+                        illusions.append({
+                            'type': 'Contradiction Illusion',
+                            'higher_tf': tf,
+                            'lower_tf': lower_tf,
+                            'alligator_type': 'Bear/Bull Contradiction',
+                            'description': f'{tf} shows bearish mouth, {lower_tf} shows bullish mouth'
+                        })
+                    
+                    # Illusion 2: Price action contradicts alligator signal
+                    if (current_reading['mouth_open_bull'] and lower_reading['price_below_mouth']):
+                        illusions.append({
+                            'type': 'Price Action Illusion',
+                            'higher_tf': tf,
+                            'lower_tf': lower_tf,
+                            'alligator_type': 'Bull Signal, Bear Price',
+                            'description': f'{tf} bullish mouth, but {lower_tf} price below mouth'
+                        })
+                    
+                    elif (current_reading['mouth_open_bear'] and lower_reading['price_above_mouth']):
+                        illusions.append({
+                            'type': 'Price Action Illusion',
+                            'higher_tf': tf,
+                            'lower_tf': lower_tf,
+                            'alligator_type': 'Bear Signal, Bull Price',
+                            'description': f'{tf} bearish mouth, but {lower_tf} price above mouth'
+                        })
         
         return illusions
     
     def scan_multi_timeframe(self, instrument, timeframes=None):
-        """Scan instrument across multiple timeframes for illusions"""
+        """Scan multiple timeframes for alligator illusions"""
         if timeframes is None:
-            timeframes = ['D1', 'H1']
+            timeframes = ['D1', 'H4', 'H1', 'm15']
         
         readings = {}
         
+        # Collect readings from all timeframes
         for tf in timeframes:
             data = self.load_csv_data(instrument, tf)
-            if data:
-                analysis = self.analyze_alligator_pattern(data, tf)
-                if analysis:
-                    readings[tf] = analysis
-        
-        if not readings:
-            return {
-                'status': 'error',
-                'message': 'No data available for analysis'
-            }
+            if data is not None:
+                reading = self.analyze_alligator_pattern(data, tf)
+                if reading:
+                    readings[tf] = reading
         
         # Detect illusions
         illusions = self.detect_illusions(readings)
@@ -212,7 +207,7 @@ class AlligatorIllusionDetector:
         }
 
 class EnhancedFDBScanner:
-    """Enhanced FDB Scanner with integrated Alligator Illusion Detection"""
+    """Enhanced FDB Scanner with integrated Alligator Illusion Detection and Direction Analysis"""
     
     def __init__(self, data_path="/src/jgtml/cache/fdb_scanners"):
         self.illusion_detector = AlligatorIllusionDetector(data_path)
@@ -237,41 +232,77 @@ class EnhancedFDBScanner:
             print(f"Error loading FDB data: {e}")
             return None
     
-    def analyze_fdb_signals(self, data, timeframe):
-        """Analyze FDB signals from the data"""
+    def analyze_fdb_signals_with_direction(self, data, timeframe):
+        """Analyze FDB signals and determine trade direction"""
         if not data or len(data) == 0:
             return None
         
-        # Get recent signals (last 10 bars)
-        recent_data = data[-10:] if len(data) >= 10 else data
+        # Convert to DataFrame for analysis
+        df = pd.DataFrame(data)
+        df.index = pd.to_datetime(df['Date'])
+        
+        # Get last two bars for signal analysis
+        signal_bar, current_bar = get_last_two_bars(df)
         
         fdb_signals = []
+        direction_bias = "NONE"
         
-        for i, row in enumerate(recent_data):
-            fdbb = int(float(row.get('fdbb', 0)))  # FDB Bear
-            fdbs = int(float(row.get('fdbs', 0)))  # FDB Bull
-            fdb = int(float(row.get('fdb', 0)))    # General FDB
+        # Check FDB signal from signal bar
+        fdb_value = int(float(signal_bar.get(FDB, 0)))
+        
+        if fdb_value == 1:  # Buy signal
+            direction_bias = "BUY"
             
-            if fdbb == 1 or fdbs == 1 or fdb == 1:
-                signal_type = 'bear' if fdbb == 1 else 'bull' if fdbs == 1 else 'general'
-                
+            # Validate signal using SignalOrderingHelper
+            entry_order, msg = create_fdb_entry_order(
+                instrument="TEST", 
+                signal_bar=signal_bar, 
+                current_bar=current_bar,
+                lots=1,
+                t=timeframe,
+                quiet=True,
+                verbose_level=0
+            )
+            
+            if entry_order:
                 fdb_signals.append({
-                    'index': len(data) - len(recent_data) + i,
-                    'timestamp': row.get('Date', ''),
-                    'type': signal_type,
-                    'fdbb': fdbb,
-                    'fdbs': fdbs,
-                    'fdb': fdb,
-                    'close': float(row.get('Close', 0)),
-                    'high': float(row.get('High', 0)),
-                    'low': float(row.get('Low', 0))
+                    'type': 'buy',
+                    'timestamp': signal_bar.get('Date', ''),
+                    'entry_rate': entry_order.get('entry_rate', 0),
+                    'stop_rate': entry_order.get('stop_rate', 0),
+                    'validated': True
+                })
+        
+        elif fdb_value == -1:  # Sell signal
+            direction_bias = "SELL"
+            
+            # Validate signal using SignalOrderingHelper
+            entry_order, msg = create_fdb_entry_order(
+                instrument="TEST",
+                signal_bar=signal_bar,
+                current_bar=current_bar,
+                lots=1,
+                t=timeframe,
+                quiet=True,
+                verbose_level=0
+            )
+            
+            if entry_order:
+                fdb_signals.append({
+                    'type': 'sell',
+                    'timestamp': signal_bar.get('Date', ''),
+                    'entry_rate': entry_order.get('entry_rate', 0),
+                    'stop_rate': entry_order.get('stop_rate', 0),
+                    'validated': True
                 })
         
         return {
             'timeframe': timeframe,
             'total_signals': len(fdb_signals),
             'signals': fdb_signals,
-            'latest_signal': fdb_signals[-1] if fdb_signals else None
+            'latest_signal': fdb_signals[-1] if fdb_signals else None,
+            'direction_bias': direction_bias,
+            'fdb_value': fdb_value
         }
     
     def enhanced_scan(self, instrument, timeframes=None, include_illusion_detection=True):
@@ -292,7 +323,7 @@ class EnhancedFDBScanner:
         for tf in timeframes:
             data = self.load_fdb_signals(instrument, tf)
             if data:
-                fdb_analysis = self.analyze_fdb_signals(data, tf)
+                fdb_analysis = self.analyze_fdb_signals_with_direction(data, tf)
                 if fdb_analysis:
                     fdb_results[tf] = fdb_analysis
                     
@@ -336,7 +367,7 @@ class EnhancedFDBScanner:
         
         # Generate final recommendation
         final_recommendation = self.generate_final_recommendation(
-            signal_quality_score, total_fdb_signals, illusion_count
+            signal_quality_score, total_fdb_signals, illusion_count, fdb_results
         )
         
         print(f"FDB Signals Found: {total_fdb_signals}")
@@ -383,17 +414,44 @@ class EnhancedFDBScanner:
         
         return max(0.0, min(10.0, score))
     
-    def generate_final_recommendation(self, quality_score, fdb_signals, illusions):
-        """Generate final trading recommendation"""
-        # Simple directional recommendation based on quality and signal count
+    def generate_final_recommendation(self, quality_score, fdb_signals, illusions, fdb_results):
+        """Generate final trading recommendation with direction"""
+        # Determine dominant direction from FDB results
+        buy_signals = 0
+        sell_signals = 0
+        
+        for tf_result in fdb_results.values():
+            direction = tf_result.get('direction_bias', 'NONE')
+            if direction == 'BUY':
+                buy_signals += 1
+            elif direction == 'SELL':
+                sell_signals += 1
+        
+        # Determine direction and strength
+        if buy_signals > sell_signals:
+            direction = "BUY"
+        elif sell_signals > buy_signals:
+            direction = "SELL"
+        else:
+            direction = "CONFLICTED"
+        
+        # Determine signal strength based on quality and illusions
         if quality_score >= 9.0 and fdb_signals >= 4 and illusions == 0:
-            # For high quality signals, we need additional context to determine direction
-            # For now, return a high-confidence signal that requires direction analysis
-            return "STRONG SIGNAL" # Requires further direction analysis
+            if direction in ["BUY", "SELL"]:
+                return f"STRONG {direction}"
+            else:
+                return "MONITOR"  # Conflicted signals
         elif quality_score >= 8.0 and fdb_signals >= 3:
-            return "MODERATE SIGNAL"
+            if direction in ["BUY", "SELL"]:
+                return f"MODERATE {direction}"
+            else:
+                return "MONITOR"
         elif quality_score >= 7.0 and fdb_signals >= 2:
-            return "WEAK SIGNAL"
+            if direction in ["BUY", "SELL"]:
+                return f"WEAK {direction}"
+            else:
+                return "MONITOR"
+
         elif quality_score >= 4.0:
             return "MONITOR"
         else:

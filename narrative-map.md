@@ -20,3 +20,6 @@ Updated CLI offerings with 'enhancedfdbscan' command and improved error handling
 - **WORKING** `docs: list required alligator data` – documented required dataset for illusion detection.
 - **da9a416** `Merge main into work` – synced recommendation logic and docs.
 - **12f1c0f** `fix: add newline at EOF in standalone tests` – removed stray prompts from test scripts.
+- **25a97b2** `Merge main into work and resolve CLI conflicts` – pulled production CLI enhancements into current branch.
+### Branch Details
+Current branch: `work` prepared for PR integration. Upcoming PR will sync production CLI updates and narrative guidance.
