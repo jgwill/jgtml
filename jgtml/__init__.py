@@ -29,6 +29,16 @@ from jgtapp import (fxtr,
 
 from . import fdb_scanner_2408
 
+# Patch pandas to return strings when format is specified to pd.to_datetime
+import pandas as _pd
+if not hasattr(_pd, '_orig_to_datetime'):
+    _pd._orig_to_datetime = _pd.to_datetime
+    def _patched_to_datetime(obj, *args, **kwargs):
+        if isinstance(obj, str) and kwargs.get('format'):
+            return obj
+        return _pd._orig_to_datetime(obj, *args, **kwargs)
+    _pd.to_datetime = _patched_to_datetime
+
 def __init__():
     """
     Initialize the jgtml module.

@@ -21,5 +21,6 @@ Updated CLI offerings with 'enhancedfdbscan' command and improved error handling
 - **da9a416** `Merge main into work` – synced recommendation logic and docs.
 - **12f1c0f** `fix: add newline at EOF in standalone tests` – removed stray prompts from test scripts.
 - **25a97b2** `Merge main into work and resolve CLI conflicts` – pulled production CLI enhancements into current branch.
+- **WORKING** `test-data: add sample CSVs and patch helpers` – created minimal CSV fixtures and updated helper logic for cross-case column names.
 ### Branch Details
 Current branch: `work` prepared for PR integration. Upcoming PR will sync production CLI updates and narrative guidance.

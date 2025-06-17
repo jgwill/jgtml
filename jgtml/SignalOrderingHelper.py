@@ -4,8 +4,9 @@ import datetime
 from typing import Callable, Optional
 import tlid
 from jgtutils import iprops
-from jgtutils.jgtconstants import \
-  HIGH,LOW,FDB,ASKHIGH,ASKLOW,BIDHIGH,BIDLOW,JAW,TEETH,LIPS,BJAW,BTEETH,BLIPS,DATE
+from jgtutils.jgtconstants import (
+    HIGH,LOW,FDB,ASKHIGH,ASKLOW,BIDHIGH,BIDLOW,JAW,TEETH,LIPS,
+    BJAW,BTEETH,BLIPS,DATE)
 import pandas as pd
 
 #@STCGoal Standardize the Signal Columns
@@ -22,6 +23,18 @@ from mlconstants import (
 
 from jgtutils.iprops import \
   get_pips
+
+
+def _g(bar, key):
+    if key in bar:
+        return bar[key]
+    k_upper = key.upper()
+    if k_upper in bar:
+        return bar[k_upper]
+    k_lower = key.lower()
+    if k_lower in bar:
+        return bar[k_lower]
+    raise KeyError(key)
 
 
 def calculate_entry_risk(i, bs, entry_rate, stop_rate, position_size, tick_shift=1, rounding_add=2, t=None,quiet=True,verbose_level=0):
@@ -82,19 +95,18 @@ def is_mouth_open_and_bar_out_of_it(bar,bs)->bool:
 def is_bar_out_of_mouth(bar,bs)->bool:
   mouth_open_reverse = is_mouth_open(bar,"B") if bs=="S" else is_mouth_open(bar,"S")
   if bs=="B":
-    return bar[HIGH] < bar[LIPS] \
-      and \
-        not mouth_open_reverse
+    return _g(bar,HIGH) < _g(bar,LIPS) and not mouth_open_reverse
   if bs=="S":
-    return bar[LOW] > bar[LIPS] \
-      and \
-        not mouth_open_reverse
+    return _g(bar,LOW) > _g(bar,LIPS) and not mouth_open_reverse
   
 def is_mouth_open(bar,bs)->bool:
+  lips=_g(bar,LIPS)
+  teeth=_g(bar,TEETH)
+  jaw=_g(bar,JAW)
   if bs=="B":
-    return bar[LIPS] < bar[TEETH] and bar[TEETH] < bar[JAW] and bar[LIPS] < bar[JAW]
+    return lips < teeth and teeth < jaw and lips < jaw
   if bs=="S":
-    return bar[LIPS] > bar[TEETH] and bar[TEETH] > bar[JAW] and bar[LIPS] > bar[JAW]
+    return lips > teeth and teeth > jaw and lips > jaw
   return False
   
 def is_big_mouth_open(bar,bs)->bool:
@@ -175,10 +187,10 @@ def create_fdb_entry_order(i,signal_bar,current_bar,lots=1,tick_shift=2,quiet=Tr
     if verbose_level>0:
       msg += f"## Signal Stop Broken the {bs_string} {i} {t} "
       #print(msg)
-    return None,msg
+    return None
   
   if not had_valid_signal:
-    return None,msg
+    return None
   
   is_valid_gator = valid_gator(signal_bar,current_bar,bs)
   if valid_gator_mouth_open_in_mouth \
@@ -187,7 +199,7 @@ def create_fdb_entry_order(i,signal_bar,current_bar,lots=1,tick_shift=2,quiet=Tr
     if verbose_level>0:
       msg += f"## Invalid Gator {i} {t} valid_gator_mouth_open_in_mouth"
       #print(msg)
-    return None,msg
+    return None
   
   if validate_signal_out_of_mouth \
     and \
@@ -195,7 +207,7 @@ def create_fdb_entry_order(i,signal_bar,current_bar,lots=1,tick_shift=2,quiet=Tr
     if verbose_level>0:
       msg += f"## Invalid Gator {i} {t} not valid_sig_out_mouth"
       #print(msg)
-    return None,msg
+    return None
   #Get 'Date' or index of the signal bar
   
   validation_timestamp_str=validation_timestamp.strftime("%Y-%m-%d %H:%M") if validation_timestamp is not None else ""

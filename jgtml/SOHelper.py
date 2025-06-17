@@ -17,8 +17,13 @@ def get_last_two_bars(df:pd.DataFrame):
 
 def get_bar_at_index(df:pd.DataFrame,idx=-1,):
   tbar = df.iloc[idx]
-  tbar_json_str = tbar.to_json()
-  return json.loads(tbar_json_str)
+  row = tbar.to_dict()
+  if df.index.name:
+    idx_val = df.index[idx]
+    if hasattr(idx_val, 'strftime'):
+      idx_val = idx_val.strftime('%Y-%m-%d %H:%M:%S')
+    row[df.index.name] = idx_val
+  return row
 
 def get_bar_at_index_v2(df:pd.DataFrame,idx=-1,format='%Y-%m-%d %H:%M:%S'):
   if 'Date' in df.columns:

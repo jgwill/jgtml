@@ -162,6 +162,7 @@ charts
 
 ref_*
 *.csv
+!tests/fdb_data/*.csv
 *.bak
 
 arch

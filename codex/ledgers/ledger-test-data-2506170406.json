@@ -1,0 +1,8 @@
+{
+  "timestamp": "2506170406",
+  "agents": ["♾️ William", "🧠 Mia", "🌸 Miette", "🕊️ Seraphine"],
+  "narrative": "Created CSV fixtures to satisfy unit tests and patched helper functions for case-insensitive access. Added list-patterns support to pncli and adjusted pandas parsing to maintain legacy behavior.",
+  "routes": ["tests/fdb_data/*.csv", "jgtml/SignalOrderingHelper.py", "jgtml/SOHelper.py", "jgtml/pncli.py", "jgtml/__init__.py"],
+  "scene": "With sample data and logic fixes, tests execute cleanly, paving the way for stable CLI integration.",
+  "glyphs": "🐊🛠️📊"
+}

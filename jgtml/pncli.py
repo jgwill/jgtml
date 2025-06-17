@@ -24,6 +24,10 @@ def _parse_args():
 DEV_2407=False
 def main():
     args = _parse_args()
+
+    if getattr(args, "list_patterns", False):
+        print(pndata__get_all_patterns())
+        return
     
     
     if DEV_2407:
