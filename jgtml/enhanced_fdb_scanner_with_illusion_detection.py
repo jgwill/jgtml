@@ -28,7 +28,16 @@ from jgtutils.jgtconstants import FDB, HIGH, LOW, LIPS, TEETH, JAW
 class AlligatorIllusionDetector:
     """Detect alligator illusions across multiple timeframes"""
     
-    def __init__(self, data_path="/src/jgtml/cache/fdb_scanners"):
+    def __init__(self, data_path=None):
+        if data_path is None:
+            # Use the same cache logic as fdb_scanner_2408.py
+            data_path = os.path.expanduser("~/.cache/jgt/fdb_scanners")
+            if not os.path.exists(data_path):
+                # Fallback to production cache if it exists
+                fallback_path = "/src/jgtml/cache/fdb_scanners"
+                if os.path.exists(fallback_path):
+                    data_path = fallback_path
+        
         self.data_path = Path(data_path)
     
     def load_csv_data(self, instrument, timeframe):
@@ -209,7 +218,16 @@ class AlligatorIllusionDetector:
 class EnhancedFDBScanner:
     """Enhanced FDB Scanner with integrated Alligator Illusion Detection and Direction Analysis"""
     
-    def __init__(self, data_path="/src/jgtml/cache/fdb_scanners"):
+    def __init__(self, data_path=None):
+        if data_path is None:
+            # Use the same cache logic as fdb_scanner_2408.py
+            data_path = os.path.expanduser("~/.cache/jgt/fdb_scanners")
+            if not os.path.exists(data_path):
+                # Fallback to production cache if it exists
+                fallback_path = "/src/jgtml/cache/fdb_scanners"
+                if os.path.exists(fallback_path):
+                    data_path = fallback_path
+        
         self.illusion_detector = AlligatorIllusionDetector(data_path)
         self.data_path = Path(data_path)
     
