@@ -1,7 +1,12 @@
 #!/usr/bin/env python3
-"""
-Standalone Alligator Illusion Detection - Phase 2 Testing
-Minimal dependencies version for testing with real CDS data
+"""Alligator Illusion standalone detector.
+
+This script implements a lightweight version of the Alligator Illusion
+detection logic so it can be executed on its own without the rest of the
+`jgtml` package.  It loads cached CDS data, analyzes the Alligator indicator
+for multiple timeframes, and surfaces contradictory or weak signals.  The
+standalone form is useful for quick experiments or debugging when the full
+environment with `jgtpy` and heavier dependencies is unavailable.
 """
 
 import csv
