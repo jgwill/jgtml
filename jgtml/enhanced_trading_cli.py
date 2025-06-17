@@ -263,8 +263,11 @@ Examples:
     
     # Automated trading system command
     auto_parser = subparsers.add_parser('auto', help='Run complete automated trading system')
-    auto_parser.add_argument('-i', '--instrument', required=True, help='Instrument to analyze')
-    auto_parser.add_argument('-t', '--timeframes', nargs='+', default=['D1', 'H4', 'H1'], help='Timeframes to analyze')
+    auto_parser.add_argument('-i', '--instruments', required=True, help='Comma-separated instruments to analyze (e.g., EUR-USD,GBP-USD,XAU-USD)')
+    auto_parser.add_argument('-t', '--timeframes', nargs='+', default=['H4', 'H1', 'm15'], help='Timeframes to analyze')
+    auto_parser.add_argument('--demo', action='store_true', default=True, help='Use demo mode (default)')
+    auto_parser.add_argument('--real', action='store_true', help='Use real trading mode')
+    auto_parser.add_argument('--quality-threshold', type=float, default=8.0, help='Minimum quality threshold for campaign creation (default: 8.0)')
     
     # Illusion detection command
     illusion_parser = subparsers.add_parser('illusion', help='Run standalone alligator illusion detection')
@@ -299,10 +302,58 @@ Examples:
             print(f"✅ Production scan completed: {result.get('message', 'Success')}")
     
     elif args.command == 'auto':
-        result = run_automated_trading_system(args.instrument, args.timeframes)
-        if result:
-            entries = result.get('entries', 0)
-            print(f"✅ Automated system completed: {entries} potential entries identified")
+        # Parse instruments
+        instruments = [inst.strip() for inst in args.instruments.split(',')]
+        demo_mode = not args.real  # Real overrides demo
+        
+        print(f"\n🤖 AUTOMATED FDB TRADING - Enhanced Mode")
+        print("=" * 60)
+        print(f"Instruments: {instruments}")
+        print(f"Mode: {'DEMO' if demo_mode else 'REAL'}")
+        print(f"Quality Threshold: {args.quality_threshold}")
+        print("=" * 60)
+        
+        all_results = {}
+        campaigns_created = []
+        
+        for instrument in instruments:
+            try:
+                print(f"\n🚀 ANALYZING {instrument}")
+                print("-" * 40)
+                result = run_automated_trading_system(instrument, args.timeframes)
+                all_results[instrument] = result
+                
+                if result and result.get("entries", 0) > 0:
+                    campaigns_created.append({
+                        "instrument": instrument,
+                        "entries": result.get("entries", 0),
+                        "quality": args.quality_threshold  # Use threshold as reference
+                    })
+                    
+            except Exception as e:
+                print(f"❌ Error processing {instrument}: {e}")
+                all_results[instrument] = {"error": str(e)}
+        
+        # Summary
+        print("\n🎯 AUTOMATED TRADING RESULTS")
+        print("=" * 50)
+        
+        for instrument, result in all_results.items():
+            if "error" in result:
+                print(f"❌ {instrument}: Error - {result['error']}")
+            else:
+                entries = result.get("entries", 0) if result else 0
+                status = "✅ ENTRIES FOUND" if entries > 0 else "📋 MANUAL REVIEW"
+                print(f"📈 {instrument}: {entries} entries (Q: {args.quality_threshold:.1f}) - {status}")
+        
+        if campaigns_created:
+            print(f"\n🚀 INSTRUMENTS WITH ENTRIES: {len(campaigns_created)}")
+            for campaign in campaigns_created:
+                print(f"  ✅ {campaign['instrument']}: {campaign['entries']} entries")
+            print(f"\n📁 Campaign files: ./campaigns/")
+            print("📋 Review and execute campaigns using entry scripts")
+        else:
+            print("\n📋 No high-quality signals found for automated campaigns")
     
     elif args.command == 'illusion':
         run_standalone_illusion_detection(args.instrument, args.timeframes)
