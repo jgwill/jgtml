@@ -264,55 +264,77 @@ class EnhancedFDBScanner:
         
         fdb_signals = []
         direction_bias = "NONE"
+        last_fdb_value = 0
         
-        # Check FDB signal from signal bar
-        fdb_value = int(float(signal_bar.get(FDB, 0)))
+        # Check recent bars for FDB signals (last 20 bars to catch recent signals)
+        recent_bars = data[-20:] if len(data) >= 20 else data
         
-        if fdb_value == 1:  # Buy signal
-            direction_bias = "BUY"
-            
-            # Validate signal using SignalOrderingHelper
-            entry_order, msg = create_fdb_entry_order(
-                instrument, 
-                signal_bar, 
-                current_bar,
-                lots=1,
-                t=timeframe,
-                quiet=True,
-                verbose_level=0
-            )
-            
-            if entry_order:
-                fdb_signals.append({
-                    'type': 'buy',
-                    'timestamp': signal_bar.get('Date', ''),
-                    'entry_rate': entry_order.get('entry_rate', 0),
-                    'stop_rate': entry_order.get('stop_rate', 0),
-                    'validated': True
-                })
+        # Debug: Print recent FDB values
+        fdb_values = [bar.get('fdb', '0') for bar in recent_bars]
+        non_zero_fdb = [(i, val) for i, val in enumerate(fdb_values) if val != '0']
+        if non_zero_fdb:
+            print(f"    Debug: Found FDB signals in recent bars: {non_zero_fdb}")
         
-        elif fdb_value == -1:  # Sell signal
-            direction_bias = "SELL"
+        for i, bar in enumerate(recent_bars):
+            fdb_value = int(float(bar.get('fdb', 0)))
+            last_fdb_value = fdb_value  # Keep track of last value seen
             
-            # Validate signal using SignalOrderingHelper
-            entry_order, msg = create_fdb_entry_order(
-                instrument,
-                signal_bar,
-                current_bar,
-                lots=1,
-                t=timeframe,
-                quiet=True,
-                verbose_level=0
-            )
-            
-            if entry_order:
-                fdb_signals.append({
-                    'type': 'sell',
-                    'timestamp': signal_bar.get('Date', ''),
-                    'entry_rate': entry_order.get('entry_rate', 0),
-                    'stop_rate': entry_order.get('stop_rate', 0),
-                    'validated': True
-                })
+            if fdb_value != 0:
+                # Found a signal, now validate it
+                if i < len(recent_bars) - 1:
+                    # Use this bar as signal bar and next as current bar for validation
+                    test_signal_bar = bar
+                    test_current_bar = recent_bars[i + 1]
+                else:
+                    # Use last two bars
+                    test_signal_bar = signal_bar
+                    test_current_bar = current_bar
+        
+                if fdb_value == 1:  # Buy signal
+                    direction_bias = "BUY"
+                    
+                    # Validate signal using SignalOrderingHelper
+                    entry_order, msg = create_fdb_entry_order(
+                        instrument, 
+                        test_signal_bar, 
+                        test_current_bar,
+                        lots=1,
+                        t=timeframe,
+                        quiet=True,
+                        verbose_level=0
+                    )
+                    
+                    if entry_order:
+                        fdb_signals.append({
+                            'type': 'buy',
+                            'timestamp': test_signal_bar.get('Date', ''),
+                            'entry_rate': entry_order.get('entry_rate', 0),
+                            'stop_rate': entry_order.get('stop_rate', 0),
+                            'validated': True
+                        })
+                
+                elif fdb_value == -1:  # Sell signal
+                    direction_bias = "SELL"
+                    
+                    # Validate signal using SignalOrderingHelper
+                    entry_order, msg = create_fdb_entry_order(
+                        instrument,
+                        test_signal_bar,
+                        test_current_bar,
+                        lots=1,
+                        t=timeframe,
+                        quiet=True,
+                        verbose_level=0
+                    )
+                    
+                    if entry_order:
+                        fdb_signals.append({
+                            'type': 'sell',
+                            'timestamp': test_signal_bar.get('Date', ''),
+                            'entry_rate': entry_order.get('entry_rate', 0),
+                            'stop_rate': entry_order.get('stop_rate', 0),
+                            'validated': True
+                        })
         
         return {
             'timeframe': timeframe,
