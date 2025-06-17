@@ -342,7 +342,7 @@ class EnhancedFDBScanner:
             'signals': fdb_signals,
             'latest_signal': fdb_signals[-1] if fdb_signals else None,
             'direction_bias': direction_bias,
-            'fdb_value': fdb_value
+            'fdb_value': last_fdb_value
         }
     
     def enhanced_scan(self, instrument, timeframes=None, include_illusion_detection=True):
