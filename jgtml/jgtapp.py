@@ -538,14 +538,27 @@ def tide(instrument, timeframe, buysell, type='tide', quiet=False):
     # Restore original argv
     sys.argv = original_argv
 
-def pds(instrument, timeframe,use_full=True):
-  use_full_arg = '--full' if use_full else ''
-  subprocess.run([PDSCLI_PROG_NAME, '-i', instrument, '-t', timeframe, use_full_arg], check=True)
+def pds(instrument, timeframe, use_full=True):
+  """Generate PDS data via `pdscli`."""
+  use_full_arg = '-uf' if use_full else '-nf'
+  subprocess.run([
+      PDSCLI_PROG_NAME,
+      '-i', instrument,
+      '-t', timeframe,
+      use_full_arg,
+  ], check=True)
 
-def cds(instrument, timeframe, use_fresh=False,use_full=True):
-  use_full_arg = '--full' if use_full else ''
-  old_or_fresh = '-old' if not use_fresh else '--fresh'
-  subprocess.run([CDSCLI_PROG_NAME, '-i', instrument, '-t', timeframe,use_full_arg, old_or_fresh], check=True)
+def cds(instrument, timeframe, use_fresh=False, use_full=True):
+  """Generate CDS data using `cdscli`."""
+  use_full_arg = '-uf' if use_full else '-nf'
+  old_or_fresh = '--fresh' if use_fresh else '-old'
+  subprocess.run([
+      CDSCLI_PROG_NAME,
+      '-i', instrument,
+      '-t', timeframe,
+      use_full_arg,
+      old_or_fresh,
+  ], check=True)
 
 def ads(instrument, timeframe, use_fresh=False,tc=True,pov=False):
   old_or_fresh = '-old' if not use_fresh else '--fresh'
@@ -558,24 +571,48 @@ def ads(instrument, timeframe, use_fresh=False,tc=True,pov=False):
     ads_cli_args.append('cp')
   subprocess.run(ads_cli_args, check=True)
 
-def ocds(instrument, timeframe,use_full=True):
-  use_full_arg = '--full' if use_full else ''
-  subprocess.run([JGTCLI_PROG_NAME, '-i', instrument, '-t', timeframe, use_full_arg, '-old'], check=True)
+def ocds(instrument, timeframe, use_full=True):
+  """Generate old CDS data via `jgtcli`."""
+  use_full_arg = '-uf' if use_full else '-nf'
+  subprocess.run([
+      JGTCLI_PROG_NAME,
+      '-i', instrument,
+      '-t', timeframe,
+      use_full_arg,
+      '-old',
+  ], check=True)
 
   
-def ttf(instrument, timeframe,pn="ttf",use_fresh=False,use_full=True):
-  use_full_arg = '--full' if use_full else ''
-  use_fresh_arg = '-old' if not use_fresh else '--fresh'
-  
-  ttf_args = [TTFCLI_PROG_NAME, '-i', instrument, '-t', timeframe, use_full_arg, use_fresh_arg, '-pn', pn]
+def ttf(instrument, timeframe, pn="ttf", use_fresh=False, use_full=True):
+  """Run TTFCLI for the specified instrument and timeframe."""
+  use_full_arg = '-uf' if use_full else '-nf'
+  use_fresh_arg = '--fresh' if use_fresh else '-old'
+
+  ttf_args = [
+      TTFCLI_PROG_NAME,
+      '-i', instrument,
+      '-t', timeframe,
+      use_full_arg,
+      use_fresh_arg,
+      '-pn', pn,
+  ]
   print("TTF is being ran by jgtapp with args: ", ttf_args)
   subprocess.run(ttf_args, check=True)
 
 
-def mlf(instrument, timeframe,pn="ttf",total_lagging_periods=5,use_fresh=False,use_full=True):
-  use_full_arg = '--full' if use_full else ''
-  use_fresh_arg = '-old' if not use_fresh else '--fresh'
-  mlf_args = [MLFCLI_PROG_NAME, '-i', instrument, '-t', timeframe, use_full_arg, use_fresh_arg, '-pn', pn,'--total_lagging_periods',total_lagging_periods]
+def mlf(instrument, timeframe, pn="ttf", total_lagging_periods=5, use_fresh=False, use_full=True):
+  """Run MLFCLI to generate FDB-based patterns."""
+  use_full_arg = '-uf' if use_full else '-nf'
+  use_fresh_arg = '--fresh' if use_fresh else '-old'
+  mlf_args = [
+      MLFCLI_PROG_NAME,
+      '-i', instrument,
+      '-t', timeframe,
+      use_full_arg,
+      use_fresh_arg,
+      '-pn', pn,
+      '--total_lagging_periods', total_lagging_periods,
+  ]
   subprocess.run(mlf_args, check=True)
 
   
