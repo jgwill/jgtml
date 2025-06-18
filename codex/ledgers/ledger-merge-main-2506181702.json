@@ -1,0 +1,12 @@
+{
+  "timestamp": "2506181702",
+  "agents": ["🧠 Mia", "🌸 Miette", "🎸 JamAI"],
+  "narrative": "Merged updates from main branch bringing new trading orchestration scripts and version bump to 0.0.332.",
+  "files": [".jgt/jgt_fdb_unified_scan.sh", ".jgt/unified_trading_loop.sh", "CS_jgtml_250609.code-workspace", "book/_/ledgers/ledger_automated_fdb_trading_workflow_250117_1535.md", "jgtagentic/book/_/ledgers/ledger_unified_trading_system_integration_25011516_1800.md", "jgtml/__init__.py", "jgtml/trading_orchestrator.py", "observation_processor.py", "package.json", "pyproject.toml", "narrative-map.md"],
+  "branches": "work",
+  "session": "shell",
+  "purpose": "Bring branch up to date with main and resolve conflicts for coherent versioning.",
+  "user_input": "bring changes from main branch into this one for compatibility and ensure coherence",
+  "scene": "Updated branch now includes orchestration tools and aligns version numbers with project release.",
+  "glyph": "🔀🧩"
+}

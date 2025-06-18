@@ -18,6 +18,10 @@ Enhanced packaging by adding `python-dateutil` directly to `requirements.txt` an
 Updated CLI offerings with 'enhancedfdbscan' command and improved error handling.
 - Fixed idscli call to avoid conflicting -new/-old flags.
 
+### branch: codex/fix-conflict-between--new-and--old-arguments-2025-06-18-16-30-36
+- Updated cdscli invocation to pass -uf/-nf flags and validated wrappers, documenting fixes in CHANGELOG. Merged main at version 0.0.333 to integrate trading orchestrator.
+
+
 ### Latest Consolidation
 - **67f0f1b** `Update version to 0.0.331` – preparing for new orchestrator features.
 - **9bc2122** `Add new markdown for Unified Trading System` – document integration design.
@@ -30,3 +34,6 @@ Updated CLI offerings with 'enhancedfdbscan' command and improved error handling
 - **d912369** `Update version to 0.0.332` – finalize stable release after integration.
 
 - **de8d4fc** `Consolidation record` – confirmed branch merge and updated logs.
+
+### Branch: codex/fix-conflict-between--new-and--old-arguments-2025-06-18-16-30-36
+- Logged merge resolution in `ledger-merge-main-resolution-2506182049.json`

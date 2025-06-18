@@ -1,38 +1,20 @@
 #!/usr/bin/env python3
 
 """
-JGT Trading System Orchestrator
+Simple JGT Trading System Orchestrator
 
-This module orchestrates the complete JGT trading system using the jgtcore timeframe library
-for proper separation between CLI utilities and core logic. It provides both real-time
-scheduling and simulation modes for testing.
-
-Usage:
-    # Real-time mode
-    python trading_orchestrator.py --timeframe H4 --instruments EUR-USD,GBP-USD --demo
-    
-    # Test mode (simulation)
-    python trading_orchestrator.py --timeframe H4 --instruments EUR-USD,GBP-USD --demo --test-mode
+This module orchestrates the complete JGT trading system without external dependencies
+for immediate testing and background service use.
 """
 
 import argparse
-import sys
-import time
 import subprocess
-from typing import List, Optional
-import os
-
-# Import jgtcore for timeframe logic
-try:
-    import jgtcore
-except ImportError:
-    # Add jgtcore to path if not installed
-    sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'jgtcore'))
-    import jgtcore
+import time
+from typing import List
 
 
-class TradingOrchestrator:
-    """Main trading system orchestrator using jgtcore timeframe library."""
+class SimpleTradingOrchestrator:
+    """Simple trading system orchestrator using existing JGT components."""
     
     def __init__(self, timeframe: str, instruments: List[str], 
                  quality_threshold: float = 8.0, demo: bool = True, test_mode: bool = False):
@@ -42,14 +24,10 @@ class TradingOrchestrator:
         self.demo = demo
         self.test_mode = test_mode
         
-        # Initialize timeframe checker using jgtcore
-        self.timeframe_checker = jgtcore.TimeframeChecker(timeframe)
-        
-        print(f"🚀 JGT Trading Orchestrator Initialized")
+        print(f"🚀 Simple JGT Trading Orchestrator Initialized")
         print(f"📊 Timeframe: {timeframe} | Instruments: {','.join(instruments)}")
-        print(f"🎯 Quality Threshold: {quality_threshold} | Demo: {demo}")
         if test_mode:
-            print("⚡ TEST MODE ENABLED - Using simulation")
+            print("⚡ TEST MODE ENABLED")
     
     def run_enhanced_trading_analysis(self) -> bool:
         """Run enhanced trading CLI analysis."""
@@ -64,20 +42,18 @@ class TradingOrchestrator:
                 '--quality-threshold', str(self.quality_threshold)
             ]
             
-            print(f"🔍 Running Enhanced Trading Analysis: {' '.join(cmd)}")
-            result = subprocess.run(cmd, capture_output=True, text=True)
+            print(f"🔍 Running: {' '.join(cmd)}")
+            result = subprocess.run(cmd, text=True)
             
             if result.returncode == 0:
-                print("✅ Enhanced trading analysis completed successfully")
-                if result.stdout:
-                    print(f"📋 Output: {result.stdout.strip()}")
+                print("✅ Enhanced trading analysis completed")
                 return True
             else:
-                print(f"❌ Enhanced trading analysis failed: {result.stderr}")
+                print(f"❌ Analysis failed with return code: {result.returncode}")
                 return False
                 
         except Exception as e:
-            print(f"❌ Error running enhanced trading analysis: {e}")
+            print(f"❌ Error: {e}")
             return False
     
     def generate_analysis_charts(self) -> bool:
@@ -139,50 +115,6 @@ class TradingOrchestrator:
             print(f"❌ Error updating trailing stops: {e}")
             return False
     
-    def quick_monitoring_update(self) -> bool:
-        """Quick chart update for monitoring."""
-        try:
-            primary_instrument = self.instruments[0] if self.instruments else "EUR-USD"
-            
-            cmd = [
-                'jgtads', '-i', primary_instrument, '-t', 'm5',
-                '--save_figure', 'charts/', '-tf'
-            ]
-            
-            print(f"📈 Quick monitoring chart update for {primary_instrument}")
-            result = subprocess.run(cmd, capture_output=True, text=True)
-            
-            if result.returncode == 0:
-                print("✅ Monitoring chart updated")
-                return True
-            else:
-                print(f"⚠️  Monitoring chart update failed: {result.stderr}")
-                return False
-                
-        except Exception as e:
-            print(f"❌ Error updating monitoring chart: {e}")
-            return False
-    
-    def rapid_trade_status_check(self) -> bool:
-        """Ultra-quick trade status check."""
-        try:
-            mode_flag = '--demo' if self.demo else '--real'
-            cmd = ['jgtapp', 'fxtr', mode_flag, '--nosave']
-            
-            print("⚡ Rapid trade status check...")
-            result = subprocess.run(cmd, capture_output=True, text=True)
-            
-            if result.returncode == 0:
-                print("✅ Trade status checked")
-                return True
-            else:
-                print("⚠️  Trade status check failed")
-                return False
-                
-        except Exception as e:
-            print(f"❌ Error checking trade status: {e}")
-            return False
-    
     def process_timeframe_trigger(self) -> bool:
         """Process actions when timeframe is triggered."""
         print(f"🎯 Processing {self.timeframe} timeframe trigger...")
@@ -203,39 +135,34 @@ class TradingOrchestrator:
         elif self.timeframe in ["m15", "m5"]:
             print("🎯 TRADE MANAGEMENT MODE")
             
+            # Enhanced trading analysis for trade management
+            if not self.run_enhanced_trading_analysis():
+                print("⚠️  Enhanced analysis failed, continuing with basic trade management...")
+            
             # Update trailing stops
             self.update_trailing_stops()
-            
-            # Quick monitoring if m5
-            if self.timeframe == "m5":
-                self.quick_monitoring_update()
             
             return True
             
         elif self.timeframe == "m1":
             print("⚡ RAPID MONITORING MODE")
             
-            # Ultra-quick status check
-            return self.rapid_trade_status_check()
+            # Quick enhanced analysis
+            return self.run_enhanced_trading_analysis()
         
         else:
             print(f"❌ Unsupported timeframe: {self.timeframe}")
             return False
     
     def run_single_cycle(self) -> bool:
-        """Run a single trading cycle (for testing)."""
+        """Run a single trading cycle."""
         if self.test_mode:
             print(f"🔄 SIMULATION: {self.timeframe} timeframe reached")
-            time.sleep(1)  # Small delay for realism
-            return self.process_timeframe_trigger()
-        else:
-            # Check if timeframe should trigger now
-            if self.timeframe_checker.check_now():
-                return self.process_timeframe_trigger()
-            else:
-                return False
+            time.sleep(1)
+        
+        return self.run_enhanced_trading_analysis()
     
-    def run_continuous(self, max_cycles: Optional[int] = None) -> None:
+    def run_continuous(self, max_cycles: int = None) -> None:
         """Run continuous trading orchestration."""
         cycle_count = 0
         
@@ -253,45 +180,15 @@ class TradingOrchestrator:
             print("🎯 Test cycles completed")
             return
         
-        # Real-time mode
-        print(f"🔄 Starting continuous monitoring for {self.timeframe} timeframe...")
-        
-        # Show next trigger time
-        next_seconds = self.timeframe_checker.seconds_until_next_trigger()
-        if next_seconds:
-            minutes = next_seconds // 60
-            seconds = next_seconds % 60
-            print(f"⏰ Next {self.timeframe} trigger in: {minutes}m {seconds}s")
-        
-        try:
-            while True:
-                if self.run_single_cycle():
-                    cycle_count += 1
-                    print(f"✅ Cycle {cycle_count} completed")
-                    
-                    if max_cycles and cycle_count >= max_cycles:
-                        print(f"🏁 Reached maximum cycles ({max_cycles})")
-                        break
-                
-                # Sleep appropriate amount for timeframe
-                if self.timeframe == "m1":
-                    time.sleep(2)
-                elif self.timeframe in ["m5", "m15"]:
-                    time.sleep(30)
-                else:
-                    time.sleep(60)
-                    
-        except KeyboardInterrupt:
-            print("\n🛑 Trading orchestrator stopped by user")
-        except Exception as e:
-            print(f"\n❌ Trading orchestrator error: {e}")
+        # Real-time mode - single execution (called by timeframe scheduler)
+        self.run_single_cycle()
 
 
 def main():
     """Main entry point."""
     parser = argparse.ArgumentParser(
-        description="JGT Trading System Orchestrator",
-        epilog="Example: python trading_orchestrator.py --timeframe H4 --instruments EUR-USD,GBP-USD --demo --test-mode"
+        description="Simple JGT Trading System Orchestrator",
+        epilog="Example: python simple_trading_orchestrator.py --timeframe m5 --instruments EUR-USD --demo --test-mode"
     )
     
     parser.add_argument(
@@ -341,7 +238,7 @@ def main():
     demo_mode = not args.real  # Default to demo unless --real is specified
     
     # Create and run orchestrator
-    orchestrator = TradingOrchestrator(
+    orchestrator = SimpleTradingOrchestrator(
         timeframe=args.timeframe,
         instruments=instruments,
         quality_threshold=args.quality_threshold,
@@ -357,4 +254,3 @@ def main():
 
 if __name__ == "__main__":
     main() 
-  

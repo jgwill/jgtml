@@ -1,0 +1,12 @@
+{
+  "timestamp": "2506182041",
+  "agents": ["🧠 Mia", "🌸 Miette", "🎸 JamAI"],
+  "narrative": "Resolved merge conflicts with main and adopted version 0.0.333. Updated narrative map, package files, and __init__.py. Added consolidation ledgers from main for continuity.",
+  "files": ["jgtml/__init__.py", "pyproject.toml", "package.json", "narrative-map.md", "codex/ledgers/ledger-consolidation-2506182003.json", "codex/ledgers/ledger-consolidation-2506182009.json"],
+  "branches": "work, main",
+  "session": "shell",
+  "purpose": "Merge main branch into work to maintain compatibility and document resolution.",
+  "user_input": "This branch has conflicts that must be resolved",
+  "scene": "Timeline stabilized with new version and ledger entries, enabling future CLI flag coherence.",
+  "glyph": "🔀📚"
+}
