@@ -29,40 +29,6 @@ class SimpleTradingOrchestrator:
         if test_mode:
             print("⚡ TEST MODE ENABLED")
     
-    def refresh_data(self) -> bool:
-        """Refresh data for all instruments using Python module imports."""
-        print("🔄 Refreshing market data...")
-        
-        try:
-            # Force refresh using Python module approach
-            for instrument in self.instruments:
-                print(f"  📊 Refreshing {instrument}...")
-                
-                for tf in ['H4', 'H1', 'm15']:
-                    try:
-                        # Use python -m approach to force cache refresh
-                        cmd = ['python', '-c', f'''
-import sys
-sys.path.append(".")
-from jgtml.enhancedtradingcli import EnhancedTradingCLI
-cli = EnhancedTradingCLI()
-cli.force_refresh_cache("{instrument}", "{tf}")
-print("Cache refreshed for {instrument} {tf}")
-''']
-                        result = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
-                        if result.returncode == 0:
-                            print(f"    ✅ {instrument} {tf} refreshed")
-                        else:
-                            print(f"    ⚠️  {instrument} {tf} refresh issue")
-                    except:
-                        print(f"    ⚠️  {instrument} {tf} refresh failed")
-                        
-        except Exception as e:
-            print(f"  ⚠️  Data refresh error: {e}")
-        
-        print("✅ Data refresh attempt completed")
-        return True
-    
     def run_enhanced_trading_analysis(self) -> bool:
         """Run enhanced trading CLI analysis."""
         try:
@@ -234,34 +200,40 @@ def main():
     
     parser.add_argument(
         '--instruments', '-i',
-        default='EUR-USD,GBP-USD,XAU-USD',
-        help='Comma-separated list of instruments'
+        default='EUR-USD',
+        help='Comma-separated list of instruments (e.g., EUR-USD,GBP-USD)'
     )
     
     parser.add_argument(
         '--quality-threshold', '-q',
-        type=float, default=8.0,
-        help='Quality threshold for trading signals'
+        type=float,
+        default=8.0,
+        help='Quality threshold for trading signals (default: 8.0)'
     )
     
     parser.add_argument(
-        '--demo', action='store_true', default=True,
+        '--demo',
+        action='store_true',
+        default=True,
         help='Use demo account (default: True)'
     )
     
     parser.add_argument(
-        '--real', action='store_true',
+        '--real',
+        action='store_true',
         help='Use real account (overrides --demo)'
     )
     
     parser.add_argument(
-        '--test-mode', action='store_true',
-        help='Enable test mode (simulation without real timeframe waiting)'
+        '--test-mode',
+        action='store_true',
+        help='Run in test mode (simulation)'
     )
     
     parser.add_argument(
-        '--max-cycles', type=int,
-        help='Maximum number of cycles to run (useful for testing)'
+        '--max-cycles',
+        type=int,
+        help='Maximum cycles for test mode'
     )
     
     args = parser.parse_args()
@@ -269,10 +241,10 @@ def main():
     # Parse instruments
     instruments = [inst.strip() for inst in args.instruments.split(',')]
     
-    # Determine demo mode
-    demo_mode = not args.real  # Default to demo unless --real is specified
+    # Determine demo/real mode
+    demo_mode = not args.real if args.real else args.demo
     
-    # Create and run orchestrator
+    # Create orchestrator
     orchestrator = SimpleTradingOrchestrator(
         timeframe=args.timeframe,
         instruments=instruments,
@@ -281,10 +253,8 @@ def main():
         test_mode=args.test_mode
     )
     
-    if args.test_mode or args.max_cycles:
-        orchestrator.run_continuous(max_cycles=args.max_cycles)
-    else:
-        orchestrator.run_continuous()
+    # Run orchestrator
+    orchestrator.run_continuous(max_cycles=args.max_cycles)
 
 
 if __name__ == "__main__":
