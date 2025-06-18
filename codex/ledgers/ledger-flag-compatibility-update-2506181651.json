@@ -1,0 +1,12 @@
+{
+  "timestamp": "2506181651",
+  "agents": ["🧠 Mia", "🌸 Miette", "🎸 JamAI"],
+  "narrative": "Finalize CLI flag alignment in wrapper functions and document updates in CHANGELOG.",
+  "files": ["CHANGELOG.md", "narrative-map.md", "jgtml/jgtapp.py"],
+  "branches": "work",
+  "session": "shell",
+  "purpose": "Record finalization of CLI flag compatibility work.",
+  "user_input": "In previous turns, the user had the following interaction ... With what is above, you might have what you need to correct that issue.",
+  "scene": "Wrapper calls now reliably use correct flags, preventing runtime errors during data refresh.",
+  "glyph": "⚙️📖"
+}
