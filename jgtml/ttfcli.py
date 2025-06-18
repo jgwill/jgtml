@@ -42,8 +42,24 @@ def _parse_args():
     args = jgtcommon.parse_args(parser)
     
     args =check_arguments(args)
-    
+
     return args
+
+
+def generate_ttf_for_pattern(instrument, timeframe, patternname="ttf", use_full=True, use_fresh=False, quotescount=-1, columns_list_from_higher_tf=None, args=None):
+    """Programmatic helper mirroring CLI behavior for JTC integrations."""
+    pseudo_force_read_flag = True if not use_fresh else False
+    return create_ttf_csv(
+        instrument,
+        timeframe,
+        use_full if use_full else False,
+        True if use_fresh else False,
+        quotescount,
+        pseudo_force_read_flag,
+        columns_list_from_higher_tf=columns_list_from_higher_tf,
+        pn=patternname,
+        args=args,
+    )
 
 
 def main():

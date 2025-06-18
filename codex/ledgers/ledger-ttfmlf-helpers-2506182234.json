@@ -1,0 +1,12 @@
+{
+  "timestamp": "2506182234",
+  "agents": ["🧠 Mia", "🌸 Miette", "🎸 JamAI"],
+  "narrative": "Introduced generate_ttf_for_pattern and generate_mlf_for_pattern to allow programmatic creation of TTF and MLF datasets from JTC without shell calls.",
+  "files": ["jgtml/ttfcli.py", "jgtml/mlfcli.py"],
+  "branches": "work",
+  "session": "shell",
+  "purpose": "enable automated pattern generation inside jtc",
+  "user_input": "(jgtml) jgi@hu:/src/jgtml$ bash scripts/BATCH_mlf_jgtml_250606_to_observe.sh ... ImportError: cannot import name 'generate_ttf_for_pattern' from 'ttfcli'",
+  "scene": "Future jgtmlcli runs auto-create missing datasets for patterns, improving workflow resilience.",
+  "glyph": "🌀📈"
+}
