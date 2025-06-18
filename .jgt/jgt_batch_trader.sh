@@ -3,7 +3,7 @@
 # This script manages multiple timeframe trading processes in background
 # Integrates: Enhanced Trading CLI, Trading Orchestrator, Timeframe Scheduler, FDB Scanner
 
-set -e
+#set -e
 
 # Configuration
 DEFAULT_INSTRUMENTS="EUR-USD,GBP-USD,XAU-USD"

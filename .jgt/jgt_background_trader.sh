@@ -2,7 +2,7 @@
 # 🚀 JGT BACKGROUND TRADER - Multi-Timeframe Demo Trading System
 # Manages background trading processes for m5, m15, H1 timeframes
 
-set -e
+#set -e
 
 # Configuration
 INSTRUMENTS="EUR-USD,GBP-USD,XAU-USD"

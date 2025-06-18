@@ -4,7 +4,7 @@
 # Author: JGT Trading System Integration
 # Version: 1.0 - Complete Stack Integration
 
-set -e  # Exit on any error
+#set -e  # Exit on any error
 
 TIMEFRAME=${1:-"H4"}
 INSTRUMENTS=${2:-"EUR-USD,GBP-USD,XAU-USD"}
