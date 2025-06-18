@@ -43,13 +43,13 @@ class SimpleTradingOrchestrator:
             ]
             
             print(f"🔍 Running: {' '.join(cmd)}")
-            result = subprocess.run(cmd, capture_output=True, text=True)
+            result = subprocess.run(cmd, text=True)
             
             if result.returncode == 0:
                 print("✅ Enhanced trading analysis completed")
                 return True
             else:
-                print(f"❌ Analysis failed: {result.stderr}")
+                print(f"❌ Analysis failed with return code: {result.returncode}")
                 return False
                 
         except Exception as e:
