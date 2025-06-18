@@ -28,15 +28,24 @@ import argparse
 sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
 
 try:
-    from enhanced_fdb_scanner_with_illusion_detection import EnhancedFDBScanner
-    from SOHelper import get_last_two_bars, get_bar_at_index
-    from SignalOrderingHelper import create_fdb_entry_order
+    from .enhanced_fdb_scanner_with_illusion_detection import EnhancedFDBScanner
+    from .SOHelper import get_last_two_bars, get_bar_at_index
+    from .SignalOrderingHelper import create_fdb_entry_order
     from jgtutils import jgtcommon
     from jgtutils.jgtconstants import FDB, ZONE_SIGNAL, MFI_FADE, MFI_SQUAT
     import tlid
 except ImportError as e:
-    print(f"Import error: {e}")
-    print("Some modules may not be available")
+    try:
+        # Fallback to absolute imports
+        from jgtml.enhanced_fdb_scanner_with_illusion_detection import EnhancedFDBScanner
+        from jgtml.SOHelper import get_last_two_bars, get_bar_at_index
+        from jgtml.SignalOrderingHelper import create_fdb_entry_order
+        from jgtutils import jgtcommon
+        from jgtutils.jgtconstants import FDB, ZONE_SIGNAL, MFI_FADE, MFI_SQUAT
+        import tlid
+    except ImportError as e2:
+        print(f"Import error: {e2}")
+        print("Some modules may not be available")
 
 class HigherTimeframeBiasAnalyzer:
     """Analyzes higher timeframe bias for trading decisions"""
