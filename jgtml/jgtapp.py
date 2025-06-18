@@ -244,11 +244,17 @@ def fxmvstop(tradeid,stop,flag_pips=False, demo=False,args=None):
     #@STCIssue pass the error code to the caller context.  ex. fxmvstop is ran directly from the CLI, the error code should be passed by exiting the process with the error code, else if used by fxmvstopgator, the error code should be passed to the caller context in a raised exception.
     #look at the args command to guess the context
 
-def ids(instrument, timeframe,use_full=False,use_fresh=True):
+def ids(instrument, timeframe, use_full=False, use_fresh=True):
   """Refresh the IDS data (indicator Data Service)."""
-  use_fresh_arg = '-old' if not use_fresh else '--fresh'
-  use_full_arg = '--full' if use_full else '-new'
-  subprocess.run([IDSCLI_PROG_NAME, '-i', instrument, '-t', timeframe, use_full_arg, use_fresh_arg], check=True)
+  use_fresh_arg = '--fresh' if use_fresh else '-old'
+  use_full_arg = '-uf' if use_full else '-nf'
+  subprocess.run([
+      IDSCLI_PROG_NAME,
+      '-i', instrument,
+      '-t', timeframe,
+      use_full_arg,
+      use_fresh_arg,
+  ], check=True)
 
 """
 fxmvstopgator -tid 68773276  --demo -i AUD/NZD -t H4 --lips
