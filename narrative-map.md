@@ -17,8 +17,16 @@ Enhanced packaging by adding `python-dateutil` directly to `requirements.txt` an
 - **caea33f** `fix: handle missing illusion count` – improved resilience of enhanced FDB scanner and added CLI entrypoint.
 Updated CLI offerings with 'enhancedfdbscan' command and improved error handling.
 - Fixed idscli call to avoid conflicting -new/-old flags.
-- Updated cdscli invocation to pass -uf/-nf flags correctly.
-- Confirmed wrapper flags match underlying CLI help outputs to prevent future argument mismatches.
-- Documented CLI flag fixes in CHANGELOG
-- Merged main branch to align version 0.0.332 and integrate trading orchestrator
+- Updated cdscli invocation to pass -uf/-nf flags and validated wrappers, documenting fixes in CHANGELOG. Merged main at version 0.0.333 to integrate trading orchestrator.
+### Latest Consolidation
+- **67f0f1b** `Update version to 0.0.331` – preparing for new orchestrator features.
+- **9bc2122** `Add new markdown for Unified Trading System` – document integration design.
+- **9ba1311** `Add observation processor` – supports natural language market analysis.
+- **19064dd** `Add unified trading loop` – centralizes trading system operations.
+- **6b76b79** `Remove unused paths` – cleanup workspace settings.
+- **e147f10** `Add JGT Unified FDB Scanner` – advanced market scanning script.
+- **9b4877b** `Add test mode flag` – enables dry-run capability.
+- **8e5cf36** `Add Trading Orchestrator` – orchestrates trading flows with scheduling.
+- **d912369** `Update version to 0.0.332` – finalize stable release after integration.
 
+- **de8d4fc** `Consolidation record` – confirmed branch merge and updated logs.
