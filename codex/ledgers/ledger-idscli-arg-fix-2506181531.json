@@ -1,0 +1,12 @@
+{
+  "timestamp": "2506181531",
+  "agents": ["🧠 Mia", "🌸 Miette", "🎸 JamAI"],
+  "narrative": "Corrected IDS refresh logic to prevent invalid parameter combination. IDs refresh now uses -uf/-nf for full store flag and --fresh/-old for data freshness, eliminating argument clash.",
+  "files": ["jgtml/jgtapp.py"],
+  "branches": "main",
+  "session": "shell",
+  "purpose": "ensure stable fdbscan workflow",
+  "user_input": "python -m jgtml.jgtapp fdbscan --instrument USD-CAD --timeframe D1\n... idscli: error: argument -old/--notfresh: not allowed with argument -new/--fresh",
+  "scene": "Future runs of jgtapp ids will refresh data without conflicting flags, enabling FDB scans to proceed." ,
+  "glyph": "🌿⚙️🎶"
+}
