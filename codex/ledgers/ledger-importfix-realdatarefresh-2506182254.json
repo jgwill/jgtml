@@ -1,0 +1,12 @@
+{
+  "timestamp": "2506182254",
+  "agents": ["🧠 Mia", "🌸 Miette", "🎸 JamAI"],
+  "narrative": "Adjusted real_data_refresh to use correct jgtapp import path so automated trading scripts can refresh CDS data without ModuleNotFoundError.",
+  "files": [".jgt/real_data_refresh.py"],
+  "branches": "work",
+  "session": "shell",
+  "purpose": "fix import path in refresh helper",
+  "user_input": "WORK ON\n\n❌ Real data refresh failed: No module named 'jgtml.jgtml'",
+  "scene": "Future runs of jgt_simple_trader.sh will load jgtapp properly and refresh real data before trading cycles.",
+  "glyph": "🌿🔧"
+}

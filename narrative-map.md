@@ -1,6 +1,8 @@
 # Narrative Map
 
 ## Recent Commits
+- **a81b638** `chore: ledger for refresh import fix`
+- **bd8635e** `fix: correct jgtapp import for real refresh`
 
 - **4bd1fce** `chmod` – permission adjustments for scripts.
 - **225c2a4** `Add new documentation for Starting New Phases of Work` – added docs about workflow phases.
