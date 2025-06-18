@@ -37,3 +37,4 @@ Updated CLI offerings with 'enhancedfdbscan' command and improved error handling
 
 ### Branch: codex/fix-conflict-between--new-and--old-arguments-2025-06-18-16-30-36
 - Logged merge resolution in `ledger-merge-main-resolution-2506182049.json`
+- **5a3b4b9** `fix: ensure enhancedtradingcli import path` – updated path handling for CLI.
