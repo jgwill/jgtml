@@ -38,3 +38,6 @@ Updated CLI offerings with 'enhancedfdbscan' command and improved error handling
 ### Branch: codex/fix-conflict-between--new-and--old-arguments-2025-06-18-16-30-36
 - Logged merge resolution in `ledger-merge-main-resolution-2506182049.json`
 - **5a3b4b9** `fix: ensure enhancedtradingcli import path` – updated path handling for CLI.
+
+- **9d5da56** `feat: expose pattern generation helpers` – added generate_ttf_for_pattern and generate_mlf_for_pattern for internal use.
+- **c862081** `chore: log ledger for ttf/mlf helper addition` – recorded changes supporting automated dataset generation.
