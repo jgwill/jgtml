@@ -17,8 +17,10 @@ from pathlib import Path
 import argparse
 from datetime import datetime
 
-# Add jgtml to path
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'jgtml'))
+# Ensure the package directory is on the import path
+package_dir = Path(__file__).resolve().parent
+if str(package_dir) not in sys.path:
+    sys.path.insert(0, str(package_dir))
 
 def run_enhanced_fdb_scan(instrument, timeframes, options):
     """Run the enhanced FDB scanner with illusion detection"""
