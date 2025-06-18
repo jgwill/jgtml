@@ -10,6 +10,7 @@ TIMEFRAME=${1:-"H4"}
 INSTRUMENTS=${2:-"EUR-USD,GBP-USD,XAU-USD"}
 QUALITY_THRESHOLD=${3:-"8.0"}
 MODE=${4:-"--demo"}
+TEST_MODE=${5:-"false"}  # Add test mode flag
 
 # Colors for output
 RED='\033[0;31m'
@@ -38,6 +39,10 @@ error() {
 main() {
     log "🚀 JGT Unified Trading System Starting..."
     log "📊 Timeframe: $TIMEFRAME | Instruments: $INSTRUMENTS | Quality: $QUALITY_THRESHOLD"
+    
+    if [[ "$TEST_MODE" == "true" ]]; then
+        warning "⚡ TEST MODE ENABLED - Using simulation instead of actual timeframe waiting"
+    fi
     
     case $TIMEFRAME in
         "H4"|"H1"|"D1")
