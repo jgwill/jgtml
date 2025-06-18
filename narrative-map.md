@@ -20,3 +20,5 @@ Updated CLI offerings with 'enhancedfdbscan' command and improved error handling
 - Updated cdscli invocation to pass -uf/-nf flags correctly.
 - Confirmed wrapper flags match underlying CLI help outputs to prevent future argument mismatches.
 - Documented CLI flag fixes in CHANGELOG
+- Merged main branch to align version 0.0.332 and integrate trading orchestrator
+
