@@ -8,7 +8,7 @@ set -e  # Exit on any error
 # Default parameters
 TIMEFRAMES="D1"
 INSTRUMENTS="SPX500 EUR-USD"
-PATTERNS="mfi zonesq aoac"  # Production patterns from settings.json
+PATTERNS="mz mfi zonesq aoac"  # Production patterns from settings.json
 
 # Override with command line arguments
 if [ "$1" != "" ]; then
@@ -21,7 +21,7 @@ if [ "$3" != "" ]; then
     PATTERNS="$3"
 fi
 
-USE_OFFLINE_DATA=1
+USE_OFFLINE_DATA=0
 USE_OFFLINE_ARG=""
 if [ "$USE_OFFLINE_DATA" -eq 1 ]; then
     USE_OFFLINE_ARG="-old"

@@ -12,7 +12,7 @@ if [ "$2" != "" ];then
 fi
 
 
-USE_OFFLINE_DATA=1
+USE_OFFLINE_DATA=0
 USE_OFFLINE_ARG=""
 if [ "$USE_OFFLINE_DATA" -eq 1 ];then
     echo "# Using OFFLINE Data (Market is close or using -old to get faster results)"
@@ -21,7 +21,7 @@ fi
 
 
 
-PATTERNS_BEING_EXPLORED="mfi zonesq aoac" #see:  $HOME/.jgt/settings.json for the property "patterns"
+PATTERNS_BEING_EXPLORED="mz mfi zonesq aoac" #see:  $HOME/.jgt/settings.json for the property "patterns"
 # #Ex. settings.json
 #  "patterns": {
 #     "mfi": {
