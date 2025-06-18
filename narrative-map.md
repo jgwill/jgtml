@@ -30,3 +30,4 @@ Updated CLI offerings with 'enhancedfdbscan' command and improved error handling
 - **d912369** `Update version to 0.0.332` – finalize stable release after integration.
 
 - **de8d4fc** `Consolidation record` – confirmed branch merge and updated logs.
+- Logged merge resolution in `ledger-merge-main-resolution-2506182049.json`
