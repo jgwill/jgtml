@@ -22,9 +22,9 @@ fi
 log_msg "🚀 Starting $TIMEFRAME background trader"
 log_msg "📍 Working directory: $(pwd)"
 
-# Force data refresh first
-log_msg "🔄 Forcing data refresh..."
-python "$JGTML_DIR/.jgt/force_data_refresh.py"
+# REAL data refresh using jgtapp.cds()
+log_msg "🔄 Real data refresh using jgtapp.cds()..."
+python "$JGTML_DIR/.jgt/real_data_refresh.py"
 
 # Run trading analysis
 log_msg "🔍 Running analysis for $TIMEFRAME..."
