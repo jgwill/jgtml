@@ -1,0 +1,12 @@
+{
+  "timestamp": "2506181636",
+  "agents": ["🧠 Mia", "🌸 Miette", "🎸 JamAI"],
+  "narrative": "Validated CLI flag compatibility across wrapper functions. Ensured each helper uses -uf/-nf and --fresh/-old as supported by underlying CLIs via --help checks.",
+  "files": ["jgtml/jgtapp.py"],
+  "branches": "work",
+  "session": "shell",
+  "purpose": "confirm correct flag usage after cdscli and idscli fixes",
+  "user_input": "Validate that all flags you added are compatible with the commands wrapped inside by looking all their helps (some of them are internal python script you have access to)",
+  "scene": "Stable wrapper calls enable seamless dataset refresh and pattern generation without argument errors.",
+  "glyph": "⚙️🧪"
+}

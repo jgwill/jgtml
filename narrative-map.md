@@ -18,3 +18,4 @@ Enhanced packaging by adding `python-dateutil` directly to `requirements.txt` an
 Updated CLI offerings with 'enhancedfdbscan' command and improved error handling.
 - Fixed idscli call to avoid conflicting -new/-old flags.
 - Updated cdscli invocation to pass -uf/-nf flags correctly.
+- Confirmed wrapper flags match underlying CLI help outputs to prevent future argument mismatches.
