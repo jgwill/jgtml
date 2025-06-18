@@ -71,36 +71,49 @@ test_timeframe() {
 create_trader_script() {
     local timeframe=$1
     local trader_script="$SCRIPT_DIR/trader_${timeframe}.sh"
+    local jgtml_dir="$(pwd)"
     
-    cat > "$trader_script" << 'EOF'
+    cat > "$trader_script" << EOF
 #!/bin/bash
-# Auto-generated trader script
+# Auto-generated trader script for $timeframe
 
-TIMEFRAME="$1"
-LOG_FILE=".jgt/logs/trader_${TIMEFRAME}.log"
-PID_FILE=".jgt/pids/trader_${TIMEFRAME}.pid"
+TIMEFRAME="$timeframe"
+JGTML_DIR="$jgtml_dir"
+LOG_FILE="\$JGTML_DIR/.jgt/logs/trader_\${TIMEFRAME}.log"
+PID_FILE="\$JGTML_DIR/.jgt/pids/trader_\${TIMEFRAME}.pid"
 
-echo $$ > "$PID_FILE"
+echo \$\$ > "\$PID_FILE"
 
 log_msg() {
-    echo "$(date '+%Y-%m-%d %H:%M:%S') [$TIMEFRAME] $1" | tee -a "$LOG_FILE"
+    echo "\$(date '+%Y-%m-%d %H:%M:%S') [\$TIMEFRAME] \$1" | tee -a "\$LOG_FILE"
 }
 
-log_msg "🚀 Starting $TIMEFRAME trader (PID: $$)"
+# Change to jgtml directory
+cd "\$JGTML_DIR"
+
+# Activate conda environment
+if command -v conda &> /dev/null; then
+    eval "\$(conda shell.bash hook)"
+    conda activate jgtml 2>/dev/null || log_msg "⚠️  Could not activate jgtml environment"
+fi
+
+log_msg "🚀 Starting \$TIMEFRAME trader (PID: \$\$)"
+log_msg "📍 Working directory: \$(pwd)"
 
 while true; do
-    log_msg "🔍 Running analysis for $TIMEFRAME..."
+    log_msg "🔍 Running analysis for \$TIMEFRAME..."
     
-    python jgtml/simple_trading_orchestrator.py \
-        --timeframe "$TIMEFRAME" \
-        --instruments "EUR-USD,GBP-USD,XAU-USD" \
-        --demo \
+    # Run trading analysis (includes data refresh)
+    python "\$JGTML_DIR/jgtml/simple_trading_orchestrator.py" \\
+        --timeframe "\$TIMEFRAME" \\
+        --instruments "EUR-USD,GBP-USD,XAU-USD" \\
+        --demo \\
         --quality-threshold 8.0
     
-    log_msg "✅ $TIMEFRAME analysis cycle completed"
+    log_msg "✅ \$TIMEFRAME analysis cycle completed"
     
     # Wait based on timeframe
-    case "$TIMEFRAME" in
+    case "\$TIMEFRAME" in
         "m5") sleep 300 ;;   # 5 minutes
         "m15") sleep 900 ;;  # 15 minutes  
         "H1") sleep 3600 ;;  # 1 hour
