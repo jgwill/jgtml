@@ -12,6 +12,7 @@ PROJECT_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 # Default parameters
 TIMEFRAMES="D1"
 INSTRUMENTS="SPX500 EUR-USD"
+INSTRUMENTS="EUR-USD USD-CAD SPX500 AUD-USD AUD-CAD GBP-USD"
 PATTERNS="mfi mz zonesq aoac"  # All patterns for discovery
 
 # Override with command line arguments
