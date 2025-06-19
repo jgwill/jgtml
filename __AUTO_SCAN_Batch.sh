@@ -1,1 +1,1 @@
-for i in AUD-CAD SPX500 GBP-USD USD-CAD EUR-USD AUD-USD;do python scripts/automated_entry_system.py --live --instrument $i --min-quality 7.0;done
+for i in AUD-CAD SPX500 GBP-USD USD-CAD EUR-USD AUD-USD;do python scripts/automated_entry_system.py --live --instrument $i --min-quality 7.0;eco "=================================";echo "------------------------";echo "==================================";done
