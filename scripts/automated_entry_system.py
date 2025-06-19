@@ -54,28 +54,33 @@ class AutomatedTradingSystem:
         return default_config
     
     def refresh_market_data(self, instrument, timeframes=None):
-        """Refresh market data for specified instrument and timeframes"""
+        """Refresh market data using REAL jgtapp.cds() function"""
         if timeframes is None:
             timeframes = self.timeframes
             
         print(f"🔄 Refreshing data for {instrument}...")
         
-        success_count = 0
-        for tf in timeframes:
-            try:
-                # This would integrate with jgtpy data refresh
-                # For now, we check if cache files exist and are recent
-                cache_file = f"/src/jgtml/cache/fdb_scanners/{instrument}_{tf}_cds_cache.csv"
-                if Path(cache_file).exists():
-                    print(f"  ✅ {tf}: Cache available")
+        try:
+            # Import the REAL jgtapp module
+            sys.path.insert(0, '/src/jgtml')
+            from jgtml.jgtapp import cds
+            
+            success_count = 0
+            for tf in timeframes:
+                try:
+                    print(f"  🔄 Generating {instrument} {tf} via jgtapp.cds()...")
+                    # Use the REAL CDS generation function
+                    cds(instrument, tf, use_fresh=True, use_full=True)
+                    print(f"  ✅ {tf}: Data generated successfully")
                     success_count += 1
-                else:
-                    print(f"  ⚠️  {tf}: Cache missing - would refresh via jgtpy")
+                except Exception as e:
+                    print(f"  ❌ {tf}: CDS generation failed: {e}")
                     
-            except Exception as e:
-                print(f"  ❌ {tf}: Error - {e}")
-                
-        return success_count > 0
+            return success_count > 0
+            
+        except Exception as e:
+            print(f"❌ Failed to import jgtapp.cds(): {e}")
+            return False
     
     def run_enhanced_scan(self, instrument, timeframes):
         """Run enhanced FDB scan with illusion detection"""
