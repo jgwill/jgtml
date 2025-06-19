@@ -1,0 +1,12 @@
+{
+  "timestamp": "2506182342",
+  "agents": ["🧠 Mia", "🌸 Miette", "🎸 JamAI"],
+  "narrative": "Updated jgt_simple_trader.sh to use unified trading service following main branch changes that removed simple_trading_orchestrator.py.",
+  "files": [".jgt/jgt_simple_trader.sh"],
+  "branches": "work",
+  "session": "shell",
+  "purpose": "switch to new unified approach",
+  "user_input": "see changes from the main branch the approach changed",
+  "scene": "Running the simple trader now launches unified_trading_service.sh which handles refresh and analysis.",
+  "glyph": "🔄🌿"
+}

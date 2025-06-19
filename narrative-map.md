@@ -43,3 +43,5 @@ Updated CLI offerings with 'enhancedfdbscan' command and improved error handling
 
 - **9d5da56** `feat: expose pattern generation helpers` – added generate_ttf_for_pattern and generate_mlf_for_pattern for internal use.
 - **c862081** `chore: log ledger for ttf/mlf helper addition` – recorded changes supporting automated dataset generation.
+
+- **6fb4dde** `chore: use unified service in simple trader`

@@ -22,17 +22,8 @@ fi
 log_msg "🚀 Starting $TIMEFRAME background trader"
 log_msg "📍 Working directory: $(pwd)"
 
-# REAL data refresh using jgtapp.cds()
-log_msg "🔄 Real data refresh using jgtapp.cds()..."
-python "$JGTML_DIR/.jgt/real_data_refresh.py"
+# Use unified trading service which handles refresh and analysis
+log_msg "🔍 Running unified trading service for $TIMEFRAME..."
+"$JGTML_DIR/.jgt/unified_trading_service.sh" "$TIMEFRAME"
 
-# Run trading analysis
-log_msg "🔍 Running analysis for $TIMEFRAME..."
-
-python "$JGTML_DIR/jgtml/simple_trading_orchestrator.py" \
-    --timeframe "$TIMEFRAME" \
-    --instruments "EUR-USD,GBP-USD,XAU-USD" \
-    --demo \
-    --quality-threshold 8.0
-
-log_msg "✅ $TIMEFRAME analysis completed" 
+log_msg "✅ $TIMEFRAME trading service completed"
