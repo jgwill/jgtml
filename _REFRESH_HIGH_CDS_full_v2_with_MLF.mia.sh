@@ -13,7 +13,8 @@ cat << 'EOF'
    /   \     "Praise the terminal gods!"  
   /     \  
 EOF
-
+echo "NOT SURE IT WORKED - IT HANDEG"
+sleep 4
 
 # !!! EMERGENCY DEBUG MODE ACTIVATED !!!
 # DIAGNOSIS: Parallel processing gone wild + output pollution
