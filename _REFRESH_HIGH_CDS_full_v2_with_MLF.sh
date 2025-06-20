@@ -35,9 +35,9 @@ for t in W1 M1 D1 H4; do
         # Process patterns (skip M1)
         if [ "$t" != "M1" ]; then 
             for p in $patterns; do 
-                ttfcli -i "$i" -t "$t" -pn "$p" --full -old
-                mlfcli -i "$i" -t "$t" -pn "$p" --full -old
-                jgtmlcli -i "$i" -t "$t" -pn "$p" --full -old
+                ttfcli -i "$i" -t "$t" -pn "$p" --full -old &>/dev/null && echo "ttf $i $t $p done"
+                mlfcli -i "$i" -t "$t" -pn "$p" --full -old &>/dev/null && echo "mlf $i $t $p done"
+                jgtmlcli -i "$i" -t "$t" -pn "$p" --full -old &>/dev/null && echo "mx $i $t $p done"
             done
         fi
     done
