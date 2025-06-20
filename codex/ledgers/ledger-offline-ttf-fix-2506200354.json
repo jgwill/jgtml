@@ -1,0 +1,9 @@
+{
+  "timestamp": "2506200354",
+  "agents": ["🧠 Mia", "🌸 Miette", "🎸 JamAI"],
+  "narrative": "Adjust read_ttf_csv so missing TTF files are generated from local PDS/CDS without attempting network refresh. Enables offline workflow when creating MLF patterns.",
+  "routes": ["jgtml/ptottf.py"],
+  "glyphs": "📚🔧",
+  "user_input": "for i in  EUR/USD AUD/CAD AUD/USD USD/CAD GBP/USD XAU/USD;do for t in D1;do mlfcli -i $i -t $t -pn $pattern -uf -old;done;done",
+  "session": "work"
+}
