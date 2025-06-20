@@ -94,18 +94,26 @@ def main():
   force_refresh=args.fresh
   
   try:
-    df=run_mlf_wrapper(args, force_refresh)
-  except:
-    print("Error in generate_mlf_feature_pattern")
-    #print("patternname:", args.patternname, " might just not have its prerequisite TTF/Pattern data.  we would be running: jgtmlttfcli -i {instrument} -t {timeframe} -new")
+    df = run_mlf_wrapper(args, force_refresh)
+  except Exception as e:
+    print("Error in generate_mlf_feature_pattern:", e)
+    import traceback
+    traceback.print_exc()
     print("----WE ARE TRYING IT USING jgtapp---------")
     from jgtapp import ttf
     try:
-      ttf(args.instrument, args.timeframe, pn=args.patternname,use_fresh=args.fresh,use_full=args.full)
+      ttf(
+          args.instrument,
+          args.timeframe,
+          pn=args.patternname,
+          use_fresh=args.fresh,
+          use_full=args.full,
+      )
       print("---Running MLF now that we should have the desired pattern.")
-      df=run_mlf_wrapper(args, force_refresh)
-    except:
-      print("Error while running ttf.")
+      df = run_mlf_wrapper(args, force_refresh)
+    except Exception as e_ttf:
+      print("Error while running ttf:", e_ttf)
+      traceback.print_exc()
 
 def run_mlf_wrapper(args, force_refresh):
     df=realityhelper.generate_mlf_feature_pattern(
