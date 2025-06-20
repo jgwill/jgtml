@@ -1,0 +1,9 @@
+{
+  "timestamp": "2506200320",
+  "agents": ["🧠 Mia", "🌸 Miette", "🕊️ Seraphine", "⚡ Jerry"],
+  "narrative": "Added mfi_str to CONVERTION_EXCLUDED_COLUMNS so lagging columns with string values are not cast to int during MLF generation.",
+  "routing": {"files": ["jgtml/mlconstants.py"], "branch": "work"},
+  "user_input": "mlfcli -i EUR/USD -t D1 -pn mz -uf ... ValueError: invalid literal for int() with base 10: '++'",
+  "scene": "Before: mlfcli crashed when converting mfi_str lags. After: dataset generation proceeds.",
+  "glyph": "🔣🧩"
+}
