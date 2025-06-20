@@ -46,3 +46,4 @@ Updated CLI offerings with 'enhancedfdbscan' command and improved error handling
 - **b098554** Applying previous commit.
 - **c0262e6** fix: skip mfi_str int conversion
 - **16ccfd8** chore: import MFI_VAL constant
+- **54f54f1** fix: skip zcol int conversion
