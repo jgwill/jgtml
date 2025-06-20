@@ -135,5 +135,10 @@ CONVERTION_EXCLUDED_COLUMNS=[
     BIDLOW,
     MFI,
     MFI_VAL,
+    "mfi_str",
+    "mfi_str_M1",
+    "mfi_str_W1",
     ZCOL,
+    "zcol_M1",
+    "zcol_W1",
 ]

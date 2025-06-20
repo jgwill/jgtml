@@ -48,3 +48,4 @@ Updated CLI offerings with 'enhancedfdbscan' command and improved error handling
 - **16ccfd8** chore: import MFI_VAL constant
 - **54f54f1** fix: skip zcol int conversion
 - **e99aa97** fix: generate ttf offline when missing
+- **5cdf5ba** extend mfi_str/zcol exclusion
