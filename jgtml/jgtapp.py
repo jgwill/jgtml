@@ -597,7 +597,14 @@ def ttf(instrument, timeframe, pn="ttf", use_fresh=False, use_full=True):
       '-pn', pn,
   ]
   print("TTF is being ran by jgtapp with args: ", ttf_args)
-  subprocess.run(ttf_args, check=True)
+  try:
+      subprocess.run(ttf_args, check=True)
+  except FileNotFoundError:
+      # fallback to direct python invocation when CLI entrypoint is unavailable
+      script = os.path.join(os.path.dirname(__file__), 'ttfcli.py')
+      module_args = [sys.executable, script] + ttf_args[1:]
+      print("ttfcli not found, running via python:", module_args)
+      subprocess.run(module_args, check=True)
 
 
 def mlf(instrument, timeframe, pn="ttf", total_lagging_periods=5, use_fresh=False, use_full=True):
@@ -613,7 +620,13 @@ def mlf(instrument, timeframe, pn="ttf", total_lagging_periods=5, use_fresh=Fals
       '-pn', pn,
       '--total_lagging_periods', total_lagging_periods,
   ]
-  subprocess.run(mlf_args, check=True)
+  try:
+      subprocess.run(mlf_args, check=True)
+  except FileNotFoundError:
+      script = os.path.join(os.path.dirname(__file__), 'mlfcli.py')
+      module_args = [sys.executable, script] + mlf_args[1:]
+      print("mlfcli not found, running via python:", module_args)
+      subprocess.run(module_args, check=True)
 
   
 

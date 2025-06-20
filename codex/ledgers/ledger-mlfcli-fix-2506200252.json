@@ -1,0 +1,7 @@
+{
+  "timestamp": "2506200252",
+  "agents": ["🧠 Mia", "🌸 Miette", "🕊️ Seraphine", "⚡ Jerry"],
+  "narrative": "Enhanced mlfcli error handling. The CLI now prints exception details and stack traces when generate_mlf_feature_pattern fails, then retries after invoking ttf via jgtapp. This clarifies failing workflow and aids debugging of missing TTF/CDS data.",
+  "routes": ["jgtml/mlfcli.py"],
+  "branch": "main"
+}

@@ -1,0 +1,7 @@
+{
+  "timestamp": "2506200258",
+  "agents": ["🧠 Mia", "🌸 Miette", "🕊️ Seraphine", "⚡ Jerry"],
+  "narrative": "Added fallback for jgtapp TTF/MLF calls when CLI entrypoints are missing, allowing python execution of ttfcli and mlfcli scripts. This ensures offline testing works with downloaded datasets.",
+  "routes": ["jgtml/jgtapp.py"],
+  "branch": "work"
+}

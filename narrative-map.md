@@ -41,3 +41,11 @@ Updated CLI offerings with 'enhancedfdbscan' command and improved error handling
 
 - **9d5da56** `feat: expose pattern generation helpers` – added generate_ttf_for_pattern and generate_mlf_for_pattern for internal use.
 - **c862081** `chore: log ledger for ttf/mlf helper addition` – recorded changes supporting automated dataset generation.
+- **1353bc7** fix: improve mlfcli error diagnostics
+- **70bdaac** fix: add fallback to local python cli
+- **b098554** Applying previous commit.
+- **c0262e6** fix: skip mfi_str int conversion
+- **16ccfd8** chore: import MFI_VAL constant
+- **54f54f1** fix: skip zcol int conversion
+- **e99aa97** fix: generate ttf offline when missing
+- **5cdf5ba** extend mfi_str/zcol exclusion

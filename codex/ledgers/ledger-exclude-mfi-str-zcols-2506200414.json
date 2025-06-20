@@ -1,0 +1,9 @@
+{
+  "timestamp": "2506200414",
+  "agents": ["🧠 Mia", "🌸 Miette", "🕊️ Seraphine", "🎸 JamAI"],
+  "narrative": "Extended CONVERTION_EXCLUDED_COLUMNS to skip all mfi_str and zcol variants so offline datasets with string markers no longer cause int conversion errors during MLF generation.",
+  "routing": {"files": ["jgtml/mlconstants.py"], "branch": "work"},
+  "user_input": "mlfcli -i EUR/USD -t D1 -pn mz -uf -old",
+  "scene": "Before: ValueError triggered by '++' when adding lagging columns. After: MLF saved without errors using offline TTF data.",
+  "glyph": "🧩🔣"
+}

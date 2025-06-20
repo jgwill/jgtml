@@ -1,0 +1,9 @@
+{
+  "timestamp": "2506200347",
+  "agents": ["🧠 Mia", "🌸 Miette", "🕊️ Seraphine", "⚡ Jerry"],
+  "narrative": "Add ZCOL to the CONVERTION_EXCLUDED_COLUMNS list so string zone color values are never cast to int when generating lag features. This completes the previous fix for mfi_str.",
+  "routing": {"files": ["jgtml/mlconstants.py"], "branch": "work"},
+  "user_input": "mlfcli -i EUR/USD -t D1 -pn mz -uf ... ValueError: invalid literal for int() with base 10: '+-'",
+  "scene": "Before: zcol lag columns crashed MLF generation. After: dataset with ++/+- strings works.",
+  "glyph": "🖍️🧩"
+}
