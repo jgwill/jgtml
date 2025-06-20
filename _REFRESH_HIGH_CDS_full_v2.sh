@@ -6,9 +6,13 @@ unset JGTPY_DATA
 export JGTPY_DATA
 export JGTPY_DATA_FULL
 
+droxul mkdir /dist/data/full/cds&>/dev/null
+droxul mkdir /dist/data/current/cds&>/dev/null
+
 for t in W1 M1 D1 H4 ;do 
   for i in EUR/USD USD/CAD SPX500 AUD/USD AUD/CAD GBP/USD;do 
-    (jgtcli -i $i -t $t --fresh --full && (p=$(jgtcli -i $i -t $t --fresh --full -vp);droxul upload $p /dist/data/full/cds))
+    (jgtcli -i $i -t $t --fresh --full && (p=$(jgtcli -i $i -t $t --fresh --full -vp);droxul upload $p /dist/data/full/cds/))
+    (jgtcli -i $i -t $t --fresh && (p=$(jgtcli -i $i -t $t --fresh -vp);droxul upload $p /dist/data/current/cds/))
   done
 done
 
