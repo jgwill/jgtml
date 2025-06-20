@@ -807,7 +807,7 @@ def main():
   parser_prep_mlf_22.add_argument('-pn','--patternname', help='Pattern Name')
   parser_prep_mlf_22.add_argument('-tlp','--total_lagging_periods', help='Total Lagging Periods')
   parser_prep_mlf_22.add_argument('-new','--fresh', action='store_true', help='Use the fresh data')
-  parser_prep_mlf_22.add_argument('--full', action='store_true', help='Use the full data')
+  parser_prep_mlf_22.add_argument('-uf','--full', action='store_true', help='Use the full data')
   
   
   #ttfmxwf
