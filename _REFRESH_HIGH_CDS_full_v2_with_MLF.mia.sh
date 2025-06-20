@@ -34,6 +34,9 @@ silent_background() {
     disown
 }
 
+
+
+
 # BULLETPROOF MAIN LOOP
 for t in "${TIMEFRAMES[@]}"; do
     echo "⌛ Processing $t" >&3
