@@ -30,10 +30,20 @@ ttfcli -i EUR/USD -t D1 -pn mfi --full
 Similar to `ttfcli` but produces MLF patterns for multi-level features.
 
 ## jgtapp
-Wrapper around various trading operations including order management and dataset refresh commands:
+Wrapper around trading and dataset commands. Subcommands mirror the original
+bash functions so everything can be triggered from one entry point.
+
+Key subcommands include:
+- `fxaddorder` and `fxrmorder` – manage orders
+- `fxmvstopgator`/`fxmvstopfdb` – move stops using Alligator or FDB logic
+- `cds`, `pds`, `ads` – refresh data services
+- `ttf`, `mlf`, `mx` – generate patterns and matrix files
+
+Example:
 ```bash
 jgtapp fxaddorder -i EUR/USD -n 0.1 -r 1.0950 -d B -x 1.0900
-jgtapp fxmvstopgator -i EUR/USD -t H4 -tid TRADE_ID --lips
 ```
+
+See [jgtapp.md](jgtapp.md) for a more complete command list.
 
 Combine these commands to build robust trading workflows and ML datasets.
