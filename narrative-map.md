@@ -24,6 +24,7 @@ Introduced new automation tools for dataset preparation:
 - `guidecli_jgtml` exposes short documentation sections from `jgtml/guide_for_llm_agents`.
 - Script now checks for local CDS files before running and aborts with a helpful message if none are found.
 - Added `overview` and `cli_tools` sections so `guidecli_jgtml --list` prints brief descriptions of all capabilities.
+- Expanded docs so `guidecli_jgtml --all` outputs approximately four pages.
 
 ### branch: codex/fix-conflict-between--new-and--old-arguments-2025-06-18-16-30-36
 - Updated cdscli invocation to pass -uf/-nf flags and validated wrappers, documenting fixes in CHANGELOG. Merged main at version 0.0.333 to integrate trading orchestrator.
