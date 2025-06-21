@@ -1,4 +1,3 @@
 # JGTML Agent Guide
 
-This guide provides small snippets for LLM-based agents working with the `jgtml` package.
-Use `guidecli_jgtml --list` to see available topics.
+Run `guidecli_jgtml --list` to see available documentation sections. Use `--section <name>` to display one section or `--all` to print everything.

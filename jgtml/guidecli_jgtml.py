@@ -10,7 +10,13 @@ def _doc_dir() -> Path:
     return pkg_resources.files(PACKAGE) / DOC_PATH
 
 def list_sections():
-    return [p.stem for p in _doc_dir().iterdir() if p.suffix == '.md']
+    """Return list of (name, title) tuples for available docs."""
+    sections = []
+    for p in _doc_dir().iterdir():
+        if p.suffix == '.md':
+            title = p.read_text().splitlines()[0].lstrip('# ').strip()
+            sections.append((p.stem, title))
+    return sorted(sections)
 
 def read_section(name: str) -> str:
     path = _doc_dir() / f"{name}.md"
@@ -26,14 +32,14 @@ def main():
     args = parser.parse_args()
 
     if args.list:
-        for sec in list_sections():
-            print(sec)
+        for name, title in list_sections():
+            print(f"{name} - {title}")
         return
 
     if args.all:
-        for sec in list_sections():
-            print(f"# {sec}\n")
-            print(read_section(sec))
+        for name, _ in list_sections():
+            print(f"# {name}\n")
+            print(read_section(name))
             print()
         return
 

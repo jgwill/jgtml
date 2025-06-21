@@ -1,7 +1,3 @@
 # Automation Overview
 
-The `scripts/generate_ttf_mlf_d1.sh` script automates generation of TTF and MLF files from existing CDS data. It runs pattern creation in parallel on the D1 timeframe for a default set of instruments.
-
-```bash
-./scripts/generate_ttf_mlf_d1.sh
-```
+The dataset automation flow generates TTF and MLF pattern files using existing CDS data. Run `scripts/generate_ttf_mlf_d1.sh` to create offline D1 pattern sets in parallel for common instruments. Ensure your `data/full/cds` folder contains the source CSVs before execution.
