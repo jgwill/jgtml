@@ -19,7 +19,7 @@ guidecli_jgtml --list    # Show available sections
 ## Core Sections
 - [Overview](overview.md) — Architecture and data layout
 - [CLI Tools](cli_tools.md) — Commands for analysis and trading
-- [Automation](automation.md) — Offline dataset generation
+- [Automation](automation.md) — Offline dataset generation *(work in progress)*
 - [jgtapp](jgtapp.md) — Trading operations wrapper
 
 Use `guidecli_jgtml --section <name>` to display a page or `--all` to print them in sequence. Combine these docs with `CLI_HELP.md` for a deeper dive into each option.

@@ -1,6 +1,6 @@
 # CLI Tools
 
-jgtml ships with several command line utilities. They simplify data generation, analysis, and trading operations. Every tool supports `--help` for full usage details.
+jgtml ships with several command line utilities. They simplify data generation, analysis, and trading operations. Every tool supports `--help` for full usage details. These commands build upon the lower-level `jgtpy` libraries for data retrieval and indicator calculations.
 
 ## alligator_cli
 Unified Alligator analysis across regular, big, and tide configurations. Useful for verifying multi-timeframe confluence or generating `.jgtml-spec` files.
@@ -47,3 +47,13 @@ jgtapp fxaddorder -i EUR/USD -n 0.1 -r 1.0950 -d B -x 1.0900
 See [jgtapp.md](jgtapp.md) for a more complete command list.
 
 Combine these commands to build robust trading workflows and ML datasets.
+
+### Related Libraries
+These CLIs rely on helper modules available within `jgtml`:
+
+- `jgtapp` – trading and dataset orchestration
+- `jgtmlcli` – core processing engine
+- `mxcli` – matrix builder
+- `ttfcli` / `mlfcli` – pattern generation
+
+Lower-level data retrieval functions come from the companion package `jgtpy`.

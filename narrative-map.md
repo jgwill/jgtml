@@ -26,6 +26,10 @@ Introduced new automation tools for dataset preparation:
 - Added `overview` and `cli_tools` sections so `guidecli_jgtml --list` prints brief descriptions of all capabilities.
 - Expanded docs so `guidecli_jgtml --all` outputs approximately four pages.
 - Added dedicated `jgtapp.md` detailing the trading wrapper commands.
+- Updated `automation.md` to note that workflow scripts are still evolving.
+- Expanded `jgtapp.md` with a table of subcommands and arguments for easier reference.
+- `cli_tools.md` now mentions reliance on `jgtpy` libraries.
+- `index.md` flags the automation section as work in progress.
 
 ### branch: codex/fix-conflict-between--new-and--old-arguments-2025-06-18-16-30-36
 - Updated cdscli invocation to pass -uf/-nf flags and validated wrappers, documenting fixes in CHANGELOG. Merged main at version 0.0.333 to integrate trading orchestrator.
