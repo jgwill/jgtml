@@ -8,7 +8,7 @@ export JGTPY_DATA_FULL
 
 
 
-for t in W1 M1 D1 H4 H1;do 
+for t in H4 H1 m15 m5;do 
   for i in EUR/USD USD/CAD SPX500 AUD/USD AUD/CAD GBP/USD;do 
     (jgtcli -i $i -t $t --fresh && (p=$(jgtcli -i $i -t $t --fresh -vp);droxul upload $p /dist/data/current/cds&))
   done
