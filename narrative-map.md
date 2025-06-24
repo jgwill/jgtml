@@ -24,3 +24,5 @@ Updated CLI offerings with 'enhancedfdbscan' command and improved error handling
 - **WORKING** `test-data: add sample CSVs and patch helpers` – created minimal CSV fixtures and updated helper logic for cross-case column names.
 ### Branch Details
 Current branch: `work` prepared for PR integration. Upcoming PR will sync production CLI updates and narrative guidance.
+- **2dab80e** `Merge main updates and resolve conflicts` – incorporated last_fdb_value fix and bumped version numbers.
+- **c471b6b** `Add ledger for main merge` – logged sync with production branch.

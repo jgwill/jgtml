@@ -28,7 +28,16 @@ from jgtutils.jgtconstants import FDB, HIGH, LOW, LIPS, TEETH, JAW
 class AlligatorIllusionDetector:
     """Detect alligator illusions across multiple timeframes"""
     
-    def __init__(self, data_path="/src/jgtml/cache/fdb_scanners"):
+    def __init__(self, data_path=None):
+        if data_path is None:
+            # Use the same cache logic as fdb_scanner_2408.py
+            data_path = os.path.expanduser("~/.cache/jgt/fdb_scanners")
+            if not os.path.exists(data_path):
+                # Fallback to production cache if it exists
+                fallback_path = "/src/jgtml/cache/fdb_scanners"
+                if os.path.exists(fallback_path):
+                    data_path = fallback_path
+        
         self.data_path = Path(data_path)
     
     def load_csv_data(self, instrument, timeframe):
@@ -209,7 +218,16 @@ class AlligatorIllusionDetector:
 class EnhancedFDBScanner:
     """Enhanced FDB Scanner with integrated Alligator Illusion Detection and Direction Analysis"""
     
-    def __init__(self, data_path="/src/jgtml/cache/fdb_scanners"):
+    def __init__(self, data_path=None):
+        if data_path is None:
+            # Use the same cache logic as fdb_scanner_2408.py
+            data_path = os.path.expanduser("~/.cache/jgt/fdb_scanners")
+            if not os.path.exists(data_path):
+                # Fallback to production cache if it exists
+                fallback_path = "/src/jgtml/cache/fdb_scanners"
+                if os.path.exists(fallback_path):
+                    data_path = fallback_path
+        
         self.illusion_detector = AlligatorIllusionDetector(data_path)
         self.data_path = Path(data_path)
     
@@ -232,7 +250,7 @@ class EnhancedFDBScanner:
             print(f"Error loading FDB data: {e}")
             return None
     
-    def analyze_fdb_signals_with_direction(self, data, timeframe):
+    def analyze_fdb_signals_with_direction(self, data, timeframe, instrument):
         """Analyze FDB signals and determine trade direction"""
         if not data or len(data) == 0:
             return None
@@ -246,55 +264,77 @@ class EnhancedFDBScanner:
         
         fdb_signals = []
         direction_bias = "NONE"
+        last_fdb_value = 0
         
-        # Check FDB signal from signal bar
-        fdb_value = int(float(signal_bar.get(FDB, 0)))
+        # Check recent bars for FDB signals (last 20 bars to catch recent signals)
+        recent_bars = data[-20:] if len(data) >= 20 else data
         
-        if fdb_value == 1:  # Buy signal
-            direction_bias = "BUY"
-            
-            # Validate signal using SignalOrderingHelper
-            entry_order, msg = create_fdb_entry_order(
-                instrument="TEST", 
-                signal_bar=signal_bar, 
-                current_bar=current_bar,
-                lots=1,
-                t=timeframe,
-                quiet=True,
-                verbose_level=0
-            )
-            
-            if entry_order:
-                fdb_signals.append({
-                    'type': 'buy',
-                    'timestamp': signal_bar.get('Date', ''),
-                    'entry_rate': entry_order.get('entry_rate', 0),
-                    'stop_rate': entry_order.get('stop_rate', 0),
-                    'validated': True
-                })
+        # Debug: Print recent FDB values
+        fdb_values = [bar.get('fdb', '0') for bar in recent_bars]
+        non_zero_fdb = [(i, val) for i, val in enumerate(fdb_values) if val != '0']
+        if non_zero_fdb:
+            print(f"    Debug: Found FDB signals in recent bars: {non_zero_fdb}")
         
-        elif fdb_value == -1:  # Sell signal
-            direction_bias = "SELL"
+        for i, bar in enumerate(recent_bars):
+            fdb_value = int(float(bar.get('fdb', 0)))
+            last_fdb_value = fdb_value  # Keep track of last value seen
             
-            # Validate signal using SignalOrderingHelper
-            entry_order, msg = create_fdb_entry_order(
-                instrument="TEST",
-                signal_bar=signal_bar,
-                current_bar=current_bar,
-                lots=1,
-                t=timeframe,
-                quiet=True,
-                verbose_level=0
-            )
-            
-            if entry_order:
-                fdb_signals.append({
-                    'type': 'sell',
-                    'timestamp': signal_bar.get('Date', ''),
-                    'entry_rate': entry_order.get('entry_rate', 0),
-                    'stop_rate': entry_order.get('stop_rate', 0),
-                    'validated': True
-                })
+            if fdb_value != 0:
+                # Found a signal, now validate it
+                if i < len(recent_bars) - 1:
+                    # Use this bar as signal bar and next as current bar for validation
+                    test_signal_bar = bar
+                    test_current_bar = recent_bars[i + 1]
+                else:
+                    # Use last two bars
+                    test_signal_bar = signal_bar
+                    test_current_bar = current_bar
+        
+                if fdb_value == 1:  # Buy signal
+                    direction_bias = "BUY"
+                    
+                    # Validate signal using SignalOrderingHelper
+                    entry_order, msg = create_fdb_entry_order(
+                        instrument, 
+                        test_signal_bar, 
+                        test_current_bar,
+                        lots=1,
+                        t=timeframe,
+                        quiet=True,
+                        verbose_level=0
+                    )
+                    
+                    if entry_order:
+                        fdb_signals.append({
+                            'type': 'buy',
+                            'timestamp': test_signal_bar.get('Date', ''),
+                            'entry_rate': entry_order.get('entry_rate', 0),
+                            'stop_rate': entry_order.get('stop_rate', 0),
+                            'validated': True
+                        })
+                
+                elif fdb_value == -1:  # Sell signal
+                    direction_bias = "SELL"
+                    
+                    # Validate signal using SignalOrderingHelper
+                    entry_order, msg = create_fdb_entry_order(
+                        instrument,
+                        test_signal_bar,
+                        test_current_bar,
+                        lots=1,
+                        t=timeframe,
+                        quiet=True,
+                        verbose_level=0
+                    )
+                    
+                    if entry_order:
+                        fdb_signals.append({
+                            'type': 'sell',
+                            'timestamp': test_signal_bar.get('Date', ''),
+                            'entry_rate': entry_order.get('entry_rate', 0),
+                            'stop_rate': entry_order.get('stop_rate', 0),
+                            'validated': True
+                        })
         
         return {
             'timeframe': timeframe,
@@ -302,7 +342,7 @@ class EnhancedFDBScanner:
             'signals': fdb_signals,
             'latest_signal': fdb_signals[-1] if fdb_signals else None,
             'direction_bias': direction_bias,
-            'fdb_value': fdb_value
+            'fdb_value': last_fdb_value
         }
     
     def enhanced_scan(self, instrument, timeframes=None, include_illusion_detection=True):
@@ -323,7 +363,7 @@ class EnhancedFDBScanner:
         for tf in timeframes:
             data = self.load_fdb_signals(instrument, tf)
             if data:
-                fdb_analysis = self.analyze_fdb_signals_with_direction(data, tf)
+                fdb_analysis = self.analyze_fdb_signals_with_direction(data, tf, instrument)
                 if fdb_analysis:
                     fdb_results[tf] = fdb_analysis
                     
@@ -451,7 +491,6 @@ class EnhancedFDBScanner:
                 return f"WEAK {direction}"
             else:
                 return "MONITOR"
-
         elif quality_score >= 4.0:
             return "MONITOR"
         else:
@@ -538,3 +577,4 @@ def main():
 
 if __name__ == "__main__":
     main() 
+

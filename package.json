@@ -1,6 +1,6 @@
 {
   "name": "jgtml",
-  "version": "0.0.319",
+  "version": "0.0.323",
   "description": "JGTML",
   "main": "index.js",
   "directories": {
@@ -14,19 +14,5 @@
     "release": "bash release-n-test.sh",
     "release1": "make dist && twine upload dist/*",
     "publish": "twine upload dist/*"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/jgwill/jgtml.git"
-  },
-  "keywords": [
-    "jgt",
-    "jgtml"
-  ],
-  "author": "Guillaume Isabelle",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/jgwill/jgtml/issues"
-  },
-  "homepage": "https://github.com/jgwill/jgtml#readme"
+  }
 }
