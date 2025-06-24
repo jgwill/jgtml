@@ -1,0 +1,12 @@
+{
+  "timestamp": "2506211710",
+  "agents": ["🧠 Mia", "🌸 Miette", "🎸 JamAI"],
+  "narrative": "Introduced guidecli_jgtml for agent docs and a parallel script to generate TTF/MLF data from stored CDS files. Version bumped to 0.0.342 and narrative map updated.",
+  "files": ["jgtml/guidecli_jgtml.py", "scripts/generate_ttf_mlf_d1.sh", "jgtml/guide_for_llm_agents/index.md", "jgtml/guide_for_llm_agents/automation.md", "narrative-map.md", "jgtml/__init__.py", "pyproject.toml", "package.json"],
+  "branches": "work",
+  "session": "shell",
+  "purpose": "Automate dataset preparation and document usage for issue #42",
+  "user_input": "in ./data/full/cds you have what you need to generate the TTF and MLF data.  look at *.sh in the root to make sure you use that data and I want you to think of automating the generation of those various patterns that are possible for preparing the machine learning data framework.  Generate new bash script for yourself so later on you would be capable to generate these data.  Think of processing in parallel for efficiency and focus on D1 timeframes with the required amount of instruments to look for being capable to do your job.   Make sure this intentions is reflected into a section of the narrative-map.md\n\nif you need to understand the data use : guidecli_jgtpy --help\n\nthat might be relevant to start creating ./jgtml/guidecli_jgtml.py where you will mimic what you learn from that package \"jgtpy\" that generated the data you found in ./data/full/cds\n\nWe work on issue #42 so use  Workspace.jgwill.jgtpy:42 for your work",
+  "scene": "Automated dataset scripts enable future ML data refresh cycles while agents access quick docs through guidecli_jgtml.",
+  "glyph": "⚙️📖"
+}

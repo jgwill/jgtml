@@ -6,7 +6,11 @@ GET /docs/CLI_HELP.md
 
 # Core components documentation
 
-* todo add them here
+GET /jgtml/guide_for_llm_agents/index.md
+GET /jgtml/guide_for_llm_agents/overview.md
+GET /jgtml/guide_for_llm_agents/cli_tools.md
+GET /jgtml/guide_for_llm_agents/jgtapp.md
+GET /jgtml/guide_for_llm_agents/automation.md
 
 
 # Additional documentation

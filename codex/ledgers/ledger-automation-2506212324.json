@@ -1,0 +1,18 @@
+{
+  "timestamp": "2506212324",
+  "agents": ["🧠 Mia", "🌸 Miette", "🎸 JamAI"],
+  "narrative": "Refined automation docs and expanded jgtapp guide with command table. Index and CLI references updated to mention jgtpy and mark automation as WIP.",
+  "files": [
+    "jgtml/guide_for_llm_agents/automation.md",
+    "jgtml/guide_for_llm_agents/index.md",
+    "jgtml/guide_for_llm_agents/jgtapp.md",
+    "jgtml/guide_for_llm_agents/cli_tools.md",
+    "narrative-map.md"
+  ],
+  "branches": "work",
+  "session": "shell",
+  "purpose": "Clarify jgtml capabilities and document jgtapp subcommands for Issue #42",
+  "user_input": "keep working, if you run:\n\njgtapp --help\n\nYou will see various commands, look at all their --help that will give you even more content to put in this guidecli_jgtml.py about jgtapp.py",
+  "scene": "LLM agents gain deeper understanding of jgtapp options and automation flow, enabling richer dataset generation and trading control.",
+  "glyph": "⚙️📖"
+}

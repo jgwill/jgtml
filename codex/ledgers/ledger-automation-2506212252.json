@@ -1,0 +1,20 @@
+{
+  "timestamp": "2506212252",
+  "agents": ["🧠 Mia", "🌸 Miette", "🎸 JamAI"],
+  "narrative": "Created jgtapp.md to document trading wrapper commands and expanded CLI tools guide. Index page links to the new doc. Version bumped to 0.0.343.",
+  "files": [
+    "jgtml/guide_for_llm_agents/jgtapp.md",
+    "jgtml/guide_for_llm_agents/cli_tools.md",
+    "jgtml/guide_for_llm_agents/index.md",
+    "jgtml/__init__.py",
+    "pyproject.toml",
+    "package.json",
+    "narrative-map.md"
+  ],
+  "branches": "work",
+  "session": "shell",
+  "purpose": "Provide comprehensive docs for jgtapp and bump version for issue #42",
+  "user_input": "keep working, if you run:\n\njgtapp --help\n\nYou will see various commands, look at all their --help that will give you even more content to put in this guidecli_jgtml.py about jgtapp.py",
+  "scene": "LLM agents now have quick reference for jgtapp's many subcommands, enabling scripted trading routines.",
+  "glyph": "⚙️📖"
+}

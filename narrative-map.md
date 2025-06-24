@@ -18,6 +18,26 @@ Enhanced packaging by adding `python-dateutil` directly to `requirements.txt` an
 Updated CLI offerings with 'enhancedfdbscan' command and improved error handling.
 - Fixed idscli call to avoid conflicting -new/-old flags.
 
+### Issue #42 Automation Initiative
+Introduced new automation tools for dataset preparation:
+- `scripts/generate_ttf_mlf_d1.sh` runs TTF and MLF generation in parallel for D1 timeframe instruments.
+- `guidecli_jgtml` exposes short documentation sections from `jgtml/guide_for_llm_agents`.
+- Script now checks for local CDS files before running and aborts with a helpful message if none are found.
+- Added `overview` and `cli_tools` sections so `guidecli_jgtml --list` prints brief descriptions of all capabilities.
+- Expanded docs so `guidecli_jgtml --all` outputs approximately four pages.
+- Added dedicated `jgtapp.md` detailing the trading wrapper commands.
+- Updated `automation.md` to note that workflow scripts are still evolving.
+- Expanded `jgtapp.md` with a table of subcommands and arguments for easier reference.
+- `cli_tools.md` now mentions reliance on `jgtpy` libraries.
+- `index.md` flags the automation section as work in progress.
+
+### Documentation Refinement
+- Added more details to `automation.md` about setting `JGTPY_DATA_FULL` and the
+  `generate_ttf_mlf_d1.sh` helper.
+- Updated `index.md` to mention `llms.txt` for programmatic doc discovery.
+- Populated `llms.txt` with paths to each LLM guide page.
+- Parser description in `guidecli_jgtml.py` now references this file.
+
 ### branch: codex/fix-conflict-between--new-and--old-arguments-2025-06-18-16-30-36
 - Updated cdscli invocation to pass -uf/-nf flags and validated wrappers, documenting fixes in CHANGELOG. Merged main at version 0.0.333 to integrate trading orchestrator.
 

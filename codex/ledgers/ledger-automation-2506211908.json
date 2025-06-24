@@ -1,0 +1,12 @@
+{
+  "timestamp": "2506211908",
+  "agents": ["🧠 Mia", "🌸 Miette", "🎸 JamAI"],
+  "narrative": "Added dataset presence check to automation script and documented it in the narrative map.",
+  "files": ["scripts/generate_ttf_mlf_d1.sh", "narrative-map.md"],
+  "branches": "work",
+  "session": "shell",
+  "purpose": "Ensure offline generation script fails gracefully for issue #42",
+  "user_input": "keep advancing, no need to connect you need to focus on what is offered by this package and in ./data you have what is generates",
+  "scene": "Script stops with clear message when no CDS data exists, avoiding ForexConnect errors.",
+  "glyph": "⚙️📖"
+}

@@ -1,0 +1,54 @@
+"""CLI to display small documentation snippets for LLM agents using jgtml."""
+import argparse
+import importlib.resources as pkg_resources
+from pathlib import Path
+
+PACKAGE = 'jgtml'
+DOC_PATH = 'guide_for_llm_agents'
+
+def _doc_dir() -> Path:
+    return pkg_resources.files(PACKAGE) / DOC_PATH
+
+def list_sections():
+    """Return list of (name, title) tuples for available docs."""
+    sections = []
+    for p in _doc_dir().iterdir():
+        if p.suffix == '.md':
+            title = p.read_text().splitlines()[0].lstrip('# ').strip()
+            sections.append((p.stem, title))
+    return sorted(sections)
+
+def read_section(name: str) -> str:
+    path = _doc_dir() / f"{name}.md"
+    if path.is_file():
+        return path.read_text()
+    raise FileNotFoundError(f'Section {name} not found')
+
+def main():
+    parser = argparse.ArgumentParser(
+        description='JGTML documentation for LLM agents (listed in llms.txt)')
+    parser.add_argument('--list', action='store_true', help='List available sections')
+    parser.add_argument('--section', help='Display a specific section')
+    parser.add_argument('--all', action='store_true', help='Display all sections')
+    args = parser.parse_args()
+
+    if args.list:
+        for name, title in list_sections():
+            print(f"{name} - {title}")
+        return
+
+    if args.all:
+        for name, _ in list_sections():
+            print(f"# {name}\n")
+            print(read_section(name))
+            print()
+        return
+
+    if args.section:
+        print(read_section(args.section))
+        return
+
+    parser.print_help()
+
+if __name__ == '__main__':
+    main()

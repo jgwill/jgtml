@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "jgtml"
-version = "0.0.341"
+version = "0.0.343"
 authors = [
   { name="Guillaume Isabelle", email="jgi@jgwill.com" },
 ]
@@ -93,4 +93,5 @@ jgtunified_discovery_dataset_generator="jgtml.unified_discovery_dataset_generato
 enhancedfdbscan="jgtml.enhanced_fdb_scanner_with_illusion_detection:main"
 enhancedtradingcli="jgtml.enhanced_trading_cli:main"
 automatedfdbtrading="jgtml.automated_fdb_trading_system:main"
+guidecli_jgtml="jgtml.guidecli_jgtml:main"
 
