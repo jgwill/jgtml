@@ -25,7 +25,8 @@ def read_section(name: str) -> str:
     raise FileNotFoundError(f'Section {name} not found')
 
 def main():
-    parser = argparse.ArgumentParser(description='JGTML documentation for LLM agents')
+    parser = argparse.ArgumentParser(
+        description='JGTML documentation for LLM agents (listed in llms.txt)')
     parser.add_argument('--list', action='store_true', help='List available sections')
     parser.add_argument('--section', help='Display a specific section')
     parser.add_argument('--all', action='store_true', help='Display all sections')

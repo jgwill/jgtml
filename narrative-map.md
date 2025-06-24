@@ -31,6 +31,13 @@ Introduced new automation tools for dataset preparation:
 - `cli_tools.md` now mentions reliance on `jgtpy` libraries.
 - `index.md` flags the automation section as work in progress.
 
+### Documentation Refinement
+- Added more details to `automation.md` about setting `JGTPY_DATA_FULL` and the
+  `generate_ttf_mlf_d1.sh` helper.
+- Updated `index.md` to mention `llms.txt` for programmatic doc discovery.
+- Populated `llms.txt` with paths to each LLM guide page.
+- Parser description in `guidecli_jgtml.py` now references this file.
+
 ### branch: codex/fix-conflict-between--new-and--old-arguments-2025-06-18-16-30-36
 - Updated cdscli invocation to pass -uf/-nf flags and validated wrappers, documenting fixes in CHANGELOG. Merged main at version 0.0.333 to integrate trading orchestrator.
 

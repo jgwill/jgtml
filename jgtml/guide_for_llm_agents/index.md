@@ -16,6 +16,9 @@ jgtapp fxaddorder -i EUR/USD -n 0.1 -r 1.0950 -d B -x 1.0900
 guidecli_jgtml --list    # Show available sections
 ```
 
+To discover these docs programmatically, `llms.txt` lists their paths so
+language models can fetch them directly.
+
 ## Core Sections
 - [Overview](overview.md) — Architecture and data layout
 - [CLI Tools](cli_tools.md) — Commands for analysis and trading
