@@ -14,8 +14,8 @@ JGTML analyzes the effectiveness of trading signals within larger market structu
 ## 🏗️ Architecture
 
 ### Core Dependencies
-- **[jgtpy](https://pypi.org/project/jgtpy/)**: Market data acquisition wrapper from [jgtfxcon](https://pypi.org/project/jgtfxcon) and indicator calculations and signals generation.
-- **[jgtutils](https://pypi.org/project/jgtutils/)**: Common utilities and constants.  Contains the logics for reading $HOME/.jgt/config.json and $HOME/.jgt/settings.json for all app/cli to have all the context they need.  jgtutils also uses [jgtcore](https://pypi.org/project/jgtcore/) which start become the library for settings and configurations (separating jgutils that has utilities from actual libraries which is in progress)
+- **[jgtpy](https://jgtpy.jgwill.com)**: Market data acquisition wrapper from [jgtfxcon](https://jgtfxcon.jgwill.com) and indicator calculations and signals generation.
+- **[jgtutils](https://jgtutils.jgwill.com)**: Common utilities and constants.  Contains the logics for reading $HOME/.jgt/config.json and $HOME/.jgt/settings.json for all app/cli to have all the context they need.  jgtutils also uses [jgtcore](https://pypi.org/project/jgtcore/) which start become the library for settings and configurations (separating jgutils that has utilities from actual libraries which is in progress)
 - **pandas**: Data manipulation and analysis
 - **numpy**: Numerical computations
 
