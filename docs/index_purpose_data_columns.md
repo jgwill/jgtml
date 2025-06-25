@@ -10,6 +10,35 @@ Add initial documentation files for MLF, MX, and TTF data columns and purposes w
 
 * In development, data is in ./data/full/ttf ./data/full/mlf ./data/targets/mx
 
+## Patterns configuration
+
+The file `$HOME/.jgt/settings.json` defines a `"patterns"` section mapping
+pattern names to the columns generated for each dataset.
+
+| Pattern | Columns |
+| ------- | ------- |
+| `mz` | `mfi_str`, `zcol` |
+| `mfi` | `mfi_sq`, `mfi_green`, `mfi_fade`, `mfi_fake` |
+| `mfizone` | `mfi_sq`, `mfi_green`, `mfi_fade`, `mfi_fake`, `zone_sig` |
+| `zonesq` | `zone_sig`, `mfi_sq` |
+| `aoabz` | `aoaz`, `aobz` |
+| `aoac` | `ao`, `ac` |
+| `ttf` | `mfi_sig`, `zone_sig` |
+
+These patterns drive which columns appear in the feature CSVs found under the
+`./data/full/ttf` and `./data/full/mlf` directories.
+
+## Dataset layout
+
+- `./data/full/ttf` – transformed trading features using the `ttf` pattern.
+- `./data/full/mlf` – meta lag features derived from TTF for each pattern.
+- `./data/targets/mx` or `./data/full/mx/targets` – target datasets combining
+  signals such as `fdbb` and `fdbs` with the resulting profit or loss in the
+  `target` column.
+
+The raw CDS files used to build these datasets are kept in
+`./data/current/cds`.
+
 
 ------
 SEE:

@@ -1,6 +1,5 @@
-# TODO: document alongside the columns of MX with definition from [MX_data_columns.md](MX_data_columns.md) of how they are an attempt to build profit/losses from signals (fdbb and fdbs) with a target variable.  Identify how it relates to TTF and MLF data and their various patterns.  Mostly how they might be recomposed using the TTF or/and MLF data to find which combination of patterns/lagging features the most profitable (or lost perspective).
+# Purpose of MX Data
 
+The **MX** datasets capture experimental profit and loss calculations. They combine FDB buy (`fdbb`) and FDB sell (`fdbs`) signals with a resulting `target` column representing the outcome of each trade opportunity.
 
-
-
-
+These files are derived from TTF or MLF features and live in `./data/targets/mx` or `./data/full/mx/targets` depending on the environment.

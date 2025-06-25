@@ -1,6 +1,8 @@
-# TODO: document the columns of MX with definition of how they are an attempt to build profit/losses from signals (fdbb and fdbs) with a target variable.  Identify how it relates to TTF and MLF data and their various patterns.  Mostly how they might be recomposed using the TTF or/and MLF data to find which combination of patterns/lagging features the most profitable (or lost perspective).
+# MX Data Columns
 
+MX files include the FDB signals and a `target` column that measures the profit or loss associated with each signal occurrence. Typical columns are:
 
+- `fdbb`, `fdbs` – buy and sell fractal divergent bar signals
+- `target` – numeric outcome for the associated trade
 
-
-
+MX datasets may also replicate a subset of TTF or MLF features for analysis.
