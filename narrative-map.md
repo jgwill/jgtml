@@ -50,3 +50,4 @@ Updated CLI offerings with 'enhancedfdbscan' command and improved error handling
 - **e99aa97** fix: generate ttf offline when missing
 - **5cdf5ba** extend mfi_str/zcol exclusion
 - **8f49d78** docs: clarify dataset patterns and target layout
+- **2a0ee97** docs: expand dataset documentation

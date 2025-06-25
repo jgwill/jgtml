@@ -11,3 +11,5 @@ Common columns include:
 - `fdbb`, `fdbs` – fractal divergent bar signals
 - `zlcB`, `zlcS` – zero line cross signals
 - `mfi_sig`, `zone_sig` – pattern columns from `settings.json`
+
+TTF CSV files are named like `AUD-CAD_H4_ttf.csv` and reside under `./data/full/ttf`. They form the base feature set used to generate MLF and MX datasets.
