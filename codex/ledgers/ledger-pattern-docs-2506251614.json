@@ -1,0 +1,20 @@
+{
+  "timestamp": "2506251614",
+  "agents": ["♾️ William", "🧠 Mia", "🌸 Miette", "🎸 JamAI"],
+  "narrative": "Documented dataset patterns and target signal locations to guide training workflow.",
+  "files": [
+    "docs/index_purpose_data_columns.md",
+    "docs/TTF_purpose.md",
+    "docs/MLF_purpose.md",
+    "docs/MX_purpose.md",
+    "docs/TTF_data_columns.md",
+    "docs/MLF_data_columns.md",
+    "docs/MX_data_columns.md"
+  ],
+  "branches": "work",
+  "session": "shell",
+  "purpose": "Clarify how patterns relate to dataset columns and where signals reside",
+  "user_input": "if you look in $HOME/.jgt/settings.json you will find a property \"patterns\" that determine names and columns it includes.\n\nafter you have done that , keep observing what you have in ./data/full/targets/mx or  ./data/full/mx/targets you should find potential signals \"fdbb\" and \"fdbs\" with their corresponding  profit or loss in the \"target\" column.  you should also be capable to find the corresponding dataset under  ./data/full/ttf|mlf|cds \n\nwork on all you find related in : docs/index_purpose_data_columns.md\n\n* In development, data is in ./data/full/ttf ./data/full/mlf ./data/targets/mx",
+  "scene": "Future analysts navigate data directories confidently, relying on the updated docs to locate features and profit metrics.",
+  "glyph": "📖🎸"
+}
