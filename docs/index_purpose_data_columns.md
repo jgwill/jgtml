@@ -8,6 +8,8 @@ Add initial documentation files for MLF, MX, and TTF data columns and purposes w
 @ STCIssue Redundant repetition of my Intent with LLM when prompting and also no centralized place where to talk about columns patterns
 
 
+* In development, data is in ./data/full/ttf ./data/full/mlf ./data/targets/mx
+
 
 ------
 SEE:
