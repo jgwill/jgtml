@@ -2,6 +2,8 @@
 
 TTF files contain the core trading features derived from CDS. In addition to the raw price and alligator columns, each file includes the pattern columns defined for the `ttf` pattern.
 
+The underlying IDS and CDS column definitions are listed in [MFI_and_other_signals_indicators__250609.md](MFI_and_other_signals_indicators__250609.md).
+
 Common columns include:
 
 - `High`, `Low` – bar price extremes

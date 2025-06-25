@@ -2,6 +2,14 @@
 
 This page explains how the dataset files are organized and how the pattern settings in `$HOME/.jgt/settings.json` influence the columns that appear.
 
+## Dataset flow
+
+1. **IDS** – Indicator Data Service. Creates the base indicator columns listed in [MFI_and_other_signals_indicators__250609.md](MFI_and_other_signals_indicators__250609.md).
+2. **CDS** – Chaos Data Service. Adds advanced columns such as those in the *CDS Columns* section of the same document.
+3. **TTF** – Transformed Trading Features. Selects a subset of CDS columns according to the `ttf` pattern.
+4. **MLF** – Meta Lag Features. Generates lagged versions of the TTF columns for each pattern.
+5. **MX** – Target datasets combining FDB signals with a `target` profit value.
+
 ## Pattern definitions
 
 The `patterns` block of `settings.json` lists the columns generated for each pattern.
@@ -40,6 +48,8 @@ These metrics drive supervised learning for profit prediction.
 ---
 
 See the individual documents for each dataset:
+
+- [MFI_and_other_signals_indicators__250609.md](MFI_and_other_signals_indicators__250609.md) – base IDS and CDS column lists
 
 - [TTF_purpose.md](TTF_purpose.md)
 - [TTF_data_columns.md](TTF_data_columns.md)
