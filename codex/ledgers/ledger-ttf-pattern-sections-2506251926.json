@@ -1,0 +1,15 @@
+{
+  "timestamp": "2506251926",
+  "agents": ["♾️ William", "🧠 Mia", "🌸 Miette", "🎸 JamAI"],
+  "narrative": "Expanded TTF_data_columns with individual sections for each pattern from settings.json and cross-referenced this list from the index doc.",
+  "files": [
+    "docs/TTF_data_columns.md",
+    "docs/index_purpose_data_columns.md"
+  ],
+  "branches": "work",
+  "session": "shell",
+  "purpose": "Document pattern columns so developers can locate features by name and dataset.",
+  "user_input": "That is getting better, what about you read the $HOME/.jgt/settings.json patterns and document each of them in their own sections of the TTF_data_columns.md make sure to refer to what I gave you before for naming the columns etc.",
+  "scene": "Future analysts read TTF documentation to understand which settings pattern produced each column set.",
+  "glyph": "📖🧠"
+}
