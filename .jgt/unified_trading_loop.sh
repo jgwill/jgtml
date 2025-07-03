@@ -3,6 +3,8 @@
 # This script orchestrates the complete JGT trading stack
 # Author: JGT Trading System Integration
 # Version: 1.0 - Complete Stack Integration
+# STATUS: Seems to be mostly a LLM hallucination, but let's keep it for now
+#
 
 #set -e  # Exit on any error
 
