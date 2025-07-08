@@ -10,7 +10,7 @@ source .env 2>/dev/null || true
 export JGTPY_DATA JGTPY_DATA_FULL
 
 # Configuration
-TIMEFRAMES="W1 M1 D1 H4"
+TIMEFRAMES="M1 W1 D1 H4"
 INSTRUMENTS="EUR/USD USD/CAD SPX500 AUD/USD AUD/CAD GBP/USD XAU/USD"
 PATTERNS="mfi mz zonesq"
 
