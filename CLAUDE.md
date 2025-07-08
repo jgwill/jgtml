@@ -1,14 +1,22 @@
-# > JGTML Data Refresh & Script Consolidation Plan
+# ü§ñ JGTML Data Refresh & Script Consolidation Plan
 
 **Created**: 2025-07-08  
 **Status**: Analysis Complete, Implementation Needed  
 **Priority**: HIGH - Critical Infrastructure Enhancement
 
-## <Ø Executive Summary
+## üéØ Executive Summary
 
-Analysis of `/src/jgtml/scripts/` reveals sophisticated data processing workflows that need consolidation into our unified refresh system. Current state has working but fragmented scripts with different approaches to the same core pipeline: **CDS í TTF í MLF í MX**.
+Analysis of `/src/jgtml/scripts/` reveals sophisticated data processing workflows that need consolidation into our unified refresh system. Current state has working but fragmented scripts with different approaches to the same core pipeline: **CDS ‚Üí TTF ‚Üí MLF ‚Üí MX**.
 
-## = Current Script Analysis
+### üìä Data Pipeline Definitions (CORRECTED)
+- **CDS**: Chaos Data Service (market data with technical indicators) 
+- **TTF**: **Transformed Trading Features** (pattern-specific columns from CDS)
+- **MLF**: **Meta Lag Features** (lagged versions of TTF across timeframes) 
+- **MX**: ML Targets (training labels for machine learning models)
+
+**See**: `/src/jgtpy/CLAUDE.md` for complete data services architecture documentation
+
+## üîç Current Script Analysis
 
 ### Working Scripts Analyzed:
 1. **`loop_ttfcli_patterns__many_instruments.sh`** - Simple TTF generation loop
@@ -20,33 +28,33 @@ Analysis of `/src/jgtml/scripts/` reveals sophisticated data processing workflow
 
 ### Key Discoveries:
 
-#### = **Critical Data Dependencies** (NOW FIXED):
+#### üîó **Critical Data Dependencies** (FIXED):
 ```
-CDS (foundation) í TTF (features) í MLF (ML features) í MX (ML targets)
+CDS (foundation) ‚Üí TTF (features) ‚Üí MLF (lag features) ‚Üí MX (ML targets)
 ```
 **Issue**: Previous parallel scripts ran these simultaneously, causing failures  
 **Fix**: Sequential pipeline per instrument/timeframe, parallel across instruments
 
-#### <® **Missing Patterns**:
+#### üé® **Missing Patterns**:
 - **aoac**: Awesome Oscillator + Accelerator columns (ao, ac)
 - **Extended pattern list**: `mfi mz zonesq aoac` (vs our previous `mfi mz zonesq`)
 
-#### <◊ **Environment Architectures**:
+#### üèóÔ∏è **Environment Architectures**:
 - **Production (prod)**: `/workspace/data/`, `conda activate i`
 - **Development (lab)**: `/src/jgtml/data/`, `conda activate jgtml`
 - **Commands**: Environment-specific CLI wrapping (mlfcli vs python jgtml/mlfcli.py)
 
-#### =  **Workflow Types**:
+#### üìä **Workflow Types**:
 - **PRODUCTION**: Current data (~400 rows), TTF+MLF only, real-time decisions
 - **DISCOVERY**: Full historical data, TTF+MLF+MX, pattern discovery & ML training
 
-#### ô **Advanced Features**:
+#### ‚öôÔ∏è **Advanced Features**:
 - **Pattern configuration**: Dynamic loading from `jgtset` / `~/.jgt/settings.json`
 - **Offline processing**: `-old` flag for faster results when markets closed
 - **Logging integration**: Structured logging to `/tmp/batch.log`
 - **Function library**: Well-structured dependency management in `_fnml.sh`
 
-## =ß Implementation Plan
+## üöß Implementation Plan
 
 ### Phase 1: Enhanced Unified Scripts (IMMEDIATE)
 **Deliverable**: Upgraded unified scripts with missing capabilities
@@ -78,11 +86,11 @@ detect_environment() {
 }
 ```
 
-#### 1.3 MLF Integration
-**CRITICAL**: Current unified scripts missing MLF processing completely
+#### 1.3 MLF Integration (COMPLETED ‚úÖ)
+**MLF**: Meta Lag Features processing now properly integrated in parallel scripts
 ```bash
-# Add MLF step to pipeline:
-# CDS í TTF í MLF í MX (with proper dependencies)
+# Complete pipeline with proper dependencies:
+# CDS ‚Üí TTF ‚Üí MLF ‚Üí MX (sequential per instrument)
 ```
 
 #### 1.4 Workflow Type Selection
@@ -105,7 +113,7 @@ detect_environment() {
 #### 2.2 Unified Function API
 ```bash
 # Core functions to implement:
-jgtml_pipeline_instrument_timeframe()     # Full CDSíTTFíMLFíMX pipeline
+jgtml_pipeline_instrument_timeframe()     # Full CDS‚ÜíTTF‚ÜíMLF‚ÜíMX pipeline
 jgtml_production_features()               # TTF+MLF only for trading
 jgtml_discovery_workflow()                # Full historical for ML discovery
 jgtml_pattern_processor()                 # Pattern-aware processing
@@ -113,9 +121,9 @@ jgtml_pattern_processor()                 # Pattern-aware processing
 
 #### 2.3 Script Consolidation
 **Replace** these scripts with function calls:
-- `PRODUCTION_feature_exploration.sh` í `jgtml_production_features`
-- `DISCOVERY_target_generation.sh` í `jgtml_discovery_workflow`
-- Batch scripts í `jgtml_pipeline_instrument_timeframe` loops
+- `PRODUCTION_feature_exploration.sh` ‚Üí `jgtml_production_features`
+- `DISCOVERY_target_generation.sh` ‚Üí `jgtml_discovery_workflow`
+- Batch scripts ‚Üí `jgtml_pipeline_instrument_timeframe` loops
 
 ### Phase 3: Advanced Capabilities (MEDIUM PRIORITY)
 
@@ -141,11 +149,12 @@ fi
 LOG_FILE="/tmp/jgtml_unified_$(date +%Y%m%d_%H%M%S).log"
 ```
 
-## <Ø Immediate Actions Required
+## üéØ Immediate Actions Required
 
-### 1. Fix Current Scripts (COMPLETED )
--  Fixed dependency sequencing in parallel scripts
--  Added aoac pattern to configuration
+### 1. Fix Current Scripts (COMPLETED ‚úÖ)
+- ‚úÖ Fixed dependency sequencing in parallel scripts
+- ‚úÖ Added aoac pattern to configuration
+- ‚úÖ Corrected parallel processing to handle multiple instruments per timeframe
 
 ### 2. Create Enhanced Unified Scripts (NEXT)
 ```bash
@@ -156,12 +165,12 @@ _REFRESH_FUNCTIONS.sh              # Sourced function library
 ```
 
 ### 3. Integration Testing (CRITICAL)
-- Test dependency chain: CDS í TTF í MLF í MX
+- Test dependency chain: CDS ‚Üí TTF ‚Üí MLF ‚Üí MX
 - Validate aoac pattern processing
 - Verify environment switching
 - Test production vs discovery workflows
 
-## = Migration Strategy
+## üîÑ Migration Strategy
 
 ### Short Term (1-2 days)
 1. **Create production-ready scripts** with full MLF integration
@@ -178,7 +187,7 @@ _REFRESH_FUNCTIONS.sh              # Sourced function library
 2. **Advanced pattern configuration** system
 3. **Monitoring and alerting** integration
 
-## > Dependencies & Coordination
+## ü§ù Dependencies & Coordination
 
 ### SANDBOX Integration
 - **Data source**: Unified scripts provide data for SANDBOX experiments
@@ -190,7 +199,7 @@ _REFRESH_FUNCTIONS.sh              # Sourced function library
 - **CLI Tools**: Leverages jgtcli, ttfcli, mlfcli, jgtmlcli from jgtml package
 - **Environment**: Integrates with jgtcore/jgtutils environment system
 
-## =À Success Metrics
+## üìã Success Metrics
 
 1. **Single script execution** replaces 5+ individual scripts
 2. **Proper dependency handling** eliminates processing failures
@@ -200,24 +209,26 @@ _REFRESH_FUNCTIONS.sh              # Sourced function library
 
 ---
 
-## =® CRITICAL NOTES
+## üö® CRITICAL NOTES
 
-### † **Dependency Chain Must Be Respected**:
+### ‚ö†Ô∏è **Dependency Chain Must Be Respected**:
 ```
-CDS í TTF í MLF í MX
-L NEVER run these in parallel for same instrument/timeframe
- Run sequential pipeline, parallelize across instruments
+CDS ‚Üí TTF ‚Üí MLF ‚Üí MX
+‚ùå NEVER run these in parallel for same instrument/timeframe
+‚úÖ Run sequential pipeline per instrument, parallelize across instruments
 ```
 
-### =' **Environment Detection Required**:
+### üîß **Environment Detection Required**:
 - **Lab**: `/src/jgtml/`, `python jgtml/mlfcli.py`
 - **Prod**: `/workspace/`, `mlfcli` command
 - Scripts must auto-detect and adapt
 
-### =  **Missing MLF Processing**:
-Current unified scripts completely lack MLF (Machine Learning Features) processing - this is **CRITICAL** gap that breaks the pipeline.
+### üìä **Data Structure Awareness**:
+**TTF** = Transformed Trading Features (pattern columns from CDS)  
+**MLF** = Meta Lag Features (lagged versions of TTF)  
+See `/src/jgtpy/CLAUDE.md` for complete data pipeline documentation
 
-### <® **Pattern Expansion**:
+### üé® **Pattern Expansion**:
 Add `aoac` pattern and dynamic pattern loading from configuration to match existing script capabilities.
 
 ---
