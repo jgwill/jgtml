@@ -82,12 +82,13 @@ echo "Creating remote directories..."
 for t in $TIMEFRAMES; do
     echo "Processing timeframe: $t"
     
+    # Process all instruments in parallel for this timeframe
     for i in $INSTRUMENTS; do
-        # SEQUENTIAL PIPELINE PER INSTRUMENT/TIMEFRAME (DEPENDENCIES!)
         wait_for_slots
         {
             echo "🔄 Processing pipeline for $i $t"
             
+            # SEQUENTIAL PIPELINE: CDS → TTF → MLF → MX (DEPENDENCIES!)
             # Step 1: CDS (foundation data)
             if jgtcli -i "$i" -t "$t" --fresh --full &>/dev/null; then
                 fp=$(jgtcli -i "$i" -t "$t" --fresh --full -vp 2>/dev/null)
@@ -96,25 +97,25 @@ for t in $TIMEFRAMES; do
                     echo "✓ CDS $i $t processed and uploading"
                 else
                     echo "✗ CDS $i $t - no file path returned"
-                    continue  # Skip dependent processing
+                    exit 1  # Exit this background job
                 fi
             else
                 echo "✗ CDS $i $t - processing failed"
-                continue  # Skip dependent processing
+                exit 1  # Exit this background job
             fi
             
             # Pattern processing (skip M1 for performance)
             if [ "$t" != "M1" ]; then
                 for p in $PATTERNS; do
-                    # Step 2: TTF (depends on CDS)
+                    # Step 2: TTF (Transformed Trading Features - depends on CDS)
                     if ttfcli -i "$i" -t "$t" -pn "$p" --full -old &>/dev/null; then
                         echo "✓ TTF $i $t $p"
                         
-                        # Step 3: MLF (depends on TTF)
+                        # Step 3: MLF (Meta Lag Features - depends on TTF)
                         if mlfcli -i "$i" -t "$t" -pn "$p" --full -old &>/dev/null; then
                             echo "✓ MLF $i $t $p"
                             
-                            # Step 4: MX (depends on MLF/TTF)
+                            # Step 4: MX (ML targets - depends on MLF/TTF)
                             if jgtmlcli -i "$i" -t "$t" -pn "$p" --full -old &>/dev/null; then
                                 echo "✓ MX $i $t $p"
                             else

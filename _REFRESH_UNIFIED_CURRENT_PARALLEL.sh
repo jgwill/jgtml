@@ -34,42 +34,47 @@ wait_for_slots() {
 
 # Parallel CDS processing with upload
 process_cds_parallel() {
-    local instrument="$1"
-    local timeframe="$2"
+    local timeframe="$1"
     
-    wait_for_slots
-    {
-        if jgtcli -i "$instrument" -t "$timeframe" --fresh &>/dev/null; then
-            fp=$(jgtcli -i "$instrument" -t "$timeframe" --fresh -vp 2>/dev/null)
-            if [ -n "$fp" ] && [ -f "$fp" ]; then
-                if droxul upload "$fp" "/dist/data/current/cds/" &>/dev/null; then
-                    echo "✓ CDS $instrument $timeframe"
+    # Process all instruments in parallel for this timeframe
+    for instrument in $INSTRUMENTS_CDS; do
+        wait_for_slots
+        {
+            if jgtcli -i "$instrument" -t "$timeframe" --fresh &>/dev/null; then
+                fp=$(jgtcli -i "$instrument" -t "$timeframe" --fresh -vp 2>/dev/null)
+                if [ -n "$fp" ] && [ -f "$fp" ]; then
+                    if droxul upload "$fp" "/dist/data/current/cds/" &>/dev/null; then
+                        echo "✓ CDS $instrument $timeframe"
+                    else
+                        echo "✗ CDS $instrument $timeframe - upload failed"
+                    fi
                 else
-                    echo "✗ CDS $instrument $timeframe - upload failed"
+                    echo "✗ CDS $instrument $timeframe - no file generated"
                 fi
             else
-                echo "✗ CDS $instrument $timeframe - no file generated"
+                echo "✗ CDS $instrument $timeframe - processing failed"
             fi
-        else
-            echo "✗ CDS $instrument $timeframe - processing failed"
-        fi
-    } &
+        } &
+    done
 }
 
-# Parallel TTF processing
+# Parallel TTF processing for timeframe
 process_ttf_parallel() {
-    local instrument="$1"
-    local timeframe="$2"
-    local pattern="$3"
+    local timeframe="$1"
     
-    wait_for_slots
-    {
-        if ttfcli -i "$instrument" -t "$timeframe" -pn "$pattern" &>/dev/null; then
-            echo "✓ TTF $instrument $timeframe $pattern"
-        else
-            echo "✗ TTF $instrument $timeframe $pattern - failed"
-        fi
-    } &
+    # Process all instruments in parallel for this timeframe
+    for instrument in $INSTRUMENTS_TTF; do
+        for pattern in $PATTERNS_TTF; do
+            wait_for_slots
+            {
+                if ttfcli -i "$instrument" -t "$timeframe" -pn "$pattern" &>/dev/null; then
+                    echo "✓ TTF $instrument $timeframe $pattern"
+                else
+                    echo "✗ TTF $instrument $timeframe $pattern - failed"
+                fi
+            } &
+        done
+    done
 }
 
 echo "Starting parallel unified current data refresh..."
@@ -90,29 +95,20 @@ echo ""
 echo "Processing CDS current data in parallel..."
 for t in $TIMEFRAMES_CDS; do
     echo "Timeframe: $t"
-    for i in $INSTRUMENTS_CDS; do
-        process_cds_parallel "$i" "$t"
-    done
+    process_cds_parallel "$t"
+    wait  # Wait for all instruments in this timeframe to complete
+    echo "✓ CDS processing completed for $t"
 done
-
-# Wait for CDS processing to complete
-wait
-echo "✓ All CDS processing completed"
 
 # Process TTF current data in parallel
 echo ""
 echo "Processing TTF current data in parallel..."
-for i in $INSTRUMENTS_TTF; do
-    for t in $TIMEFRAMES_TTF; do
-        for p in $PATTERNS_TTF; do
-            process_ttf_parallel "$i" "$t" "$p"
-        done
-    done
+for t in $TIMEFRAMES_TTF; do
+    echo "Timeframe: $t"
+    process_ttf_parallel "$t"
+    wait  # Wait for all instruments in this timeframe to complete
+    echo "✓ TTF processing completed for $t"
 done
-
-# Wait for TTF processing to complete
-wait
-echo "✓ All TTF processing completed"
 
 # Batch upload TTF files
 echo ""
