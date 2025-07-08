@@ -10,10 +10,10 @@ unset JGTPY_DATA_FULL JGTPY_DATA
 source .env 2>/dev/null || true
 export JGTPY_DATA JGTPY_DATA_FULL
 
-# Configuration
+# Configuration  
 TIMEFRAMES="W1 M1 D1 H4"
 INSTRUMENTS="EUR/USD USD/CAD SPX500 AUD/USD AUD/CAD GBP/USD XAU/USD"
-PATTERNS="mfi mz zonesq"
+PATTERNS="mfi mz zonesq aoac"  # Added aoac pattern from scripts analysis
 
 # Dynamic parallel job calculation
 CPU_CORES=$(nproc 2>/dev/null || sysctl -n hw.ncpu 2>/dev/null || echo "4")
@@ -83,9 +83,12 @@ for t in $TIMEFRAMES; do
     echo "Processing timeframe: $t"
     
     for i in $INSTRUMENTS; do
-        # CDS processing and upload in background
+        # SEQUENTIAL PIPELINE PER INSTRUMENT/TIMEFRAME (DEPENDENCIES!)
         wait_for_slots
         {
+            echo "🔄 Processing pipeline for $i $t"
+            
+            # Step 1: CDS (foundation data)
             if jgtcli -i "$i" -t "$t" --fresh --full &>/dev/null; then
                 fp=$(jgtcli -i "$i" -t "$t" --fresh --full -vp 2>/dev/null)
                 if [ -n "$fp" ]; then
@@ -93,25 +96,39 @@ for t in $TIMEFRAMES; do
                     echo "✓ CDS $i $t processed and uploading"
                 else
                     echo "✗ CDS $i $t - no file path returned"
+                    continue  # Skip dependent processing
                 fi
             else
                 echo "✗ CDS $i $t - processing failed"
+                continue  # Skip dependent processing
+            fi
+            
+            # Pattern processing (skip M1 for performance)
+            if [ "$t" != "M1" ]; then
+                for p in $PATTERNS; do
+                    # Step 2: TTF (depends on CDS)
+                    if ttfcli -i "$i" -t "$t" -pn "$p" --full -old &>/dev/null; then
+                        echo "✓ TTF $i $t $p"
+                        
+                        # Step 3: MLF (depends on TTF)
+                        if mlfcli -i "$i" -t "$t" -pn "$p" --full -old &>/dev/null; then
+                            echo "✓ MLF $i $t $p"
+                            
+                            # Step 4: MX (depends on MLF/TTF)
+                            if jgtmlcli -i "$i" -t "$t" -pn "$p" --full -old &>/dev/null; then
+                                echo "✓ MX $i $t $p"
+                            else
+                                echo "✗ MX $i $t $p - failed"
+                            fi
+                        else
+                            echo "✗ MLF $i $t $p - failed (skipping MX)"
+                        fi
+                    else
+                        echo "✗ TTF $i $t $p - failed (skipping MLF/MX)"
+                    fi
+                done
             fi
         } &
-        
-        # Pattern processing (skip M1 for performance)
-        if [ "$t" != "M1" ]; then
-            for p in $PATTERNS; do
-                # TTF processing in background
-                run_background "ttfcli -i '$i' -t '$t' -pn '$p' --full -old" "TTF $i $t $p"
-                
-                # MLF processing in background
-                run_background "mlfcli -i '$i' -t '$t' -pn '$p' --full -old" "MLF $i $t $p"
-                
-                # MX processing in background
-                run_background "jgtmlcli -i '$i' -t '$t' -pn '$p' --full -old" "MX $i $t $p"
-            done
-        fi
     done
     
     # Wait for current timeframe to complete before starting uploads
