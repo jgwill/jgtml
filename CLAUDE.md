@@ -10,9 +10,11 @@ Analysis of `/src/jgtml/scripts/` reveals sophisticated data processing workflow
 
 ### 📊 Data Pipeline Definitions (CORRECTED)
 - **CDS**: Chaos Data Service (market data with technical indicators) 
-- **TTF**: **Transformed Trading Features** (pattern-specific columns from CDS)
+- **TTF**: **Transformed Trading Features** (cross-timeframe feature engineering)
 - **MLF**: **Meta Lag Features** (lagged versions of TTF across timeframes) 
 - **MX**: ML Targets (training labels for machine learning models)
+
+**TTF Innovation**: Takes pattern columns (e.g., `mfi_sq`) and adds higher timeframe versions (`mfi_sq_W1`, `mfi_sq_M1`) creating multi-timeframe context per bar.
 
 **See**: `/src/jgtpy/CLAUDE.md` for complete data services architecture documentation
 
@@ -230,6 +232,31 @@ See `/src/jgtpy/CLAUDE.md` for complete data pipeline documentation
 
 ### 🎨 **Pattern Expansion**:
 Add `aoac` pattern and dynamic pattern loading from configuration to match existing script capabilities.
+
+---
+
+### Integration with JGT Data Refresh Service
+
+**JGTPY Service Integration**: Our unified scripts work perfectly with JGTPY's `jgtservice` - the enterprise-grade automation platform:
+
+#### **Service Architecture Synergy**:
+- **JGTPY Service**: Handles CDS automated refresh with scheduling + cloud distribution  
+- **JGTML Scripts**: Handle TTF → MLF → MX pipeline for advanced feature generation
+- **Combined Power**: Complete automation from raw data to ML-ready features
+
+#### **Future JGTML Service Vision**:
+Create similar service architecture for JGTML:
+```bash
+# Proposed jgtml service commands
+jgtmlservice --daemon --patterns "mfi,mz,zonesq,aoac"
+jgtmlservice --discovery-mode --full  # TTF+MLF+MX pipeline
+jgtmlservice --production-mode         # TTF+MLF only (~400 rows)
+```
+
+**Service Integration Strategy**:
+1. **Current**: Use `jgtservice` for CDS automation + our unified scripts for advanced features
+2. **Future**: Extend service pattern to JGTML for complete pipeline automation
+3. **Ultimate**: Unified JGT ecosystem service covering entire PDS→MX pipeline
 
 ---
 
