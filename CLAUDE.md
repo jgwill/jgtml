@@ -18,7 +18,9 @@ Analysis of `/src/jgtml/scripts/` reveals sophisticated data processing workflow
 
 **See**: `/src/jgtpy/CLAUDE.md` for complete data services architecture documentation
 
-## 🔍 Current Script Analysis
+## 🔍 Current Script Analysis from ./scripts
+
+* Note from William (not Claude): These scripts needs to be consolidated into functions and adequately evaluated, they might be deprecated  or what was developped is not matured yet.
 
 ### Working Scripts Analyzed:
 1. **`loop_ttfcli_patterns__many_instruments.sh`** - Simple TTF generation loop
@@ -26,7 +28,7 @@ Analysis of `/src/jgtml/scripts/` reveals sophisticated data processing workflow
 3. **`batch_mlf_jgtmlcli_250516.sh`** - Production MLF+MX processing  
 4. **`PRODUCTION_feature_exploration.sh`** - Real-time trading feature generation (~400 rows)
 5. **`DISCOVERY_target_generation.sh`** - Full historical ML discovery workflow
-6. **`_fnml.sh`** - **CRITICAL** Function library with proper dependency handling
+6. **`_fnml.sh`** - **CRITICAL** Function library with proper dependency handling (this was from claude) but it is a first draft of what I wanted to be processed, that was the seed that sparked the ./jgtml/jgtapp.py commands.  Claude say that is he stated before but that is not the case, I told him that it needed refactoring etc but he missed that !
 
 ### Key Discoveries:
 
