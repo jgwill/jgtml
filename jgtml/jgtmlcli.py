@@ -9,9 +9,13 @@ sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
 
 from mlcliconstants import MXCLI_DESCRIPTION, MXCLI_EPILOG, MXCLI_PROG_NAME
 
-from jgtutils import (
-    jgtcommon as jgtcommon
-)
+# jgtcore compatibility imports
+try:
+    from jgtcore.cli import new_parser, parse_args
+    # For now, keep jgtutils for functions not yet migrated
+    from jgtutils import jgtcommon
+except ImportError:
+    from jgtutils import jgtcommon
 import argparse
 
 import pandas as pd
@@ -29,7 +33,12 @@ import pandas as pd
 
 
 def parse_args():
-    parser = jgtcommon.new_parser(MXCLI_DESCRIPTION,MXCLI_EPILOG,MXCLI_PROG_NAME)
+    # Use jgtcore if available, otherwise fallback to jgtutils
+    try:
+        from jgtcore.cli import new_parser
+        parser = new_parser(MXCLI_DESCRIPTION, MXCLI_EPILOG, MXCLI_PROG_NAME)
+    except (ImportError, TypeError):
+        parser = jgtcommon.new_parser(MXCLI_DESCRIPTION, MXCLI_EPILOG, MXCLI_PROG_NAME)
     # jgtfxcommon.add_main_arguments(parser)
     jgtcommon.add_instrument_timeframe_arguments(parser)
     

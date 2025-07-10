@@ -1,9 +1,28 @@
 # jgtml
 version='0.0.341'
+__version__ = version
+
 import sys
 import os
 
 sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
+
+# Check available libraries and versions
+try:
+    import jgtcore
+    JGTCORE_AVAILABLE = True
+    JGTCORE_VERSION = jgtcore.__version__
+except ImportError:
+    JGTCORE_AVAILABLE = False
+    JGTCORE_VERSION = None
+
+try: 
+    import jgtutils
+    JGTUTILS_AVAILABLE = True
+    JGTUTILS_VERSION = getattr(jgtutils, 'version', 'unknown')
+except ImportError:
+    JGTUTILS_AVAILABLE = False
+    JGTUTILS_VERSION = None
 
 
 from jtc import (

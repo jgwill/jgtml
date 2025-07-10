@@ -32,6 +32,7 @@ dependencies = [
   'aiohttp',
   'tlid',
   'jgtutils',
+  'jgtcore>=0.2.0',
   'jgtfxcon',
   'pyarrow',
 ]	
