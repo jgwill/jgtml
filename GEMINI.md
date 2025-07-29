@@ -37,3 +37,8 @@ This will create the following files in the `data/vertex_ai` directory:
 *   `data_forecasting_mz.csv`
 
 This work enables a robust machine learning workflow, from raw data to model training, facilitating the creation of a consensus-based trading strategy.
+
+## Vertex AI AutoML Management Plan
+
+For a detailed plan on automating the management (launch, test, monitoring) of Vertex AI AutoML models, refer to:
+*   [PLAN_AUTOML_ISSUE_66.md](PLAN_AUTOML_ISSUE_66.md)
