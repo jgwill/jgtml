@@ -62,7 +62,7 @@ def transform_for_forecasting(df: pd.DataFrame, series_id: str, target_col='targ
 
 def main():
     """Main function to drive the pattern-based data transformation."""
-    parser = argparse.ArgumentParser(description="Transform pattern-based datasets for Vertex AI training.")
+    parser = argparse.ArgumentParser(description="Transform pattern-based datasets for Vertex AI training by combining TTF and MX data.")
     parser.add_argument('-i', '--instrument', required=True, type=str, help='Instrument symbol (e.g., SPX500, EUR/USD).')
     parser.add_argument('-t', '--timeframe', required=True, type=str, help='Timeframe (e.g., D1, H4).')
     parser.add_argument('-pn', '--pattern', required=True, type=str, help='Pattern name to use for feature selection (e.g., mz, mfi).')
@@ -85,57 +85,70 @@ def main():
         if not pattern_columns:
             raise ValueError(f"No columns defined for pattern '{args.pattern}'.")
 
-        # Construct input file path
+        # Construct input file paths
         instrument_fn = args.instrument.replace('/', '-')
-        # Assuming the pattern in the filename is just the pattern name itself.
-        input_filename = f"{instrument_fn}_{args.timeframe}_{args.pattern}.csv"
-        
-        # Using the path structure you described
         data_dir_full = os.getenv("JGTPY_DATA_FULL", "data/full")
-        input_filepath = os.path.join(data_dir_full, 'targets', 'mx', input_filename)
-        
-        print(f"Loading data from: {input_filepath}")
-        
-        # Load and filter data
-        df = pd.read_csv(input_filepath)
-        
-        # Define columns to keep: Date, target, and the pattern's columns
-        columns_to_keep = ['Date', 'target'] + pattern_columns
-        
-        # Ensure all desired columns exist in the dataframe before selection
-        existing_columns_to_keep = [col for col in columns_to_keep if col in df.columns]
-        missing_cols = set(columns_to_keep) - set(existing_columns_to_keep)
-        if missing_cols:
-            print(f"Warning: The following columns were not found in the dataset and will be skipped: {list(missing_cols)}")
 
-        filtered_df = df[existing_columns_to_keep]
+        # MX file for target
+        mx_filename = f"{instrument_fn}_{args.timeframe}_{args.pattern}.csv"
+        mx_filepath = os.path.join(data_dir_full, 'targets', 'mx', mx_filename)
         
-        if 'Date' in filtered_df.columns:
-            filtered_df['Date'] = pd.to_datetime(filtered_df['Date'])
+        # TTF file for features
+        ttf_filename = f"{instrument_fn}_{args.timeframe}_{args.pattern}.csv"
+        ttf_filepath = os.path.join(data_dir_full, 'ttf', ttf_filename)
+
+        print(f"Loading target data from: {mx_filepath}")
+        print(f"Loading feature data from: {ttf_filepath}")
+        
+        # Load data
+        mx_df = pd.read_csv(mx_filepath)
+        ttf_df = pd.read_csv(ttf_filepath)
+
+        # Prepare for merge
+        for df in [mx_df, ttf_df]:
+            if 'Date' in df.columns:
+                df['Date'] = pd.to_datetime(df['Date'])
+                df.set_index('Date', inplace=True)
+
+        # Select columns
+        mx_cols_to_keep = ['target']
+        ttf_cols_to_keep = [col for col in pattern_columns if col in ttf_df.columns]
+        
+        missing_cols = set(pattern_columns) - set(ttf_cols_to_keep)
+        if missing_cols:
+            print(f"Warning: The following columns were not found in the TTF dataset and will be skipped: {list(missing_cols)}")
+
+        mx_subset = mx_df[mx_cols_to_keep]
+        ttf_subset = ttf_df[ttf_cols_to_keep]
+
+        # Merge dataframes
+        print("Merging target and feature dataframes...")
+        merged_df = mx_subset.join(ttf_subset, how='inner').reset_index()
+        print(f"Merged data has {len(merged_df)} rows.")
 
         # Create output directory
         os.makedirs(args.output_dir, exist_ok=True)
 
         # --- Regression ---
-        df_regression = transform_for_regression(filtered_df.copy())
+        df_regression = transform_for_regression(merged_df.copy())
         regression_output_path = os.path.join(args.output_dir, f'data_regression_{args.pattern}.csv')
         df_regression.to_csv(regression_output_path, index=False)
         print(f"✅ Regression data for '{args.pattern}' pattern saved to {regression_output_path}")
 
         # --- Classification ---
-        df_classification = transform_for_classification(filtered_df.copy())
+        df_classification = transform_for_classification(merged_df.copy())
         classification_output_path = os.path.join(args.output_dir, f'data_classification_{args.pattern}.csv')
         df_classification.to_csv(classification_output_path, index=False)
         print(f"✅ Classification data for '{args.pattern}' pattern saved to {classification_output_path}")
 
         # --- Forecasting ---
-        df_forecasting = transform_for_forecasting(filtered_df.copy(), args.instrument)
+        df_forecasting = transform_for_forecasting(merged_df.copy(), args.instrument)
         forecasting_output_path = os.path.join(args.output_dir, f'data_forecasting_{args.pattern}.csv')
         df_forecasting.to_csv(forecasting_output_path, index=False)
         print(f"✅ Forecasting data for '{args.pattern}' pattern saved to {forecasting_output_path}")
 
-    except FileNotFoundError:
-        print(f"❌ Error: Input file not found at '{input_filepath}'. Please ensure the file exists.")
+    except FileNotFoundError as e:
+        print(f"❌ Error: Input file not found. Please ensure both MX and TTF files exist. Missing file: {e.filename}")
     except Exception as e:
         print(f"❌ An error occurred: {e}")
 
