@@ -12,7 +12,7 @@ export JGTPY_DATA JGTPY_DATA_FULL
 # Configuration
 TIMEFRAMES="M1 W1 D1 H4"
 INSTRUMENTS="EUR/USD USD/CAD SPX500 AUD/USD AUD/CAD GBP/USD XAU/USD"
-PATTERNS="mfi mz zonesq"
+PATTERNS="mfi mz zonesq aoac"
 
 echo "Starting unified full data refresh..."
 echo "Timeframes: $TIMEFRAMES"

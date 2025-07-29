@@ -14,7 +14,7 @@ TIMEFRAMES_CDS="M1 W1 D1 H4 H1 m15 m5"
 TIMEFRAMES_TTF="D1 H4"
 INSTRUMENTS_CDS="XAU/USD EUR/USD USD/CAD SPX500 AUD/USD AUD/CAD GBP/USD"
 INSTRUMENTS_TTF="EUR/USD AUD/CAD AUD/USD USD/CAD GBP/USD XAU/USD"
-PATTERNS_TTF="mz"
+PATTERNS_TTF="mfi mz zonesq aoac"
 
 echo "Starting unified current data refresh..."
 
@@ -22,6 +22,7 @@ echo "Starting unified current data refresh..."
 echo "Creating remote directories..."
 droxul mkdir /dist/data/current/cds &>/dev/null || true
 droxul mkdir /dist/data/current/ttf &>/dev/null || true
+droxul mkdir /dist/data/current/mlf &>/dev/null || true
 
 # Process CDS current data
 echo "Processing CDS current data..."
@@ -41,16 +42,23 @@ for t in $TIMEFRAMES_CDS; do
     done
 done
 
-# Process TTF current data
-echo "Processing TTF current data..."
+# Process TTF+MLF current data
+echo "Processing TTF+MLF current data..."
 for i in $INSTRUMENTS_TTF; do
     for t in $TIMEFRAMES_TTF; do
         for p in $PATTERNS_TTF; do
-            echo "  Processing TTF: $i $t $p"
+            echo "  Processing TTF+MLF: $i $t $p"
+            # SEQUENTIAL PIPELINE: TTF → MLF (DEPENDENCIES!)
             if ttfcli -i "$i" -t "$t" -pn "$p" &>/dev/null; then
                 echo "    TTF completed"
+                # MLF processing depends on TTF
+                if mlfcli -i "$i" -t "$t" -pn "$p" &>/dev/null; then
+                    echo "    MLF completed"
+                else
+                    echo "    MLF failed"
+                fi
             else
-                echo "    TTF failed"
+                echo "    TTF failed (skipping MLF)"
             fi
         done
     done
@@ -68,4 +76,18 @@ if [ -d "$JGTPY_DATA/ttf" ]; then
     echo "TTF upload completed"
 fi
 
+# Upload MLF files
+echo "Uploading MLF files..."
+if [ -d "$JGTPY_DATA/mlf" ]; then
+    cd "$JGTPY_DATA/mlf"
+    for f in *.csv; do
+        if [ -f "$f" ]; then
+            droxul upload "$f" "/dist/data/current/mlf/$f" &>/dev/null
+        fi
+    done
+    echo "MLF upload completed"
+fi
+
 echo "Unified current data refresh completed successfully!"
+echo "Check results with:"
+echo "  ls -la \$JGTPY_DATA/{cds,ttf,mlf}/"
