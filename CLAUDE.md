@@ -1,5 +1,12 @@
 # 🤖 JGTML Data Refresh & Script Consolidation Plan
 
+-----
+* looking that file, it is confusing and has outdated information
+
+
+
+-----
+
 **Created**: 2025-07-08  
 **Status**: Analysis Complete, Implementation Needed  
 **Priority**: HIGH - Critical Infrastructure Enhancement
