@@ -114,7 +114,8 @@ detect_environment() {
 ### Phase 2: Function Library Integration (HIGH PRIORITY)
 **Deliverable**: Single sourced function library for all scripts
 
-#### 2.1 Enhanced _fnml.sh Integration
+#### 2.1 Enhanced _fnml.sh Integration (I doubt this is up to date but it might for sure there are other scripts that are sure not up to date)
+
 **Target**: `/src/jgtml/scripts/_fnml_unified.sh`
 - Merge current `_fnml.sh` functions with our unified script logic
 - Add dynamic pattern loading from `jgtset`
