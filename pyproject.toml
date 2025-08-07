@@ -79,6 +79,8 @@ pncli="jgtml.pncli:main"
 jgtmlfcli="jgtml.mlfcli:main"
 mlfcli="jgtml.mlfcli:main"
 
+jgtmlservice="jgtml.jgtmlservice:main"
+
 jgtmlpncli="jgtml.pncli:main"
 
 #ptojgtmltidealligator="jgtml.ptojgtmltidealligator:main"
