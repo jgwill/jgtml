@@ -276,7 +276,7 @@ def show_status(config: JGTMLServiceConfig):
     print(f"Verbose Level: {config.verbose_level}")
     
     # Show model coverage status
-    print(f"\\nML Model Coverage Status:")
+    print(f"\nML Model Coverage Status:")
     print("=" * 40)
     
     total_combinations = len(config.instruments) * len(config.timeframes) * len(config.patterns)
@@ -291,7 +291,7 @@ def show_status(config: JGTMLServiceConfig):
     print(f"Coverage: [TO BE CALCULATED]")
     
     # Feature pipeline status
-    print(f"\\nFeature Pipeline Status:")
+    print(f"\nFeature Pipeline Status:")
     print("=" * 40)
     print(f"TTF Files: [TO BE IMPLEMENTED]")
     print(f"MLF Files: [TO BE IMPLEMENTED]") 
@@ -300,11 +300,11 @@ def show_status(config: JGTMLServiceConfig):
     # Validate configuration
     errors = config.validate()
     if errors:
-        print("\\nConfiguration Errors:")
+        print("\nConfiguration Errors:")
         for error in errors:
             print(f"  - {error}")
     else:
-        print("\\nConfiguration: VALID")
+        print("\nConfiguration: VALID")
 
 
 def main():
