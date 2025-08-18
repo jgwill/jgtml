@@ -8,6 +8,23 @@ import signal
 import atexit
 from contextlib import contextmanager
 
+# JGTTracer integration for comprehensive observability
+try:
+    # Try to import from local source first (for development)
+    import sys
+    jgtcore_source_path = "/src/jgtcore"
+    if jgtcore_source_path not in sys.path:
+        sys.path.insert(0, jgtcore_source_path)
+    from jgtcore import JGTTracer, is_tracing_enabled
+    _TRACING_AVAILABLE = True
+except ImportError:
+    try:
+        # Fallback to installed package
+        from jgtcore import JGTTracer, is_tracing_enabled
+        _TRACING_AVAILABLE = True
+    except ImportError:
+        _TRACING_AVAILABLE = False
+
 sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
 
 import pandas as pd
@@ -292,6 +309,11 @@ def main():
   global timeframes
   global no_cache
   
+  # Initialize JGTTracer for comprehensive observability
+  tracer = None
+  if _TRACING_AVAILABLE and is_tracing_enabled():
+      tracer = JGTTracer("jgtml", "fdb_scanner_2508")
+  
   _ini_cache()
   args=parse_args()
   no_cache=args.no_cache
@@ -305,6 +327,23 @@ def main():
   
     
   quiet=args.quiet
+  
+  # Start main FDB scanning operation with tracing
+  if tracer:
+      scan_params = {
+          "instruments": instruments, 
+          "timeframes": timeframes,
+          "demo_mode": demo_flag,
+          "no_cache": no_cache,
+          "quiet": quiet
+      }
+      trace_id = tracer.start_operation("FDB_Scanner_2508_Session", scan_params)
+      tracer.add_step("scanner_initialization", {
+          "cache_initialized": True,
+          "args_parsed": True,
+          "instruments_count": len(instruments),
+          "timeframes_count": len(timeframes)
+      })
   
   verbose_level=args.verbose
   # %%
@@ -365,6 +404,14 @@ def main():
   _append_all_signals_filepath_bash(all_signals_filepath_bash,"signals_out_json_file="+all_signals_filepath) 
   
   for i in instruments:
+    # Trace individual instrument processing
+    if tracer:
+        tracer.add_step(f"instrument_scan_start", {
+            "instrument": i,
+            "processing_order": instruments.index(i) + 1,
+            "total_instruments": len(instruments)
+        })
+    
     zones={}
     squats={}
     fades={}
@@ -377,6 +424,14 @@ def main():
     for t in timeframes_to_parse:
       if t == " " or t == "":
         continue
+      
+      # Trace timeframe processing
+      if tracer:
+          tracer.add_step(f"timeframe_processing", {
+              "instrument": i,
+              "timeframe": t,
+              "processing_step": "data_loading"
+          })
       
       cache_filepath = _make_cached_filepath(i, t,suffix=cds_cache_file_suffix)
 
@@ -555,6 +610,24 @@ def main():
   
   if verbose_level>0:
     print(f"Signals saved to {all_signals_filepath}")
+  
+  # Complete the tracing operation
+  if tracer:
+      tracer.add_step("scanner_completion", {
+          "total_instruments_processed": len(instruments),
+          "signals_file": all_signals_filepath,
+          "bash_script_file": all_signals_filepath_bash,
+          "scan_successful": True,
+          "total_signals": len(all_signals)
+      })
+      completion_result = tracer.complete_operation({
+          "status": "completed", 
+          "total_instruments": len(instruments),
+          "total_signals_found": len(all_signals),
+          "output_files_created": True
+      })
+      if not quiet:
+          print(f"🔍 FDB Scanner 2508 completed - Trace ID: {trace_id}")
 
 def expand_timeframe_list(timeframes_to_parse):
     for t in timeframes:
@@ -688,6 +761,7 @@ def ensure_jgtfxcli_available():
 
 # Example usage before any jgtfxcli invocation:
 ensure_jgtfxcli_available()
+
 # ...existing code...
 if __name__ == "__main__":
     try:
