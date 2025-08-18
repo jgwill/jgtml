@@ -15,6 +15,13 @@ from mlclicommon import (add_patterns_arguments,
                          check_arguments)
 import realityhelper
 
+# Tracing integration with fail-safe design
+try:
+    from jgtcore import JGTTracer
+    _has_tracing = True
+except ImportError:
+    _has_tracing = False
+
 def create_app_arguments()->argparse.Namespace:
   from jgtutils import jgtcommon
   
@@ -70,67 +77,246 @@ def generate_mlf_for_pattern(
     args=None,
 ):
     """Convenience wrapper around realityhelper.generate_mlf_feature_pattern."""
-    return realityhelper.generate_mlf_feature_pattern(
-        instrument,
-        timeframe,
-        lag_period=lag_period,
-        total_lagging_periods=total_lagging_periods,
-        dropna=True,
-        use_full=use_full,
-        columns_to_keep=columns_to_keep,
-        columns_to_drop=columns_to_drop,
-        drop_bid_ask=drop_bid_ask,
-        force_refresh=use_fresh,
-        pn=patternname,
-        args=args,
-    )
+    # Initialize tracing for programmatic MLF generation
+    tracer = None
+    if _has_tracing:
+        try:
+            tracer = JGTTracer("jgtml", "mlf_generation")
+        except Exception:
+            pass  # Graceful fallback
+    
+    if tracer:
+        trace_metadata = {
+            "instrument": instrument,
+            "timeframe": timeframe,
+            "pattern": patternname,
+            "lag_period": lag_period,
+            "total_lagging_periods": total_lagging_periods,
+            "use_full": use_full,
+            "use_fresh": use_fresh,
+            "columns_to_keep": columns_to_keep,
+            "columns_to_drop": columns_to_drop,
+            "drop_bid_ask": drop_bid_ask,
+            "programmatic_call": True
+        }
+        
+        with tracer.trace_operation(f"MLF_prog_{instrument}_{timeframe}_{patternname}", trace_metadata) as trace_id:
+            tracer.add_step("mlf_parameters", input_data=trace_metadata)
+            
+            # Core MLF processing
+            result = realityhelper.generate_mlf_feature_pattern(
+                instrument,
+                timeframe,
+                lag_period=lag_period,
+                total_lagging_periods=total_lagging_periods,
+                dropna=True,
+                use_full=use_full,
+                columns_to_keep=columns_to_keep,
+                columns_to_drop=columns_to_drop,
+                drop_bid_ask=drop_bid_ask,
+                force_refresh=use_fresh,
+                pn=patternname,
+                args=args,
+            )
+            
+            feature_count = len(result.columns) if result is not None else 0
+            tracer.add_step("mlf_generation_complete", 
+                          output_data={
+                              "success": True, 
+                              "pattern": patternname, 
+                              "feature_count": feature_count,
+                              "total_lag_periods": total_lagging_periods,
+                              "call_type": "programmatic"
+                          })
+            return result
+    else:
+        return realityhelper.generate_mlf_feature_pattern(
+            instrument,
+            timeframe,
+            lag_period=lag_period,
+            total_lagging_periods=total_lagging_periods,
+            dropna=True,
+            use_full=use_full,
+            columns_to_keep=columns_to_keep,
+            columns_to_drop=columns_to_drop,
+            drop_bid_ask=drop_bid_ask,
+            force_refresh=use_fresh,
+            pn=patternname,
+            args=args,
+        )
   
 
 
 def main():
-  
-  args = create_app_arguments()
+    args = create_app_arguments()
+    
+    # Initialize tracing for MLF CLI processing
+    tracer = None
+    if _has_tracing:
+        try:
+            tracer = JGTTracer("jgtml", "mlf_cli")
+        except Exception:
+            pass  # Graceful fallback
+    
+    force_refresh = args.fresh
+    
+    if tracer:
+        trace_metadata = {
+            "instrument": args.instrument,
+            "timeframe": args.timeframe,
+            "pattern": args.patternname,
+            "lag_period": args.lag_period,
+            "total_lagging_periods": args.total_lagging_periods,
+            "use_full": args.full,
+            "use_fresh": args.fresh,
+            "columns_to_keep": args.columns_to_keep,
+            "columns_to_drop": args.columns_to_drop,
+            "drop_bid_ask": args.rmbidask,
+            "cli_call": True
+        }
+        
+        with tracer.trace_operation(f"MLF_CLI_{args.instrument}_{args.timeframe}_{args.patternname}", trace_metadata) as trace_id:
+            tracer.add_step("cli_argument_parsing", input_data=vars(args))
+            
+            tracer.add_step("mlf_configuration",
+                          input_data={
+                              "lag_configuration": f"{args.lag_period}x{args.total_lagging_periods}",
+                              "column_filtering": {
+                                  "keep": args.columns_to_keep,
+                                  "drop": args.columns_to_drop
+                              },
+                              "force_refresh": force_refresh
+                          })
+            
+            try:
+                df = run_mlf_wrapper_with_tracing(args, force_refresh, tracer)
+                
+                feature_count = len(df.columns) if df is not None else 0
+                tracer.add_step("mlf_processing_complete",
+                              output_data={
+                                  "success": True,
+                                  "pattern": args.patternname,
+                                  "feature_count": feature_count,
+                                  "instrument": args.instrument,
+                                  "timeframe": args.timeframe,
+                                  "call_type": "cli"
+                              })
+            except Exception as e:
+                tracer.add_step("mlf_processing_error",
+                              input_data={"error_type": type(e).__name__},
+                              output_data={"error_message": str(e)})
+                
+                # Try fallback with TTF generation
+                tracer.add_step("attempting_ttf_fallback",
+                              input_data={"reason": "MLF generation failed"})
+                
+                import traceback
+                traceback.print_exc()
+                print("----WE ARE TRYING IT USING jgtapp---------")
+                from jgtapp import ttf
+                try:
+                    ttf(
+                        args.instrument,
+                        args.timeframe,
+                        pn=args.patternname,
+                        use_fresh=args.fresh,
+                        use_full=args.full,
+                    )
+                    tracer.add_step("ttf_fallback_complete",
+                                  output_data={"ttf_generated": True})
+                    
+                    print("---Running MLF now that we should have the desired pattern.")
+                    df = run_mlf_wrapper_with_tracing(args, force_refresh, tracer)
+                    
+                    feature_count = len(df.columns) if df is not None else 0
+                    tracer.add_step("mlf_fallback_success",
+                                  output_data={
+                                      "success": True,
+                                      "feature_count": feature_count,
+                                      "used_fallback": True
+                                  })
+                except Exception as e_ttf:
+                    tracer.add_step("ttf_fallback_error",
+                                  input_data={"ttf_error_type": type(e_ttf).__name__},
+                                  output_data={"ttf_error_message": str(e_ttf)})
+                    print("Error while running ttf:", e_ttf)
+                    traceback.print_exc()
+                    raise
+    else:
+        # Original processing without tracing
+        try:
+            df = run_mlf_wrapper(args, force_refresh)
+        except Exception as e:
+            print("Error in generate_mlf_feature_pattern:", e)
+            import traceback
+            traceback.print_exc()
+            print("----WE ARE TRYING IT USING jgtapp---------")
+            from jgtapp import ttf
+            try:
+                ttf(
+                    args.instrument,
+                    args.timeframe,
+                    pn=args.patternname,
+                    use_fresh=args.fresh,
+                    use_full=args.full,
+                )
+                print("---Running MLF now that we should have the desired pattern.")
+                df = run_mlf_wrapper(args, force_refresh)
+            except Exception as e_ttf:
+                print("Error while running ttf:", e_ttf)
+                traceback.print_exc()
 
-  force_refresh=args.fresh
-  
-  try:
-    df = run_mlf_wrapper(args, force_refresh)
-  except Exception as e:
-    print("Error in generate_mlf_feature_pattern:", e)
-    import traceback
-    traceback.print_exc()
-    print("----WE ARE TRYING IT USING jgtapp---------")
-    from jgtapp import ttf
-    try:
-      ttf(
-          args.instrument,
-          args.timeframe,
-          pn=args.patternname,
-          use_fresh=args.fresh,
-          use_full=args.full,
-      )
-      print("---Running MLF now that we should have the desired pattern.")
-      df = run_mlf_wrapper(args, force_refresh)
-    except Exception as e_ttf:
-      print("Error while running ttf:", e_ttf)
-      traceback.print_exc()
+def run_mlf_wrapper_with_tracing(args, force_refresh, tracer):
+    """MLF wrapper with detailed tracing support"""
+    if tracer:
+        tracer.add_step("mlf_wrapper_start",
+                      input_data={
+                          "realityhelper_call": True,
+                          "force_refresh": force_refresh
+                      })
+    
+    df = realityhelper.generate_mlf_feature_pattern(
+        args.instrument,
+        args.timeframe,
+        use_full=args.full,
+        force_refresh=force_refresh,
+        lag_period=args.lag_period,
+        total_lagging_periods=args.total_lagging_periods,
+        dropna=True,
+        columns_to_keep=args.columns_to_keep,
+        columns_to_drop=args.columns_to_drop,
+        drop_bid_ask=args.rmbidask,
+        pn=args.patternname,
+        args=args
+    )
+    
+    if tracer:
+        feature_count = len(df.columns) if df is not None else 0
+        tracer.add_step("mlf_wrapper_complete",
+                      output_data={
+                          "feature_count": feature_count,
+                          "dataframe_shape": str(df.shape) if df is not None else "None"
+                      })
+    
+    return df
 
 def run_mlf_wrapper(args, force_refresh):
-    df=realityhelper.generate_mlf_feature_pattern(
-                            args.instrument,
-                            args.timeframe,
-                            use_full=args.full,
-                            force_refresh=force_refresh,
-                            lag_period=args.lag_period,
-                            total_lagging_periods=args.total_lagging_periods,
-                            dropna=True,
-                            columns_to_keep=args.columns_to_keep,
-                            columns_to_drop=args.columns_to_drop,
-                            drop_bid_ask=args.rmbidask,
-                            pn=args.patternname,
-                            args=args)
+    """Original MLF wrapper without tracing"""
+    df = realityhelper.generate_mlf_feature_pattern(
+        args.instrument,
+        args.timeframe,
+        use_full=args.full,
+        force_refresh=force_refresh,
+        lag_period=args.lag_period,
+        total_lagging_periods=args.total_lagging_periods,
+        dropna=True,
+        columns_to_keep=args.columns_to_keep,
+        columns_to_drop=args.columns_to_drop,
+        drop_bid_ask=args.rmbidask,
+        pn=args.patternname,
+        args=args
+    )
     return df
-  #create_ttf_csv(args.instrument, args.timeframe, args.full if args.full else False, args.fresh, args.quotescount, args.force_read)
 
 if __name__ == "__main__":
   main()
