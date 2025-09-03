@@ -1,0 +1,7 @@
+{
+  "created_at": "2025-09-03T23:10:24.832137",
+  "trained_on": "EUR/USD_H4",
+  "accuracy": 0.995,
+  "feature_count": 29,
+  "training_samples": 800
+}
