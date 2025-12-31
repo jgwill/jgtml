@@ -174,3 +174,17 @@ DECISION: YES - ACCEPTABLE - All 7 elements pass
 
 
 | 10:24:12 | Signal approval | ORDER PLACED | Signal approval ≠ ORDER PLACED | Monitor for fill |
+**[2025-12-31 10:30:52]** [INFO] m5   scan #  3: ✅ PASS - ACCEPTABLE - All 7 elements pass
+
+**[2025-12-31 10:30:52]** [INFO] m5   scan #  3: ✅ PASS - ACCEPTABLE - All 7 elements pass
+
+**[2025-12-31 10:30:56]** [TRADE] 🎯 ORDER PLACED: AUD-USD_m5_251231103052
+   Entry: 0.66662 | Stop: 0.66628
+   Target: 0.66730 | Risk: 3.4p
+
+**[2025-12-31 10:30:57]** [TRADE] 🎯 ORDER PLACED: AUD-USD_m5_251231103052
+   Entry: 0.66662 | Stop: 0.66628
+   Target: 0.66730 | Risk: 3.4p
+
+**[2025-12-31 10:31:47]** [INFO] m15  scan #  3: ❌ FAIL - UNACCEPTABLE - Blocked by: signal_valid
+

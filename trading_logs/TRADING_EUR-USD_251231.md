@@ -267,3 +267,27 @@ DECISION: YES - ACCEPTABLE - All 7 elements pass
 
 
 | 10:24:04 | Signal approval | ORDER PLACED | Signal approval ≠ ORDER PLACED | Monitor for fill |
+**[2025-12-31 10:30:14]** [INFO] m5   scan #  1: ✅ PASS - ACCEPTABLE - All 7 elements pass
+
+**[2025-12-31 10:30:15]** [INFO] m5   scan #  1: ✅ PASS - ACCEPTABLE - All 7 elements pass
+
+**[2025-12-31 10:30:18]** [TRADE] 🎯 ORDER PLACED: EUR-USD_m5_251231103014
+   Entry: 1.17261 | Stop: 1.17201
+   Target: 1.17381 | Risk: 6.0p
+
+**[2025-12-31 10:30:19]** [TRADE] 🎯 ORDER PLACED: EUR-USD_m5_251231103015
+   Entry: 1.17261 | Stop: 1.17201
+   Target: 1.17381 | Risk: 6.0p
+
+**[2025-12-31 10:31:12]** [INFO] m15  scan #  1: ✅ PASS - ACCEPTABLE - All 7 elements pass
+
+**[2025-12-31 10:31:12]** [INFO] m15  scan #  1: ✅ PASS - ACCEPTABLE - All 7 elements pass
+
+**[2025-12-31 10:31:16]** [TRADE] 🎯 ORDER PLACED: EUR-USD_m15_251231103112
+   Entry: 1.17262 | Stop: 1.17201
+   Target: 1.17384 | Risk: 6.1p
+
+**[2025-12-31 10:31:16]** [TRADE] 🎯 ORDER PLACED: EUR-USD_m15_251231103112
+   Entry: 1.17262 | Stop: 1.17201
+   Target: 1.17384 | Risk: 6.1p
+

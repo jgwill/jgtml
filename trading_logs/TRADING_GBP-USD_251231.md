@@ -243,3 +243,19 @@ DECISION: YES - ACCEPTABLE - All 7 elements pass
 
 
 | 10:24:08 | Signal approval | ORDER PLACED | Signal approval ≠ ORDER PLACED | Monitor for fill |
+**[2025-12-31 10:30:33]** [INFO] m5   scan #  2: ✅ PASS - ACCEPTABLE - All 7 elements pass
+
+**[2025-12-31 10:30:34]** [INFO] m5   scan #  2: ✅ PASS - ACCEPTABLE - All 7 elements pass
+
+**[2025-12-31 10:30:37]** [TRADE] 🎯 ORDER PLACED: GBP-USD_m5_251231103033
+   Entry: 1.34114 | Stop: 1.34011
+   Target: 1.34320 | Risk: 10.3p
+
+**[2025-12-31 10:30:38]** [TRADE] 🎯 ORDER PLACED: GBP-USD_m5_251231103034
+   Entry: 1.34114 | Stop: 1.34011
+   Target: 1.34320 | Risk: 10.3p
+
+**[2025-12-31 10:31:32]** [INFO] m15  scan #  2: ❌ FAIL - UNACCEPTABLE - Blocked by: signal_valid
+
+**[2025-12-31 10:31:33]** [INFO] m15  scan #  2: ❌ FAIL - UNACCEPTABLE - Blocked by: signal_valid
+
