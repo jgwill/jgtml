@@ -341,3 +341,123 @@ DECISION: YES - ACCEPTABLE - All 7 elements pass
 
 **[2025-12-31 10:55:00]** [INFO] m5   scan # 16: ✅ PASS - ACCEPTABLE - All 7 elements pass
 
+**[2025-12-31 10:55:05]** [TRADE] 🎯 ORDER PLACED: EUR-USD_m5_251231105500
+   Entry: 1.17261 | Stop: 1.17201
+   Target: 1.17381 | Risk: 6.0p
+
+**[2025-12-31 11:00:25]** [INFO] m5   scan # 19: ✅ PASS - ACCEPTABLE - All 7 elements pass
+
+**[2025-12-31 11:00:30]** [TRADE] 🎯 ORDER PLACED: EUR-USD_m5_251231110025
+   Entry: 1.17261 | Stop: 1.17201
+   Target: 1.17381 | Risk: 6.0p
+
+**[2025-12-31 11:01:54]** [INFO] m15  scan #  7: ✅ PASS - ACCEPTABLE - All 7 elements pass
+
+**[2025-12-31 11:01:59]** [TRADE] 🎯 ORDER PLACED: EUR-USD_m15_251231110154
+   Entry: 1.17262 | Stop: 1.17201
+   Target: 1.17384 | Risk: 6.1p
+
+**[2025-12-31 11:03:13]** [INFO] H1   scan #  1: ✅ PASS - ACCEPTABLE - All 7 elements pass
+
+**[2025-12-31 11:03:19]** [TRADE] 🎯 ORDER PLACED: EUR-USD_H1_251231110313
+   Entry: 1.17390 | Stop: 1.17297
+   Target: 1.17576 | Risk: 9.3p
+
+**[2025-12-31 11:05:00]** [INFO] m5   scan # 22: ✅ PASS - ACCEPTABLE - All 7 elements pass
+
+**[2025-12-31 11:05:06]** [TRADE] 🎯 ORDER PLACED: EUR-USD_m5_251231110500
+   Entry: 1.17261 | Stop: 1.17201
+   Target: 1.17381 | Risk: 6.0p
+
+**[2025-12-31 11:10:10]** [INFO] m5   scan # 25: ❌ FAIL - UNACCEPTABLE - Blocked by: signal_present
+
+**[2025-12-31 11:15:00]** [INFO] m5   scan # 28: ❌ FAIL - UNACCEPTABLE - Blocked by: signal_present
+
+**[2025-12-31 11:15:06]** [INFO] m15  scan # 10: ✅ PASS - ACCEPTABLE - All 7 elements pass
+
+**[2025-12-31 11:15:10]** [TRADE] 🎯 ORDER PLACED: EUR-USD_m15_251231111506
+   Entry: 1.17262 | Stop: 1.17201
+   Target: 1.17384 | Risk: 6.1p
+
+**[2025-12-31 11:20:14]** [INFO] m5   scan # 31: ❌ FAIL - UNACCEPTABLE - Blocked by: signal_present
+
+**[2025-12-31 11:25:00]** [INFO] m5   scan # 34: ❌ FAIL - UNACCEPTABLE - Blocked by: signal_present
+
+**[2025-12-31 11:30:14]** [INFO] m5   scan # 37: ❌ FAIL - UNACCEPTABLE - Blocked by: signal_present
+
+**[2025-12-31 11:30:58]** [INFO] m15  scan # 13: ✅ PASS - ACCEPTABLE - All 7 elements pass
+
+**[2025-12-31 11:31:02]** [TRADE] 🎯 ORDER PLACED: EUR-USD_m15_251231113058
+   Entry: 1.17262 | Stop: 1.17201
+   Target: 1.17384 | Risk: 6.1p
+
+**[2025-12-31 11:35:00]** [INFO] m5   scan # 40: ❌ FAIL - UNACCEPTABLE - Blocked by: signal_present
+
+**[2025-12-31 11:40:10]** [INFO] m5   scan # 43: ✅ PASS - ACCEPTABLE - All 7 elements pass
+
+**[2025-12-31 11:40:14]** [TRADE] 🎯 ORDER PLACED: EUR-USD_m5_251231114010
+   Entry: 1.17382 | Stop: 1.17329
+   Target: 1.17488 | Risk: 5.3p
+
+**[2025-12-31 11:45:00]** [INFO] m5   scan # 46: ✅ PASS - ACCEPTABLE - All 7 elements pass
+
+**[2025-12-31 11:45:04]** [TRADE] 🎯 ORDER PLACED: EUR-USD_m5_251231114500
+   Entry: 1.17382 | Stop: 1.17329
+   Target: 1.17488 | Risk: 5.3p
+
+**[2025-12-31 11:45:08]** [INFO] m15  scan # 16: ✅ PASS - ACCEPTABLE - All 7 elements pass
+
+**[2025-12-31 11:45:12]** [TRADE] 🎯 ORDER PLACED: EUR-USD_m15_251231114508
+   Entry: 1.17262 | Stop: 1.17201
+   Target: 1.17384 | Risk: 6.1p
+
+**[2025-12-31 11:50:10]** [INFO] m5   scan # 49: ❌ FAIL - UNACCEPTABLE - Blocked by: signal_valid
+
+**[2025-12-31 11:50:12]** [INFO] m5   scan #  1: ❌ FAIL - UNACCEPTABLE - Blocked by: signal_valid
+
+**[2025-12-31 11:55:00]** [INFO] m5   scan # 52: ❌ FAIL - UNACCEPTABLE - Blocked by: signal_valid
+
+**[2025-12-31 11:55:33]** [INFO] m5   scan #  4: ❌ FAIL - UNACCEPTABLE - Blocked by: signal_valid
+
+**[2025-12-31 12:00:21]** [INFO] m5   scan # 55: ✅ PASS - ACCEPTABLE - All 7 elements pass
+
+**[2025-12-31 12:00:25]** [TRADE] 🎯 ORDER PLACED: EUR-USD_m5_251231120021
+   Entry: 1.17382 | Stop: 1.17329
+   Target: 1.17488 | Risk: 5.3p
+
+**[2025-12-31 12:00:34]** [INFO] m5   scan #  7: ✅ PASS - ACCEPTABLE - All 7 elements pass
+
+**[2025-12-31 12:00:38]** [TRADE] 🎯 ORDER PLACED: EUR-USD_m5_251231120034
+   Entry: 1.17382 | Stop: 1.17329
+   Target: 1.17488 | Risk: 5.3p
+
+**[2025-12-31 12:01:02]** [INFO] m15  scan # 19: ✅ PASS - ACCEPTABLE - All 7 elements pass
+
+**[2025-12-31 12:01:04]** [INFO] m15  scan #  1: ✅ PASS - ACCEPTABLE - All 7 elements pass
+
+**[2025-12-31 12:01:07]** [TRADE] 🎯 ORDER PLACED: EUR-USD_m15_251231120102
+   Entry: 1.17262 | Stop: 1.17201
+   Target: 1.17384 | Risk: 6.1p
+
+**[2025-12-31 12:01:08]** [TRADE] 🎯 ORDER PLACED: EUR-USD_m15_251231120104
+   Entry: 1.17262 | Stop: 1.17201
+   Target: 1.17384 | Risk: 6.1p
+
+**[2025-12-31 12:01:35]** [INFO] H1   scan #  4: ✅ PASS - ACCEPTABLE - All 7 elements pass
+
+**[2025-12-31 12:01:39]** [TRADE] 🎯 ORDER PLACED: EUR-USD_H1_251231120135
+   Entry: 1.17390 | Stop: 1.17297
+   Target: 1.17576 | Risk: 9.3p
+
+**[2025-12-31 12:05:00]** [INFO] m5   scan # 58: ✅ PASS - ACCEPTABLE - All 7 elements pass
+
+**[2025-12-31 12:05:04]** [TRADE] 🎯 ORDER PLACED: EUR-USD_m5_251231120500
+   Entry: 1.17382 | Stop: 1.17329
+   Target: 1.17488 | Risk: 5.3p
+
+**[2025-12-31 12:05:34]** [INFO] m5   scan # 10: ✅ PASS - ACCEPTABLE - All 7 elements pass
+
+**[2025-12-31 12:05:38]** [TRADE] 🎯 ORDER PLACED: EUR-USD_m5_251231120534
+   Entry: 1.17382 | Stop: 1.17329
+   Target: 1.17488 | Risk: 5.3p
+

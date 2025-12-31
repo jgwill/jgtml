@@ -224,3 +224,121 @@ DECISION: YES - ACCEPTABLE - All 7 elements pass
 
 **[2025-12-31 10:51:00]** [INFO] m5   scan #  9: ❌ FAIL - UNACCEPTABLE - Blocked by: signal_valid
 
+**[2025-12-31 10:55:11]** [INFO] m5   scan # 18: ❌ FAIL - UNACCEPTABLE - Blocked by: signal_valid
+
+**[2025-12-31 11:01:25]** [INFO] m5   scan # 21: ✅ PASS - ACCEPTABLE - All 7 elements pass
+
+**[2025-12-31 11:01:30]** [TRADE] 🎯 ORDER PLACED: AUD-USD_m5_251231110125
+   Entry: 0.66662 | Stop: 0.66628
+   Target: 0.66730 | Risk: 3.4p
+
+**[2025-12-31 11:02:48]** [INFO] m15  scan #  9: ❌ FAIL - UNACCEPTABLE - Blocked by: signal_valid
+
+**[2025-12-31 11:04:06]** [INFO] H1   scan #  3: ❌ FAIL - UNACCEPTABLE - Blocked by: signal_valid
+
+**[2025-12-31 11:05:12]** [INFO] m5   scan # 24: ✅ PASS - ACCEPTABLE - All 7 elements pass
+
+**[2025-12-31 11:05:17]** [TRADE] 🎯 ORDER PLACED: AUD-USD_m5_251231110512
+   Entry: 0.66662 | Stop: 0.66628
+   Target: 0.66730 | Risk: 3.4p
+
+**[2025-12-31 11:10:29]** [INFO] m5   scan # 27: ✅ PASS - ACCEPTABLE - All 7 elements pass
+
+**[2025-12-31 11:10:33]** [TRADE] 🎯 ORDER PLACED: AUD-USD_m5_251231111029
+   Entry: 0.66668 | Stop: 0.66597
+   Target: 0.66810 | Risk: 7.1p
+
+**[2025-12-31 11:15:01]** [INFO] m5   scan # 30: ✅ PASS - ACCEPTABLE - All 7 elements pass
+
+**[2025-12-31 11:15:06]** [TRADE] 🎯 ORDER PLACED: AUD-USD_m5_251231111501
+   Entry: 0.66668 | Stop: 0.66597
+   Target: 0.66810 | Risk: 7.1p
+
+**[2025-12-31 11:15:10]** [INFO] m15  scan # 12: ❌ FAIL - UNACCEPTABLE - Blocked by: signal_valid
+
+**[2025-12-31 11:20:40]** [INFO] m5   scan # 33: ✅ PASS - ACCEPTABLE - All 7 elements pass
+
+**[2025-12-31 11:20:44]** [TRADE] 🎯 ORDER PLACED: AUD-USD_m5_251231112040
+   Entry: 0.66668 | Stop: 0.66597
+   Target: 0.66810 | Risk: 7.1p
+
+**[2025-12-31 11:25:01]** [INFO] m5   scan # 36: ✅ PASS - ACCEPTABLE - All 7 elements pass
+
+**[2025-12-31 11:25:05]** [TRADE] 🎯 ORDER PLACED: AUD-USD_m5_251231112501
+   Entry: 0.66668 | Stop: 0.66597
+   Target: 0.66810 | Risk: 7.1p
+
+**[2025-12-31 11:30:40]** [INFO] m5   scan # 39: ✅ PASS - ACCEPTABLE - All 7 elements pass
+
+**[2025-12-31 11:30:44]** [TRADE] 🎯 ORDER PLACED: AUD-USD_m5_251231113040
+   Entry: 0.66668 | Stop: 0.66597
+   Target: 0.66810 | Risk: 7.1p
+
+**[2025-12-31 11:31:31]** [INFO] m15  scan # 15: ❌ FAIL - UNACCEPTABLE - Blocked by: signal_valid
+
+**[2025-12-31 11:35:00]** [INFO] m5   scan # 42: ✅ PASS - ACCEPTABLE - All 7 elements pass
+
+**[2025-12-31 11:35:04]** [TRADE] 🎯 ORDER PLACED: AUD-USD_m5_251231113500
+   Entry: 0.66668 | Stop: 0.66597
+   Target: 0.66810 | Risk: 7.1p
+
+**[2025-12-31 11:40:33]** [INFO] m5   scan # 45: ✅ PASS - ACCEPTABLE - All 7 elements pass
+
+**[2025-12-31 11:40:37]** [TRADE] 🎯 ORDER PLACED: AUD-USD_m5_251231114033
+   Entry: 0.66686 | Stop: 0.66653
+   Target: 0.66752 | Risk: 3.3p
+
+**[2025-12-31 11:45:04]** [INFO] m5   scan # 48: ✅ PASS - ACCEPTABLE - All 7 elements pass
+
+**[2025-12-31 11:45:08]** [TRADE] 🎯 ORDER PLACED: AUD-USD_m5_251231114504
+   Entry: 0.66686 | Stop: 0.66653
+   Target: 0.66752 | Risk: 3.3p
+
+**[2025-12-31 11:45:16]** [INFO] m15  scan # 18: ❌ FAIL - UNACCEPTABLE - Blocked by: signal_valid
+
+**[2025-12-31 11:50:29]** [INFO] m5   scan # 51: ❌ FAIL - UNACCEPTABLE - Blocked by: signal_valid
+
+**[2025-12-31 11:50:33]** [INFO] m5   scan #  3: ❌ FAIL - UNACCEPTABLE - Blocked by: signal_valid
+
+**[2025-12-31 11:55:00]** [INFO] m5   scan # 54: ❌ FAIL - UNACCEPTABLE - Blocked by: signal_valid
+
+**[2025-12-31 11:55:33]** [INFO] m5   scan #  6: ❌ FAIL - UNACCEPTABLE - Blocked by: signal_valid
+
+**[2025-12-31 12:00:49]** [INFO] m5   scan # 57: ✅ PASS - ACCEPTABLE - All 7 elements pass
+
+**[2025-12-31 12:00:51]** [INFO] m5   scan #  9: ✅ PASS - ACCEPTABLE - All 7 elements pass
+
+**[2025-12-31 12:00:53]** [TRADE] 🎯 ORDER PLACED: AUD-USD_m5_251231120049
+   Entry: 0.66686 | Stop: 0.66653
+   Target: 0.66752 | Risk: 3.3p
+
+**[2025-12-31 12:00:55]** [TRADE] 🎯 ORDER PLACED: AUD-USD_m5_251231120051
+   Entry: 0.66686 | Stop: 0.66653
+   Target: 0.66752 | Risk: 3.3p
+
+**[2025-12-31 12:01:30]** [INFO] m15  scan #  3: ✅ PASS - ACCEPTABLE - All 7 elements pass
+
+**[2025-12-31 12:01:31]** [INFO] m15  scan # 21: ✅ PASS - ACCEPTABLE - All 7 elements pass
+
+**[2025-12-31 12:01:34]** [TRADE] 🎯 ORDER PLACED: AUD-USD_m15_251231120130
+   Entry: 0.66664 | Stop: 0.66628
+   Target: 0.66736 | Risk: 3.6p
+
+**[2025-12-31 12:01:35]** [TRADE] 🎯 ORDER PLACED: AUD-USD_m15_251231120131
+   Entry: 0.66664 | Stop: 0.66628
+   Target: 0.66736 | Risk: 3.6p
+
+**[2025-12-31 12:01:39]** [INFO] H1   scan #  6: ❌ FAIL - UNACCEPTABLE - Blocked by: signal_valid
+
+**[2025-12-31 12:05:08]** [INFO] m5   scan # 60: ✅ PASS - ACCEPTABLE - All 7 elements pass
+
+**[2025-12-31 12:05:12]** [TRADE] 🎯 ORDER PLACED: AUD-USD_m5_251231120508
+   Entry: 0.66686 | Stop: 0.66653
+   Target: 0.66752 | Risk: 3.3p
+
+**[2025-12-31 12:05:43]** [INFO] m5   scan # 12: ✅ PASS - ACCEPTABLE - All 7 elements pass
+
+**[2025-12-31 12:05:47]** [TRADE] 🎯 ORDER PLACED: AUD-USD_m5_251231120543
+   Entry: 0.66686 | Stop: 0.66653
+   Target: 0.66752 | Risk: 3.3p
+
