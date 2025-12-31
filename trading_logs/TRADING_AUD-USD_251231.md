@@ -98,3 +98,79 @@ DECISION: YES - ACCEPTABLE - All 7 elements pass
 
 
 | 09:55:35 | Signal approval | APPROVED | Signal approval ≠ APPROVED | Order created |
+**[2025-12-31 10:22:38]** [INFO] Scanning for LONG opportunities...
+
+**[2025-12-31 10:22:38]** [WARN] ⚠️ Data stale: Data is 28 min old (max: 10 min). Last bar: 2025-12-31 14:55:00
+
+**[2025-12-31 10:22:38]** [INFO] Attempting data refresh...
+
+**[2025-12-31 10:22:48]** [INFO] After refresh: Data is fresh (3 min old)
+
+**[2025-12-31 10:22:48]** [INFO] TF m5:
+```
+TandT EVALUATION:
+--------------------------------------------------
+  data_freshness: ✓ ACCEPTABLE
+  market_open: ✓ ACCEPTABLE
+  htf_alignment: ✓ ACCEPTABLE
+  signal_present: ✓ ACCEPTABLE
+  signal_valid: ✓ ACCEPTABLE
+  mouth_open: ✓ ACCEPTABLE
+  trend_strength: ✓ ACCEPTABLE
+--------------------------------------------------
+DECISION: YES - ACCEPTABLE - All 7 elements pass
+```
+
+**[2025-12-31 10:22:48]** [TRADE] 🎯 APPROVED: AUD-USD_m5_251231102248
+   Entry: 0.66662
+   Stop: 0.66628
+   Target: 0.66730
+   Risk: 3.4 pips
+
+**[2025-12-31 10:22:48]** [INFO] Placing entry order via fxaddorder...
+   Instrument: AUD-USD
+   Direction: BUY
+   Entry: 0.66662
+   Stop: 0.66628
+   Lots: 1
+   Mode: DEMO
+
+**[2025-12-31 10:22:49]** [ERROR] ❌ Failed to place order: fxaddorder command failed: Command '['fxaddorder', '-i', 'AUD-USD', '-n', '1', '-r', '0.66662', '-d', 'B', '-x', '0.66628', '', '--demo']' returned non-zero exit status 2.
+
+
+| 10:22:49 | Signal approval | ORDER FAILED | Signal approval ≠ ORDER FAILED | Error placing order |
+**[2025-12-31 10:24:08]** [INFO] Scanning for LONG opportunities...
+
+**[2025-12-31 10:24:08]** [INFO] TF m5:
+```
+TandT EVALUATION:
+--------------------------------------------------
+  data_freshness: ✓ ACCEPTABLE
+  market_open: ✓ ACCEPTABLE
+  htf_alignment: ✓ ACCEPTABLE
+  signal_present: ✓ ACCEPTABLE
+  signal_valid: ✓ ACCEPTABLE
+  mouth_open: ✓ ACCEPTABLE
+  trend_strength: ✓ ACCEPTABLE
+--------------------------------------------------
+DECISION: YES - ACCEPTABLE - All 7 elements pass
+```
+
+**[2025-12-31 10:24:08]** [TRADE] 🎯 APPROVED: AUD-USD_m5_251231102408
+   Entry: 0.66662
+   Stop: 0.66628
+   Target: 0.66730
+   Risk: 3.4 pips
+
+**[2025-12-31 10:24:08]** [INFO] Placing entry order...
+   Instrument: AUD-USD
+   Entry: 0.66662
+   Stop: 0.66628
+
+**[2025-12-31 10:24:08]** [DEBUG] Command: fxaddorder -i AUD-USD -n 1 -r 0.66662 -d B -x 0.66628 --demo
+
+**[2025-12-31 10:24:12]** [ORDER] ✅ Entry order PLACED: AUD-USD_m5_251231102408
+   Waiting for fill or cancellation...
+
+
+| 10:24:12 | Signal approval | ORDER PLACED | Signal approval ≠ ORDER PLACED | Monitor for fill |

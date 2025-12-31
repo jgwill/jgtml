@@ -167,3 +167,79 @@ DECISION: NO - UNACCEPTABLE - Blocked by: signal_present
 
 
 | 09:55:23 | FDB signal | No signal | FDB signal ≠ No signal | Wait |
+**[2025-12-31 10:22:27]** [INFO] Scanning for LONG opportunities...
+
+**[2025-12-31 10:22:27]** [WARN] ⚠️ Data stale: Data is 32 min old (max: 10 min). Last bar: 2025-12-31 14:50:00
+
+**[2025-12-31 10:22:27]** [INFO] Attempting data refresh...
+
+**[2025-12-31 10:22:37]** [INFO] After refresh: Data is fresh (3 min old)
+
+**[2025-12-31 10:22:37]** [INFO] TF m5:
+```
+TandT EVALUATION:
+--------------------------------------------------
+  data_freshness: ✓ ACCEPTABLE
+  market_open: ✓ ACCEPTABLE
+  htf_alignment: ✓ ACCEPTABLE
+  signal_present: ✓ ACCEPTABLE
+  signal_valid: ✓ ACCEPTABLE
+  mouth_open: ✓ ACCEPTABLE
+  trend_strength: ✓ ACCEPTABLE
+--------------------------------------------------
+DECISION: YES - ACCEPTABLE - All 7 elements pass
+```
+
+**[2025-12-31 10:22:37]** [TRADE] 🎯 APPROVED: GBP-USD_m5_251231102237
+   Entry: 1.34114
+   Stop: 1.34011
+   Target: 1.34320
+   Risk: 10.3 pips
+
+**[2025-12-31 10:22:37]** [INFO] Placing entry order via fxaddorder...
+   Instrument: GBP-USD
+   Direction: BUY
+   Entry: 1.34114
+   Stop: 1.34011
+   Lots: 1
+   Mode: DEMO
+
+**[2025-12-31 10:22:38]** [ERROR] ❌ Failed to place order: fxaddorder command failed: Command '['fxaddorder', '-i', 'GBP-USD', '-n', '1', '-r', '1.34114', '-d', 'B', '-x', '1.34011', '', '--demo']' returned non-zero exit status 2.
+
+
+| 10:22:38 | Signal approval | ORDER FAILED | Signal approval ≠ ORDER FAILED | Error placing order |
+**[2025-12-31 10:24:04]** [INFO] Scanning for LONG opportunities...
+
+**[2025-12-31 10:24:04]** [INFO] TF m5:
+```
+TandT EVALUATION:
+--------------------------------------------------
+  data_freshness: ✓ ACCEPTABLE
+  market_open: ✓ ACCEPTABLE
+  htf_alignment: ✓ ACCEPTABLE
+  signal_present: ✓ ACCEPTABLE
+  signal_valid: ✓ ACCEPTABLE
+  mouth_open: ✓ ACCEPTABLE
+  trend_strength: ✓ ACCEPTABLE
+--------------------------------------------------
+DECISION: YES - ACCEPTABLE - All 7 elements pass
+```
+
+**[2025-12-31 10:24:04]** [TRADE] 🎯 APPROVED: GBP-USD_m5_251231102404
+   Entry: 1.34114
+   Stop: 1.34011
+   Target: 1.34320
+   Risk: 10.3 pips
+
+**[2025-12-31 10:24:04]** [INFO] Placing entry order...
+   Instrument: GBP-USD
+   Entry: 1.34114
+   Stop: 1.34011
+
+**[2025-12-31 10:24:04]** [DEBUG] Command: fxaddorder -i GBP-USD -n 1 -r 1.34114 -d B -x 1.34011 --demo
+
+**[2025-12-31 10:24:08]** [ORDER] ✅ Entry order PLACED: GBP-USD_m5_251231102404
+   Waiting for fill or cancellation...
+
+
+| 10:24:08 | Signal approval | ORDER PLACED | Signal approval ≠ ORDER PLACED | Monitor for fill |

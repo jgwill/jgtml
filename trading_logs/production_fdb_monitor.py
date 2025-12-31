@@ -36,6 +36,12 @@ sys.path.insert(0, '/b/trading/jgtcore')
 # Use existing JGT infrastructure
 from jgtutils.jgtcommon import is_market_open
 
+# Import entry order creation from jgtml
+try:
+    from jgtml.jgtapp import fxaddorder
+except ImportError:
+    fxaddorder = None
+
 
 class DataFreshnessValidator:
     """Validates data freshness using timeframe-specific logic."""
@@ -425,14 +431,29 @@ class ProductionFDBMonitor:
                     f"🎯 APPROVED: {order['order_id']}\n"
                     f"   Entry: {order['entry_rate']:.5f}\n"
                     f"   Stop: {order['stop_rate']:.5f}\n"
-                    f"   Target: {order['target_rate']:.5f}",
+                    f"   Target: {order['target_rate']:.5f}\n"
+                    f"   Risk: {order['risk_pips']:.1f} pips",
                     "TRADE")
                 
-                # MMOT: Log expectation
-                self._log_mmot(instrument, "Signal approval", "APPROVED", "Order created")
-                
-                self.active_orders[order['order_id']] = order
-                return order
+                # Place actual entry order using fxaddorder
+                try:
+                    self._place_entry_order(order, demo=True)
+                    self._log(instrument,
+                        f"✅ Entry order PLACED: {order['order_id']}\n"
+                        f"   Waiting for fill or cancellation...",
+                        "ORDER")
+                    
+                    # MMOT: Log expectation
+                    self._log_mmot(instrument, "Signal approval", "ORDER PLACED", "Monitor for fill")
+                    
+                    self.active_orders[order['order_id']] = order
+                    return order
+                except Exception as e:
+                    self._log(instrument,
+                        f"❌ Failed to place order: {e}",
+                        "ERROR")
+                    self._log_mmot(instrument, "Signal approval", "ORDER FAILED", "Error placing order")
+                    return None
             else:
                 # MMOT: Log why not approved
                 if not context['data_freshness']:
@@ -445,12 +466,20 @@ class ProductionFDBMonitor:
         return None
     
     def _create_order(self, instrument, timeframe, signal):
-        """Create entry order."""
+        """Create entry order with risk calculations."""
         order_id = f"{instrument}_{timeframe}_{datetime.now().strftime('%y%m%d%H%M%S')}"
         
         entry = signal['entry_rate']
         stop = signal['stop_rate']
-        risk = entry - stop
+        risk = entry - stop  # Absolute risk in currency
+        
+        # Calculate risk in pips (forex standard: 4 decimal places = 1 pip)
+        # Exception: JPY pairs use 2 decimal places
+        if 'JPY' in instrument:
+            risk_pips = risk * 100
+        else:
+            risk_pips = risk * 10000
+        
         target = entry + (risk * 2)  # 2:1 R:R
         
         return {
@@ -461,10 +490,49 @@ class ProductionFDBMonitor:
             'entry_rate': entry,
             'stop_rate': stop,
             'target_rate': target,
+            'risk_pips': risk_pips,
+            'lots': 1,
             'signal_date': str(signal['signal_date']),
             'created_at': datetime.now().isoformat(),
             'status': 'PENDING'
         }
+    
+    def _place_entry_order(self, order, demo=True):
+        """Place actual entry order using subprocess call to fxaddorder."""
+        
+        self._log(order['instrument'],
+            f"Placing entry order...\n"
+            f"   Instrument: {order['instrument']}\n"
+            f"   Entry: {order['entry_rate']:.5f}\n"
+            f"   Stop: {order['stop_rate']:.5f}",
+            "INFO")
+        
+        try:
+            # Build command args - matching format from jgtapp.py fxaddorder
+            demo_arg = '--demo' if demo else '--real'
+            
+            cmd = [
+                'fxaddorder',
+                '-i', order['instrument'],
+                '-n', str(order['lots']),
+                '-r', str(order['entry_rate']),
+                '-d', 'B',  # Buy
+                '-x', str(order['stop_rate']),
+                demo_arg
+            ]
+            
+            self._log(order['instrument'], f"Command: {' '.join(cmd)}", "DEBUG")
+            
+            result = subprocess.run(cmd, capture_output=True, text=True, timeout=30, check=False)
+            
+            if result.returncode != 0:
+                raise RuntimeError(f"fxaddorder failed: {result.stderr}")
+            
+            order['status'] = 'PLACED'
+            order['placed_at'] = datetime.now().isoformat()
+            
+        except Exception as e:
+            raise RuntimeError(f"Error placing order: {e}")
     
     def monitor_loop(self, interval_seconds=300):
         """Main monitoring loop."""

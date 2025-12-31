@@ -191,3 +191,79 @@ DECISION: NO - UNACCEPTABLE - Blocked by: signal_present
 
 
 | 09:55:13 | FDB signal | No signal | FDB signal ≠ No signal | Wait |
+**[2025-12-31 10:22:15]** [INFO] Scanning for LONG opportunities...
+
+**[2025-12-31 10:22:15]** [WARN] ⚠️ Data stale: Data is 32 min old (max: 10 min). Last bar: 2025-12-31 14:50:00
+
+**[2025-12-31 10:22:15]** [INFO] Attempting data refresh...
+
+**[2025-12-31 10:22:26]** [INFO] After refresh: Data is fresh (2 min old)
+
+**[2025-12-31 10:22:26]** [INFO] TF m5:
+```
+TandT EVALUATION:
+--------------------------------------------------
+  data_freshness: ✓ ACCEPTABLE
+  market_open: ✓ ACCEPTABLE
+  htf_alignment: ✓ ACCEPTABLE
+  signal_present: ✓ ACCEPTABLE
+  signal_valid: ✓ ACCEPTABLE
+  mouth_open: ✓ ACCEPTABLE
+  trend_strength: ✓ ACCEPTABLE
+--------------------------------------------------
+DECISION: YES - ACCEPTABLE - All 7 elements pass
+```
+
+**[2025-12-31 10:22:26]** [TRADE] 🎯 APPROVED: EUR-USD_m5_251231102226
+   Entry: 1.17261
+   Stop: 1.17201
+   Target: 1.17381
+   Risk: 6.0 pips
+
+**[2025-12-31 10:22:26]** [INFO] Placing entry order via fxaddorder...
+   Instrument: EUR-USD
+   Direction: BUY
+   Entry: 1.17261
+   Stop: 1.17201
+   Lots: 1
+   Mode: DEMO
+
+**[2025-12-31 10:22:27]** [ERROR] ❌ Failed to place order: fxaddorder command failed: Command '['fxaddorder', '-i', 'EUR-USD', '-n', '1', '-r', '1.17261', '-d', 'B', '-x', '1.17201', '', '--demo']' returned non-zero exit status 2.
+
+
+| 10:22:27 | Signal approval | ORDER FAILED | Signal approval ≠ ORDER FAILED | Error placing order |
+**[2025-12-31 10:24:00]** [INFO] Scanning for LONG opportunities...
+
+**[2025-12-31 10:24:00]** [INFO] TF m5:
+```
+TandT EVALUATION:
+--------------------------------------------------
+  data_freshness: ✓ ACCEPTABLE
+  market_open: ✓ ACCEPTABLE
+  htf_alignment: ✓ ACCEPTABLE
+  signal_present: ✓ ACCEPTABLE
+  signal_valid: ✓ ACCEPTABLE
+  mouth_open: ✓ ACCEPTABLE
+  trend_strength: ✓ ACCEPTABLE
+--------------------------------------------------
+DECISION: YES - ACCEPTABLE - All 7 elements pass
+```
+
+**[2025-12-31 10:24:00]** [TRADE] 🎯 APPROVED: EUR-USD_m5_251231102400
+   Entry: 1.17261
+   Stop: 1.17201
+   Target: 1.17381
+   Risk: 6.0 pips
+
+**[2025-12-31 10:24:00]** [INFO] Placing entry order...
+   Instrument: EUR-USD
+   Entry: 1.17261
+   Stop: 1.17201
+
+**[2025-12-31 10:24:00]** [DEBUG] Command: fxaddorder -i EUR-USD -n 1 -r 1.17261 -d B -x 1.17201 --demo
+
+**[2025-12-31 10:24:04]** [ORDER] ✅ Entry order PLACED: EUR-USD_m5_251231102400
+   Waiting for fill or cancellation...
+
+
+| 10:24:04 | Signal approval | ORDER PLACED | Signal approval ≠ ORDER PLACED | Monitor for fill |
