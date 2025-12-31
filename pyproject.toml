@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "jgtml"
-version = "0.0.348"
+version = "0.0.349"
 authors = [
   { name="Guillaume Isabelle", email="jgi@jgwill.com" },
 ]
@@ -88,6 +88,7 @@ jgtmlpncli="jgtml.pncli:main"
 #ptojgtmlbigalligator="jgtml.ptojgtmlbigalligator:main"
 
 fdbscan="jgtml.fdb_scanner_2408:main"
+fdbscan2="jgtml.fdb_scanner_2508:main"
 fdbqualpredictor="jgtml.fdb_signal_quality_predictor:main"
 fdbpatternintelligence="jgtml.fdb_pattern_intelligence:main"
 jgtalligator="jgtml.alligator_cli:main"

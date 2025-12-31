@@ -1,0 +1,35 @@
+Workspace.jgwill.jgtml.COMPLETE_WORKFLOW_SUMMARY.md:
+  - Workspace.jgwill.jgtml.COMPLETE_WORKFLOW_SUMMARY.md
+Workspace.jgwill.jgtml.commit.files.llms.txt:
+  - Workspace.jgwill.jgtml.commit.files.llms.txt
+Workspace.jgwill.jgtml.commit.files.requirements.txt:
+  - Workspace.jgwill.jgtml.commit.files.requirements.txt
+Workspace.jgwill.jgtml.commit.message:
+  - Workspace.jgwill.jgtml.commit.message
+Workspace.jgwill.jgtml.docs.Complete_Trading_Workflow.md:
+  - Workspace.jgwill.jgtml.docs.Complete_Trading_Workflow.md
+Workspace.jgwill.jgtml.tmp:
+  - Workspace.jgwill.jgtml.tmp
+Workspace.jgwill.jgtml:
+  - Workspace.jgwill.jgtml:40.chat.250613
+  - Workspace.jgwill.jgtml:40.narrative-map.glyph.25061515
+  - Workspace.jgwill.jgtml:Ledgers:Codex:ledger-alligator-comment-2506162321.json
+  - Workspace.jgwill.jgtml:Ledgers:Codex:ledger-cherry-pick-update-2506141612.json
+  - Workspace.jgwill.jgtml:Ledgers:Codex:ledger-consolidation-2506141421.json
+  - Workspace.jgwill.jgtml:Ledgers:Codex:ledger-enhancedfdbscan-datagen-2506161721.json
+  - Workspace.jgwill.jgtml:Ledgers:Codex:ledger-enhancedfdbscan-fix-2506161606.json
+  - Workspace.jgwill.jgtml:Ledgers:Codex:ledger-merge-main-fixes-2506171134.json
+  - Workspace.jgwill.jgtml:Ledgers:Codex:ledger-merge-nlfix-2506170013.json
+  - Workspace.jgwill.jgtml:Ledgers:Codex:ledger-merge-production-cli-2506170343.json
+  - Workspace.jgwill.jgtml:Ledgers:Codex:ledger-required-data-2506170002.json
+  - Workspace.jgwill.jgtml:Ledgers:Codex:ledger-test-data-2506170406.json
+  - Workspace.jgwill.jgtml:Ledgers:Codex:ledger-ttfcli_req-2506160732.json
+  - Workspace.jgwill.jgtml:codex.agent.message.001
+  - Workspace.jgwill.jgtml:codex.agent.message.002
+  - Workspace.jgwill.jgtml:codex.jgtagentic.delegationSpec.2506161720
+  - Workspace.jgwill.jgtml:docs.README.md
+  - Workspace.jgwill.jgtml:docs.Required_Alligator_Data.md
+  - Workspace.jgwill.jgtml:docs.narrative-map.md
+  - Workspace.jgwill.jgtml:docs.pyproject.toml
+  - Workspace.jgwill.jgtml:docs.requirements.txt
+  - Workspace.jgwill.jgtml:narrative-map

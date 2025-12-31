@@ -1,0 +1,171 @@
+#!/bin/bash
+# 🧠 JGT Unified Data Refresh Orchestrator
+# Master command for all data pipeline operations
+# Routes to production/discovery workflows with intelligent mode selection
+
+set -e
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# ============================================================================
+# HELP & MODE SELECTION
+# ============================================================================
+
+show_help() {
+    cat <<'EOF'
+🧠 JGT Unified Data Refresh Orchestrator
+
+USAGE:
+    jgtml_refresh [MODE] [OPTIONS]
+
+MODES:
+    production    Real-time trading data (TTF+MLF, ~400 bars) [DEFAULT]
+    discovery     ML research data (TTF+MLF+MX, full history)
+    status        Show current data statistics
+    cleanup       Remove stale data
+    help          Show this help message
+
+PRODUCTION WORKFLOW (Real-time Trading):
+    jgtml_refresh production
+    jgtml_refresh production --instruments "EUR/USD,XAU/USD" --timeframes "D1,H4"
+    jgtml_refresh production --patterns "mfi mz zonesq aoac"
+
+DISCOVERY WORKFLOW (ML Research):
+    jgtml_refresh discovery
+    jgtml_refresh discovery --instruments "EUR/USD" --max-jobs 2
+    jgtml_refresh discovery --timeframes "D1,H4" --patterns "mfi mz zonesq aoac"
+
+UTILITIES:
+    jgtml_refresh status              # Show data statistics
+    jgtml_refresh cleanup [DAYS]      # Remove data older than N days
+    jgtml_refresh help                # Show this help
+
+GLOBAL OPTIONS:
+    --instruments LIST    Comma/space-separated instruments
+    --timeframes LIST     Comma/space-separated timeframes
+    --patterns LIST       Comma/space-separated patterns
+    --max-jobs N          Max parallel operations
+    --cleanup DAYS        Cleanup after refresh
+    --verbose             Enable debug output
+    -h, --help           Show this help
+
+WORKFLOW EXAMPLES:
+
+  1. Quick production refresh (fastest):
+     $ jgtml_refresh production
+
+  2. Production with specific pairs:
+     $ jgtml_refresh production --instruments "EUR/USD,XAU/USD"
+
+  3. Extended pattern analysis:
+     $ jgtml_refresh production --patterns "mfi mz zonesq aoac"
+
+  4. ML discovery with full history:
+     $ jgtml_refresh discovery
+
+  5. Single instrument deep research:
+     $ jgtml_refresh discovery --instruments "EUR/USD" --max-jobs 1
+
+  6. Cleanup old data, then refresh:
+     $ jgtml_refresh production --cleanup 14
+
+PIPELINE ARCHITECTURE:
+
+  Production:              Discovery:
+  ═════════════           ══════════════════
+  │                       │
+  ├─ CDS refresh          ├─ CDS full history
+  ├─ TTF generation       ├─ TTF generation
+  ├─ MLF generation       ├─ MLF generation
+  └─ Ready for trading    └─ MX targets (ML training)
+
+DATA LOCATIONS:
+  Lab mode:  /src/jgtml/data/
+  Prod mode: /workspace/data/
+
+PATTERNS:
+  • mfi    (Money Flow Index signals)
+  • mz     (Alligator mouth zones)
+  • zonesq (Zone squeezes)
+  • aoac   (Awesome Oscillator + Accelerator)
+
+TYPICAL PROCESSING TIME:
+  Production (7 instruments, 3 timeframes): 3-5 minutes
+  Discovery (7 instruments, 2 timeframes): 30-60 minutes
+
+ENVIRONMENT DETECTION:
+  • Automatically detects lab (/src/jgtml) vs prod (/workspace)
+  • Loads config from ~/.jgt/settings.json
+  • Uses offline mode when markets are closed
+
+TROUBLESHOOTING:
+  • Check logs in /tmp/jgtml_logs/
+  • Verify CLI tools: which jgtcli ttfcli mlfcli
+  • Test connectivity: jgtservice --status
+
+EOF
+}
+
+# ============================================================================
+# COMMAND HANDLERS
+# ============================================================================
+
+cmd_status() {
+    source "$SCRIPT_DIR/_refresh_functions.sh"
+    detect_environment
+    show_data_stats
+}
+
+cmd_cleanup() {
+    local days="${1:-7}"
+    source "$SCRIPT_DIR/_refresh_functions.sh"
+    detect_environment
+    init_logging "jgtml_cleanup"
+    cleanup_stale_data "$days"
+}
+
+cmd_production() {
+    shift  # Remove 'production' from args
+    bash "$SCRIPT_DIR/_REFRESH_PRODUCTION.sh" "$@"
+}
+
+cmd_discovery() {
+    shift  # Remove 'discovery' from args
+    bash "$SCRIPT_DIR/_REFRESH_DISCOVERY.sh" "$@"
+}
+
+# ============================================================================
+# MAIN DISPATCHER
+# ============================================================================
+
+main() {
+    local mode="${1:-production}"
+
+    case "$mode" in
+        production)
+            cmd_production "$@"
+            ;;
+        discovery)
+            cmd_discovery "$@"
+            ;;
+        status)
+            cmd_status
+            ;;
+        cleanup)
+            cmd_cleanup "$2"
+            ;;
+        help|-h|--help)
+            show_help
+            ;;
+        *)
+            echo "❌ Unknown mode: $mode"
+            echo ""
+            show_help
+            exit 1
+            ;;
+    esac
+}
+
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+    main "$@"
+fi
