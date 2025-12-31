@@ -66,3 +66,35 @@
    - Target: 0.67052
    - Risk: 1.9 pips
 
+**[2025-12-31 09:52:05]** [CANCEL] ❌ Order AUD-USD_m5_251231094610 INVALIDATED - Stop broken before entry triggered
+
+**[2025-12-31 09:55:23]** [INFO] Scanning for LONG opportunities...
+
+**[2025-12-31 09:55:23]** [WARN] ⚠️ Data stale: Data is 10915 min old (max: 10 min). Last bar: 2025-12-24 01:00:00
+
+**[2025-12-31 09:55:23]** [INFO] Attempting data refresh...
+
+**[2025-12-31 09:55:35]** [INFO] After refresh: Data is fresh (1 min old)
+
+**[2025-12-31 09:55:35]** [INFO] TF m5:
+```
+TandT EVALUATION:
+--------------------------------------------------
+  data_freshness: ✓ ACCEPTABLE
+  market_open: ✓ ACCEPTABLE
+  htf_alignment: ✓ ACCEPTABLE
+  signal_present: ✓ ACCEPTABLE
+  signal_valid: ✓ ACCEPTABLE
+  mouth_open: ✓ ACCEPTABLE
+  trend_strength: ✓ ACCEPTABLE
+--------------------------------------------------
+DECISION: YES - ACCEPTABLE - All 7 elements pass
+```
+
+**[2025-12-31 09:55:35]** [TRADE] 🎯 APPROVED: AUD-USD_m5_251231095535
+   Entry: 0.66767
+   Stop: 0.66736
+   Target: 0.66829
+
+
+| 09:55:35 | Signal approval | APPROVED | Signal approval ≠ APPROVED | Order created |

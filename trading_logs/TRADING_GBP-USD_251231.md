@@ -66,3 +66,104 @@
    - Target: 1.35162
    - Risk: 3.0 pips
 
+**[2025-12-31 09:51:32]** [TRADE] ✅ Order GBP-USD_m5_251231093949 FILLED - Entry triggered at 1.35102
+
+**[2025-12-31 09:51:54]** [TRADE] ✅ Order GBP-USD_m5_251231094558 FILLED - Entry triggered at 1.35102
+
+**[2025-12-31 09:52:16]** [INFO] Scanning for FDB Buy signals...
+
+**[2025-12-31 09:52:16]** [INFO] HTF Bias: H4=LONG, D1=LONG
+
+**[2025-12-31 09:54:25]** [INFO] Scanning for LONG opportunities...
+
+**[2025-12-31 09:54:25]** [WARN] Data stale: Data is 10914 min old (max: 10 min). Last bar: 2025-12-24 01:00:00
+
+**[2025-12-31 09:54:37]** [INFO] TF m5:
+```
+TandT EVALUATION:
+--------------------------------------------------
+  data_freshness: ✓ ACCEPTABLE
+  market_open: ✓ ACCEPTABLE
+  htf_alignment: ✓ ACCEPTABLE
+  signal_present: ✓ ACCEPTABLE
+  signal_valid: ✗ UNACCEPTABLE
+  mouth_open: ✓ ACCEPTABLE
+  trend_strength: ✓ ACCEPTABLE
+--------------------------------------------------
+DECISION: NO - UNACCEPTABLE - Blocked by: signal_valid
+```
+
+**[2025-12-31 09:54:37]** [WARN] Data stale: Data is 10915 min old (max: 30 min). Last bar: 2025-12-24 01:00:00
+
+**[2025-12-31 09:54:48]** [INFO] TF m15:
+```
+TandT EVALUATION:
+--------------------------------------------------
+  data_freshness: ✓ ACCEPTABLE
+  market_open: ✓ ACCEPTABLE
+  htf_alignment: ✓ ACCEPTABLE
+  signal_present: ✓ ACCEPTABLE
+  signal_valid: ✗ UNACCEPTABLE
+  mouth_open: ✓ ACCEPTABLE
+  trend_strength: ✓ ACCEPTABLE
+--------------------------------------------------
+DECISION: NO - UNACCEPTABLE - Blocked by: signal_valid
+```
+
+**[2025-12-31 09:54:48]** [WARN] Data stale: Data is 10915 min old (max: 120 min). Last bar: 2025-12-24 01:00:00
+
+**[2025-12-31 09:55:13]** [INFO] Scanning for LONG opportunities...
+
+**[2025-12-31 09:55:13]** [INFO] TF m5:
+```
+TandT EVALUATION:
+--------------------------------------------------
+  data_freshness: ✓ ACCEPTABLE
+  market_open: ✓ ACCEPTABLE
+  htf_alignment: ✓ ACCEPTABLE
+  signal_present: ✓ ACCEPTABLE
+  signal_valid: ✗ UNACCEPTABLE
+  mouth_open: ✓ ACCEPTABLE
+  trend_strength: ✓ ACCEPTABLE
+--------------------------------------------------
+DECISION: NO - UNACCEPTABLE - Blocked by: signal_valid
+```
+
+**[2025-12-31 09:55:13]** [INFO] TF m15:
+```
+TandT EVALUATION:
+--------------------------------------------------
+  data_freshness: ✓ ACCEPTABLE
+  market_open: ✓ ACCEPTABLE
+  htf_alignment: ✓ ACCEPTABLE
+  signal_present: ✓ ACCEPTABLE
+  signal_valid: ✗ UNACCEPTABLE
+  mouth_open: ✓ ACCEPTABLE
+  trend_strength: ✓ ACCEPTABLE
+--------------------------------------------------
+DECISION: NO - UNACCEPTABLE - Blocked by: signal_valid
+```
+
+**[2025-12-31 09:55:13]** [WARN] ⚠️ Data stale: Data is 10915 min old (max: 120 min). Last bar: 2025-12-24 01:00:00
+
+**[2025-12-31 09:55:13]** [INFO] Attempting data refresh...
+
+**[2025-12-31 09:55:23]** [INFO] After refresh: Data is fresh (55 min old)
+
+**[2025-12-31 09:55:23]** [INFO] TF H1:
+```
+TandT EVALUATION:
+--------------------------------------------------
+  data_freshness: ✓ ACCEPTABLE
+  market_open: ✓ ACCEPTABLE
+  htf_alignment: ✓ ACCEPTABLE
+  signal_present: ✗ UNACCEPTABLE
+  signal_valid: ✗ UNACCEPTABLE
+  mouth_open: ✓ ACCEPTABLE
+  trend_strength: ✓ ACCEPTABLE
+--------------------------------------------------
+DECISION: NO - UNACCEPTABLE - Blocked by: signal_present
+```
+
+
+| 09:55:23 | FDB signal | No signal | FDB signal ≠ No signal | Wait |
