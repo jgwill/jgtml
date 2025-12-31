@@ -36,3 +36,18 @@
    - Target: 1.35162
    - Risk: 3.0 pips
 
+**[2025-12-31 09:39:28]** [START] === MONITORING SESSION STARTED ===
+
+**[2025-12-31 09:39:39]** [INFO] Scanning for FDB Buy signals...
+
+**[2025-12-31 09:39:39]** [INFO] HTF Bias: H4=LONG, D1=LONG
+
+**[2025-12-31 09:39:49]** [SIGNAL] 🔥 FDB BUY SIGNAL on m5! Entry: 1.35102, Stop: 1.35072
+
+**[2025-12-31 09:39:49]** [ORDER] 📋 Entry Order Created:
+   - Order ID: GBP-USD_m5_251231093949
+   - Entry: 1.35102
+   - Stop: 1.35072
+   - Target: 1.35162
+   - Risk: 3.0 pips
+
