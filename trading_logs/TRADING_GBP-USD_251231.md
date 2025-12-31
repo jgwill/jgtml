@@ -401,3 +401,9 @@ DECISION: YES - ACCEPTABLE - All 7 elements pass
    Entry: 1.34439 | Stop: 1.34374
    Target: 1.34569 | Risk: 6.5p
 
+**[2025-12-31 12:10:19]** [INFO] m5   scan # 62: ✅ PASS - ACCEPTABLE - All 7 elements pass
+
+**[2025-12-31 12:10:23]** [TRADE] 🎯 ORDER PLACED: GBP-USD_m5_251231121019
+   Entry: 1.34439 | Stop: 1.34374
+   Target: 1.34569 | Risk: 6.5p
+

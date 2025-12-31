@@ -342,3 +342,9 @@ DECISION: YES - ACCEPTABLE - All 7 elements pass
    Entry: 0.66686 | Stop: 0.66653
    Target: 0.66752 | Risk: 3.3p
 
+**[2025-12-31 12:10:33]** [INFO] m5   scan # 63: ✅ PASS - ACCEPTABLE - All 7 elements pass
+
+**[2025-12-31 12:10:37]** [TRADE] 🎯 ORDER PLACED: AUD-USD_m5_251231121033
+   Entry: 0.66686 | Stop: 0.66653
+   Target: 0.66752 | Risk: 3.3p
+

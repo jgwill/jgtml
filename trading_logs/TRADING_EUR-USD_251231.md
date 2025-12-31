@@ -461,3 +461,5 @@ DECISION: YES - ACCEPTABLE - All 7 elements pass
    Entry: 1.17382 | Stop: 1.17329
    Target: 1.17488 | Risk: 5.3p
 
+**[2025-12-31 12:10:10]** [INFO] m5   scan # 61: ❌ FAIL - UNACCEPTABLE - Blocked by: signal_valid
+
