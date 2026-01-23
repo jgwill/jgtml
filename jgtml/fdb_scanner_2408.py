@@ -202,12 +202,46 @@ def _make_cached_filepath(i, t,subdir="fdb_scanners",ext="csv",suffix=""):
   fpath=os.path.join(cache_dir_fullpath,fn)
   return fpath.replace("..", ".")
 
+def read_from_existing_cds(_i, _t, validate_freshness=True):
+    """Read CDS data from existing pipeline files (JGTPY_DATA/current/cds/)
+
+    Args:
+        _i: Instrument (e.g., "EUR/USD")
+        _t: Timeframe (e.g., "H1")
+        validate_freshness: If True, validates data timestamp against timeframe
+
+    Returns:
+        pd.DataFrame: CDS data
+
+    Raises:
+        FileNotFoundError: If CDS file doesn't exist
+        ValueError: If data is stale and validate_freshness=True
+    """
+    import dotenv
+    dotenv.load_dotenv()
+    jgtpy_data = os.getenv("JGTPY_DATA")
+    if jgtpy_data is None:
+        raise Exception("JGTPY_DATA environment variable not set. Check .env file.")
+
+    ifn = _i.replace("/", "-")
+    cds_filepath = os.path.join(jgtpy_data, "cds", f"{ifn}_{_t}.csv")
+
+    if not os.path.exists(cds_filepath):
+        raise FileNotFoundError(f"CDS file not found: {cds_filepath}")
+
+    dfsrc = pd.read_csv(cds_filepath, index_col=0, parse_dates=True, dtype=DTYPE_DEFINITIONS)
+
+    if validate_freshness and not is_timeframe_cached_valid(dfsrc, _t, quiet=True):
+        raise ValueError(f"CDS data for {_i} {_t} is stale. Last bar: {dfsrc.index[-1]}")
+
+    return dfsrc
+
 def generate_fresh_and_cache(_i,_t,_quotescount=300,cache_filepath=None):
     """Generate fresh data and cache it with proper error handling"""
     global cds_cache_file_suffix
     if cache_filepath is None:
         cache_filepath = _make_cached_filepath(_i, _t,suffix=cds_cache_file_suffix)
-    
+
     try:
         dfsrc:pd.DataFrame=svc.get(_i,_t,quotescount=_quotescount)
         with safe_file_operation(cache_filepath, 'w') as f:
@@ -277,12 +311,13 @@ all_timeframes_references = "M1,W1,D1,H4,H1"
 
 def parse_args():
   parser=jgtcommon.new_parser("FDB Scanner","Scan market for FDB signals","fdbscan",add_exiting_quietly_flag=True)
-  parser=jgtcommon.add_verbose_argument(parser) 
+  parser=jgtcommon.add_verbose_argument(parser)
   parser=jgtcommon.add_instrument_standalone_argument(parser)
   parser=jgtcommon.add_timeframe_standalone_argument(parser)
   parser=jgtcommon.add_demo_flag_argument(parser)
   parser.add_argument("-nc","--no-cache",action="store_true",help="Do not use cache")
-  
+  parser.add_argument("--allow-stale",action="store_true",help="Allow using stale/outdated data (for offline/weekend scanning)")
+
   args=jgtcommon.parse_args(parser)
   return args
 
@@ -292,10 +327,11 @@ def main():
   global instruments
   global timeframes
   global no_cache
-  
+
   _ini_cache()
   args=parse_args()
   no_cache=args.no_cache
+  allow_stale=args.allow_stale
   
   #instruments=args.instruments if args.iflag else instruments if not args.instrument else [args.instrument]
   #timeframes=args.timeframes if args.tflag else timeframes if not args.timeframe else [args.timeframe]
@@ -381,19 +417,75 @@ def main():
       
       cache_filepath = _make_cached_filepath(i, t,suffix=cds_cache_file_suffix)
 
+      # Determine if this is HTF reference scan or actual signal scan
+      is_htf_reference = t not in timeframes
+
       dfsrc:pd.DataFrame=None
       if no_cache:
-        dfsrc:pd.DataFrame=generate_fresh_and_cache(i,t,quotescount)
-      
+        # Try to read from existing CDS pipeline first
+        try:
+          # For HTF references or if allow_stale flag set, skip validation
+          validate_freshness = not is_htf_reference and not allow_stale
+          dfsrc:pd.DataFrame=read_from_existing_cds(i,t,validate_freshness=validate_freshness)
+        except ValueError as e:
+          # Stale data for signal scan
+          if verbose_level>1:print(f"Stale CDS data for {i} {t}: {e}")
+          if is_htf_reference:
+            # For HTF, try without validation
+            dfsrc:pd.DataFrame=read_from_existing_cds(i,t,validate_freshness=False)
+          else:
+            # For signal scan, skip this instrument/timeframe
+            if verbose_level>0:print(f"SKIP {i} {t} - stale data (cannot refresh)")
+            continue
+        except Exception as e:
+          if verbose_level>1:print(f"No existing CDS data for {i} {t}: {e}")
+          if is_htf_reference:
+            # Skip missing HTF data silently
+            continue
+          # For signal scans, this is an error
+          if verbose_level>0:print(f"SKIP {i} {t} - no CDS data")
+          continue
+
       if dfsrc is None:
         try:
           dfsrc=pd.read_csv(cache_filepath,index_col=0,parse_dates=True,dtype=DTYPE_DEFINITIONS)
         except:
-          dfsrc:pd.DataFrame=generate_fresh_and_cache(i,t,quotescount,cache_filepath)
-    
-        if not is_timeframe_cached_valid(dfsrc, t):
+          # Try existing CDS pipeline before fresh generation
+          try:
+            validate_freshness = not is_htf_reference and not allow_stale
+            dfsrc:pd.DataFrame=read_from_existing_cds(i,t,validate_freshness=validate_freshness)
+          except ValueError as e:
+            if verbose_level>1:print(f"Stale cached CDS for {i} {t}: {e}")
+            if is_htf_reference:
+              dfsrc:pd.DataFrame=read_from_existing_cds(i,t,validate_freshness=False)
+            else:
+              if verbose_level>0:print(f"SKIP {i} {t} - stale data")
+              continue
+          except Exception as e:
+            if verbose_level>1:print(f"No cached CDS for {i} {t}: {e}")
+            if is_htf_reference:
+              continue
+            if verbose_level>0:print(f"SKIP {i} {t} - no data")
+            continue
+
+        if dfsrc is not None and not is_timeframe_cached_valid(dfsrc, t):
           if verbose_level>2:print("Cache invalid for ",t)
-          dfsrc=generate_fresh_and_cache(i,t,quotescount)
+          # Try existing CDS pipeline before fresh generation
+          try:
+            validate_freshness = not is_htf_reference and not allow_stale
+            dfsrc:pd.DataFrame=read_from_existing_cds(i,t,validate_freshness=validate_freshness)
+          except ValueError as e:
+            if is_htf_reference:
+              # Keep stale HTF data
+              pass
+            else:
+              if verbose_level>0:print(f"SKIP {i} {t} - stale data")
+              continue
+          except Exception as e:
+            if is_htf_reference:
+              continue
+            if verbose_level>0:print(f"SKIP {i} {t} - no data")
+            continue
       
       signal_bar,current_bar= get_last_two_bars(dfsrc)
 
