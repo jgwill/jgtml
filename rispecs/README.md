@@ -12,17 +12,20 @@ This directory contains RISE-compliant specifications for JGTML - the trading si
 
 ## Specification Map
 
-| Spec File | Status | Source Module | Purpose |
-|-----------|--------|---------------|---------|
+| Spec File | Status | Source Module | CLI Command |
+|-----------|--------|---------------|-------------|
+| **Orchestration** ||||
+| [app.specs.md](./app.specs.md) | ✅ | Master Overview | - |
+| [jgtapp.spec.md](./jgtapp.spec.md) | ✅ | jgtapp.py | `jgtapp` |
 | **Signal Detection** ||||
-| [fdb-scanner.spec.md](./fdb-scanner.spec.md) | ✅ Complete | fdb_scanner_2508.py | FDB signal scanning & validation |
-| [signal-ordering.spec.md](./signal-ordering.spec.md) | ✅ Complete | SignalOrderingHelper.py | Entry order generation & risk |
+| [fdb-scanner.spec.md](./fdb-scanner.spec.md) | ✅ | fdb_scanner_2508.py | `fdbscan` |
+| [signal-ordering.spec.md](./signal-ordering.spec.md) | ✅ | SignalOrderingHelper.py | - |
 | **Alligator Analysis** ||||
-| [alligator-analysis.spec.md](./alligator-analysis.spec.md) | ✅ Complete | TideAlligatorAnalysis.py | Three-scale Alligator convergence |
+| [alligator-analysis.spec.md](./alligator-analysis.spec.md) | ✅ | TideAlligatorAnalysis.py | `alligator_cli` |
 | **Feature Engineering** ||||
-| [ttf.spec.md](./ttf.spec.md) | ✅ Complete | ttfcli.py, ptottf.py | Cross-timeframe features |
-| [mlf.spec.md](./mlf.spec.md) | ✅ Complete | mlfcli.py, realityhelper.py | Meta lag features for ML |
-| [mx.spec.md](./mx.spec.md) | ✅ Complete | mxcli.py, jtc.py | ML matrix with targets |
+| [ttf.spec.md](./ttf.spec.md) | ✅ | ttfcli.py, ptottf.py | `ttfcli` |
+| [mlf.spec.md](./mlf.spec.md) | ✅ | mlfcli.py, realityhelper.py | `mlfcli` |
+| [mx.spec.md](./mx.spec.md) | ✅ | mxcli.py, jtc.py | `mxcli` |
 
 ## RISE Framework Compliance
 
