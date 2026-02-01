@@ -199,3 +199,5 @@ zold
 
 # React Component Preview
 previewConfig.json
+trading_logs/
+.hch

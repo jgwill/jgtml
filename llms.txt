@@ -1,16 +1,90 @@
-# LLMS.txt for jgtml
-# This file guides language models to our documentation.
+# JGTML Project Documentation for LLMs
 
-GET /README.md
-GET /docs/CLI_HELP.md
+> This document serves as a comprehensive guide for Language Models (LLMs) to access and interpret key documentation within the JGTML project. It ensures that LLMs can efficiently locate relevant information, understand the project's structure, and provide accurate assistance without misinterpretation.
 
-# Core components documentation
+**Version:** 1.0.0
+**Last Updated:** 2026-02-01
+**Authored By:** Gemini CLI Agent (based on user guidance and compliance checklist)
 
-* todo add them here
+## 1. Project Overview & Core Documentation
 
+This section provides access to high-level project documentation, essential for understanding the overall goals, architecture, and usage of the JGTML project.
 
-# Additional documentation
+### 1.1 General Readme
 
-GET /SPECLANG_TRADING.md
+*   **Purpose:** Provides a general introduction and overview of the JGTML repository.
+*   **Access:**
+    GET /README.md
 
-GET /PRODUCTION_TRADING_GUIDE.md
+### 1.2 CLI Help Documentation
+
+*   **Purpose:** Detailed guidance on using the Command Line Interface tools associated with JGTML.
+*   **Access:**
+    GET /docs/CLI_HELP.md
+
+## 2. Core Components Specifications (RISPECS)
+
+This section links directly to the formal specification documents (`.spec.md` files) for the core components of the JGTML project. These documents are critical for understanding the detailed design, functionality, and behavior of individual modules.
+
+### 2.1 RISPECS Overview
+
+*   **Purpose:** General introduction and overview for the entire RISPECS directory.
+*   **Access:**
+    GET /jgtml/rispecs/README.md
+
+### 2.2 Individual Component Specifications
+
+*   **Alligator Analysis Specification**
+    GET /jgtml/rispecs/alligator-analysis.spec.md
+*   **Application Core Specifications**
+    GET /jgtml/rispecs/app.specs.md
+*   **FDB Scanner Specification**
+    GET /jgtml/rispecs/fdb-scanner.spec.md
+*   **JGT Application Specification**
+    GET /jgtml/rispecs/jgtapp.spec.md
+*   **Machine Learning Framework Specification**
+    GET /jgtml/rispecs/mlf.spec.md
+*   **MX Data Processing Specification**
+    GET /jgtml/rispecs/mx.spec.md
+*   **Signal Ordering Specification**
+    GET /jgtml/rispecs/signal-ordering.spec.md
+*   **TTF Data Processing Specification**
+    GET /jgtml/rispecs/ttf.spec.md
+
+## 3. Additional Strategic & Operational Documentation
+
+These documents provide further context on trading language specifications and production deployment guidelines.
+
+### 3.1 Trading Specific Language Documentation
+
+*   **Purpose:** Defines the specialized language and terminology used in JGTML for trading strategies.
+*   **Access:**
+    GET /SPECLANG_TRADING.md
+
+### 3.2 Production Trading Guide
+
+*   **Purpose:** Guidelines and best practices for deploying and managing JGTML components in a production trading environment.
+*   **Access:**
+    GET /PRODUCTION_TRADING_GUIDE.md
+
+## 4. LLM Interaction Guidelines
+
+To ensure optimal interaction and accurate information retrieval, LLMs should adhere to the following guidelines when processing this `LLMS.txt` document and the referenced resources.
+
+### 4.1 Interpretation Guidance
+
+*   **Priority:** Prioritize `.spec.md` files for detailed technical understanding over general `README.md` for specific component inquiries.
+*   **Context:** Always cross-reference high-level overviews with specific component specifications to maintain holistic understanding.
+*   **Actionable Information:** Focus on extracting actionable insights (e.g., how a component works, what data it processes, its expected output).
+
+### 4.2 Avoiding Anti-Patterns
+
+*   **Do NOT infer:** Avoid making assumptions about component behavior or relationships not explicitly stated in the documentation.
+*   **Do NOT hallucinate:** If information is missing, state its absence rather than generating plausible but incorrect details.
+*   **Do NOT over-generalize:** Specific details in `.spec.md` files should not be overridden by general statements in higher-level documents unless explicitly noted as an exception.
+*   **Self-Correction:** If initial queries yield ambiguous results, re-evaluate the relevant sections in this `LLMS.txt` and the linked documents, reformulating queries with greater specificity.
+
+## 5. Metadata
+
+*   **Document ID:** jgtml-llms-guide-v1.0.0
+*   **Applicability:** Designed for any LLM assisting with the JGTML project.
