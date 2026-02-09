@@ -5,13 +5,20 @@ jgtml
 
 from setuptools import find_packages, setup
 import re
+from pathlib import Path
 
-#from jgtml import __version__ as version
 def read_version():
-    with open("jgtml/__init__.py") as f:
-        content=f.read()
-        version_match = re.search(r"version=['\"]([^'\"]*)['\"]", content)
-        return version_match.group(1)
+    """Read version from __init__.py without importing."""
+    init_file = Path(__file__).parent / "jgtml" / "__init__.py"
+    if not init_file.exists():
+        return "0.0.0"
+    content = init_file.read_text()
+    match = re.search(r'version\s*=\s*["\']([^"\']+)["\']', content)
+    if match:
+        return match.group(1)
+    return "0.0.0"
+
+version = read_version()
         # for line in f:
         #     #print(line)
         #     if line.startswith("version="):
