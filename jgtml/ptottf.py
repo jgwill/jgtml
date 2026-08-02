@@ -1,4 +1,5 @@
 
+import numpy as np
 import pandas as pd
 from jgtpy import JGTCDSSvc as svc
 from jgtutils import jgtpov as jpov
@@ -104,6 +105,10 @@ def create_ttf_csv(i, t, use_full=False, use_fresh=True, quotescount=-1,force_re
   if dropna_volume:
     df=dropna_volume_in_dataframe(df)
   
+  #@STCIssue ABANDONED SKETCHES BELOW -- neither block runs as written (the first
+  # merges `on='index'` against a frame whose index is not a column, with its own
+  # v_sorted line commented out). Kept only as a record of intent. The working
+  # vectorised join is the searchsorted block further down.
   # for key_tf, v in workset.items():
   #   if key_tf != t:
   #     # Ensure 'v' is sorted by index to use merge_asof
@@ -139,26 +144,45 @@ def create_ttf_csv(i, t, use_full=False, use_fresh=True, quotescount=-1,force_re
   #           data = data.iloc[-1]
   #           #print(count,"::ii:",ii," ::data:",data[col]," ::new_col_name:",new_col_name)
   #           df.at[ii,new_col_name]=data[col]
-  # Pre-allocate new columns with None (or np.nan for numerical data)
-  for col in columns_list_from_higher_tf:
-    for key_tf in workset:
-      if key_tf != t:
-        new_col_name = f"{col}_{key_tf}"
-        df[new_col_name] = None
-  #count = 0
+  #@STCGoal Vectorised backward as-of join of the higher-timeframe columns.
+  # It replaces a per-base-bar loop that built a boolean mask and materialised a
+  # full COPY of the higher-timeframe frame just to read its last row -- 418,020
+  # full-frame copies for EUR/USD H4, ~22 ms/row, ~843 s for one pattern. The
+  # cost of that loop is why no full TTF/MLF refresh completed between 2025-07-09
+  # and 2026-08-02.
+  #
+  #@STCIssue pd.merge_asof is NOT a drop-in here, despite being the obvious tool.
+  # Where a higher timeframe starts LATER than the base timeframe the join yields
+  # leading NaN, which upcasts int64 pattern columns (mfi_sq, mfi_green, mfi_fade,
+  # mfi_fake, zone_sig) to float64 -- emitting "1.0" where the loop emitted "1".
+  # searchsorted into an object column reproduces the loop byte-for-byte instead,
+  # including its None fill for base bars with no higher-timeframe bar yet.
+  # Verified byte-identical, EUR/USD D1 + H4, all four production patterns:
+  # /b/trading/handoff/260801-mlf-signal-profitability/010-pipeline-performance-fix-landed.md
+  base_columns = list(df.columns)
+  htf_column_order = [f"{col}_{key_tf}"
+                      for col in columns_list_from_higher_tf
+                      for key_tf in workset if key_tf != t]
   for key_tf, v in workset.items():
     if key_tf != t:
+      missing_columns = [c for c in columns_list_from_higher_tf if c not in v.columns]
+      if missing_columns:
+        #@STCIssue Fail loudly. The loop this replaces raised KeyError here too, from
+        # deep inside a Series lookup; this one says which timeframe and which column.
+        raise KeyError(f"TTF {i} {t}: higher timeframe '{key_tf}' has no column(s) "
+                       f"{missing_columns} required by pattern '{pn}'")
       v_sorted = v.sort_index()  # Ensure data is sorted for efficient access
+      # Position of the last higher-timeframe bar whose index is <= each base bar.
+      # side="right" minus one == the loop's `v_sorted[v_sorted.index <= date].iloc[-1]`.
+      latest_pos = v_sorted.index.searchsorted(df.index, side="right") - 1
+      matched = latest_pos >= 0
       for col in columns_list_from_higher_tf:
-        new_col_name = f"{col}_{key_tf}"
-        for ii in df.index:
-          #count += 1
-          date = ii
-          # Limit the data to those less than or equal to the current date
-          data = v_sorted[v_sorted.index <= date]
-          if not data.empty:
-              latest_data = data.iloc[-1]  # Get the latest data point
-              df.at[ii, new_col_name] = latest_data[col]
+        source_values = v_sorted[col].to_numpy()
+        joined = np.empty(len(df), dtype=object)
+        joined[matched] = source_values[latest_pos[matched]]
+        joined[~matched] = None
+        df[f"{col}_{key_tf}"] = joined
+  df = df[base_columns + htf_column_order]
 
   #print("Total count of operations:",count)
   columns_we_want_to_keep_to_view=created_columns
