@@ -618,7 +618,10 @@ def mlf(instrument, timeframe, pn="ttf", total_lagging_periods=5, use_fresh=Fals
       use_full_arg,
       use_fresh_arg,
       '-pn', pn,
-      '--total_lagging_periods', total_lagging_periods,
+      # str(): subprocess requires every argv element to be a string, and the
+      # default here is the int 5 -- so `jgtapp mlf` raised TypeError before it
+      # ever reached mlfcli.
+      '--total_lagging_periods', str(total_lagging_periods),
   ]
   try:
       subprocess.run(mlf_args, check=True)

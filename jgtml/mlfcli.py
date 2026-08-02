@@ -147,9 +147,57 @@ def generate_mlf_for_pattern(
   
 
 
+MLF_GENERATION_FAILED_EXIT_CODE = 74
+
+
+def _outfile_for(args):
+  """Where this invocation is supposed to have written, per realityhelper's own rule."""
+  return realityhelper.get_mlf_outfile_fullpath(
+      args.instrument, args.timeframe, args.full, args.patternname)
+
+
+def _describe_output(path):
+  """(ok, detail) for the file a run claims to have produced.
+
+  Existence is not enough.  This stack has twice written a Python traceback with
+  a `.csv` extension (96 bytes, `jgwill/jgtsrc#121`), so the file has to parse as
+  a table with at least one row before we call the run a success.
+  """
+  if not os.path.exists(path):
+    return False, "no file at " + path
+  size = os.path.getsize(path)
+  if size == 0:
+    return False, "empty file at " + path
+  try:
+    df = pd.read_csv(path, index_col=0, nrows=5)
+  except Exception as e:
+    return False, f"unreadable as CSV ({size} bytes, {type(e).__name__}: {e}) at {path}"
+  if len(df.columns) < 2:
+    return False, f"only {len(df.columns)} column(s) -- not a feature table -- at {path}"
+  with open(path) as fh:
+    rows = sum(1 for _ in fh) - 1
+  if rows < 1:
+    return False, "header only, no rows at " + path
+  return True, f"rows={rows} cols={len(df.columns)} bytes={size} -> {path}"
+
+
+def _report(args, ok, detail):
+  """One line per (instrument, timeframe, pattern). Machine-greppable, always printed.
+
+  `jgtapp.py` -- the reference for how these CLIs are meant to be driven -- runs
+  every one of them through `subprocess.run(..., check=True)`.  That contract only
+  works if the CLI's exit code tells the truth, which is what the caller of this
+  function then makes sure of.
+  """
+  status = "WRITTEN" if ok else "FAILED"
+  print(f"MLF {status}: {args.instrument} {args.timeframe} {args.patternname} :: {detail}",
+        file=sys.stdout if ok else sys.stderr, flush=True)
+
+
 def main():
     args = create_app_arguments()
-    
+    failure = None
+
     # Initialize tracing for MLF CLI processing
     tracer = None
     if _has_tracing:
@@ -243,12 +291,19 @@ def main():
                     traceback.print_exc()
                     raise
     else:
-        # Original processing without tracing
+        # Original processing without tracing.
+        #
+        # This branch is the live one: jgtcore 0.2.5 has no JGTTracer, so the
+        # `except ImportError` above sets _has_tracing False.  It used to swallow
+        # every failure -- inner exception printed, `main()` falling off the end,
+        # `sys.exit(None)` -> **exit 0 with nothing written**.  That is the exact
+        # shape that hid `int('+-')` for as long as `*_H4_mz` MLF has existed,
+        # which is to say: it never existed, and nothing said so.
+        import traceback
         try:
             df = run_mlf_wrapper(args, force_refresh)
         except Exception as e:
             print("Error in generate_mlf_feature_pattern:", e)
-            import traceback
             traceback.print_exc()
             print("----WE ARE TRYING IT USING jgtapp---------")
             from jgtapp import ttf
@@ -265,6 +320,26 @@ def main():
             except Exception as e_ttf:
                 print("Error while running ttf:", e_ttf)
                 traceback.print_exc()
+                failure = f"{type(e).__name__}: {e} (ttf fallback also failed: "\
+                          f"{type(e_ttf).__name__}: {e_ttf})"
+
+    # Whatever path got us here, the run is only a success if a usable file
+    # exists on disk. Nothing below trusts a return value or the absence of an
+    # exception.
+    try:
+        outfile = _outfile_for(args)
+    except Exception as e:
+        _report(args, False, f"cannot resolve output path: {type(e).__name__}: {e}")
+        sys.exit(MLF_GENERATION_FAILED_EXIT_CODE)
+
+    ok, detail = _describe_output(outfile)
+    if ok and failure:
+        detail += f" (recovered after: {failure})"
+    if not ok and failure:
+        detail += f" | first error: {failure}"
+    _report(args, ok, detail)
+    if not ok:
+        sys.exit(MLF_GENERATION_FAILED_EXIT_CODE)
 
 def run_mlf_wrapper_with_tracing(args, force_refresh, tracer):
     """MLF wrapper with detailed tracing support"""

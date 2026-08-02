@@ -136,9 +136,38 @@ CONVERTION_EXCLUDED_COLUMNS=[
     MFI,
     MFI_VAL,
     "mfi_str",
-    "mfi_str_M1",
-    "mfi_str_W1",
     ZCOL,
-    "zcol_M1",
-    "zcol_W1",
 ]
+
+#: Every timeframe a base timeframe can have ABOVE it. `ptottf` names a joined
+#: higher-timeframe column `<col>_<TF>`, so each string-valued pattern column has
+#: one variant per higher timeframe.
+_HIGHER_TIMEFRAME_SUFFIXES = ["M1", "W1", "D1", "H8", "H4", "H3", "H2", "H1",
+                              "m30", "m15", "m5", "m1"]
+
+#: Pattern columns whose values are STRINGS ('+-', '--', 'green', 'red', ...).
+#: `anhelper.add_lagging_columns` casts every non-excluded lag column with
+#: `astype(int)`; on a string column that raises ValueError and kills the run.
+_STRING_VALUED_PATTERN_COLUMNS = ["mfi_str", ZCOL]
+
+# 2026-08-02 -- the list above used to stop at W1, enumerated by hand:
+# "mfi_str_M1", "mfi_str_W1", "zcol_M1", "zcol_W1".  `mfi_str_D1` and `zcol_D1`
+# were simply absent, and H4 is the only refreshed timeframe whose higher set
+# includes D1 (H4 -> D1/W1/M1; D1 -> W1/M1; W1 -> M1).  So every
+# `<instrument>_H4_mz` MLF -- `mz` being exactly the `mfi_str` + `zcol` pattern --
+# died on `int('+-')`, and because `mlfcli` exited 0 anyway, no *_H4_mz.csv has
+# ever existed on any instrument.  Un-gated by Guillaume on 2026-08-02.
+# Generating the variants closes the same hole at H1/m15/m5 instead of waiting
+# for it to reopen there.
+CONVERTION_EXCLUDED_COLUMNS += [
+    f"{col}_{tf}"
+    for col in _STRING_VALUED_PATTERN_COLUMNS
+    for tf in _HIGHER_TIMEFRAME_SUFFIXES
+]
+
+# NOTE, deliberately NOT done here: `ao_D1`, `ac_W1` and friends are floats in
+# [-1, 1] and are *also* absent from this list, so their lag columns are
+# `astype(int)`-ed to 0 on 99.6-100% of rows (handoff 011 section 4, 006).  That
+# is the same line of code but a different defect: fixing it changes the NUMBERS
+# in every MLF file that already exists, where this change only creates files
+# that never existed.  It stays gated.
