@@ -1,2 +1,43 @@
+# GitHub Pages/Jekyll configuration for jgtml documentation site
+# Excludes only the largest problematic directories and build artifacts
+# that would cause GitHub Pages workflow to fail
+
 exclude:
+  # Original exclusion
   - jgtml_refresh
+  
+  # Very large data directories that aren't documentation
+  - models/
+  - trading_logs/
+  - arch/
+  - garden_one/
+  - book/
+  
+  # Editor and tool configuration
+  - .cursor/
+  - .vscode/
+  - .jgt/
+  - .mia/
+  - .cursorignore
+  
+  # Git and CI configuration
+  - .github/
+  - .gitignore
+  - .git/
+  
+  # Copilot and agent instructions (internal use)
+  - .copilot-instructions*.md
+  - .ritual-prompt-instructions.md
+  - .seeding-agent-instructions.md
+  - .sync_memory.json
+  
+  # Build and package artifacts
+  - setup.py
+  - pyproject.toml
+  - requirements.txt
+  - Makefile
+  - bump_version.py
+  - package.json
+  - "*.whl"
+  - dist/
+  - build/
