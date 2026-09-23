@@ -1,18 +1,61 @@
 # GitHub Pages/Jekyll configuration for jgtml documentation site
-# Minimal exclusions to ensure GitHub Pages build succeeds
+# Balanced exclusions: exclude code/data/build files but keep documentation
 
 exclude:
-  # Large data directories
-  - jgtml_refresh
-  - models
-  - book
-  
-  # Tool and editor directories
-  - .cursor
-  - .vscode
-  - .jgt
-  - .mia
-  
-  # Build directories
-  - dist
-  - build
+  # Git and version control
+  - .git/
+  - .gitignore
+  - .github/
+
+  # Large data and model directories
+  - models/
+  - jgtml_refresh/
+  - book/
+
+  # Source code and packages (not documentation)
+  - jgtml/
+  - examples/
+  - scripts/
+  - src/
+  - tests/
+  - research/
+
+  # Python package and build files
+  - setup.py
+  - pyproject.toml
+  - requirements.txt
+  - "*.whl"
+  - "*.egg-info"
+  - dist/
+  - build/
+
+  # Shell scripts and executables
+  - "*.sh"
+  - "*.bat"
+
+  # Editor and tool configuration
+  - .cursor/
+  - .vscode/
+  - .jgt/
+  - .mia/
+  - .cursorignore
+  - "*.code-workspace"
+
+  # Copilot and internal instructions
+  - .copilot-instructions*.md
+  - .ritual-prompt-instructions.md
+  - .seeding-agent-instructions.md
+  - .sync_memory.json
+
+  # Node/npm artifacts
+  - node_modules/
+  - package.json
+  - yarn.lock
+
+  # Other build/development files
+  - Makefile
+  - bump_version.py
+  - "*.log"
+  - "*.txt"
+  - "*.joblib"
+  - "*.csv"
