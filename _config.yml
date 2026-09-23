@@ -1,20 +1,12 @@
 # GitHub Pages/Jekyll configuration for jgtml documentation site
-# Excludes large data directories, Python packages, build artifacts, and configuration files
-# that would cause GitHub Pages workflow to fail or take excessive time
+# Excludes only the largest problematic directories and build artifacts
+# that would cause GitHub Pages workflow to fail
 
 exclude:
-  # Existing exclusion
+  # Original exclusion
   - jgtml_refresh
   
-  # Python package and source code (not website content)
-  - jgtml/
-  - src/
-  - tests/
-  - scripts/
-  - examples/
-  - codex/
-  
-  # Large data directories
+  # Very large data directories that aren't documentation
   - models/
   - trading_logs/
   - arch/
@@ -39,19 +31,6 @@ exclude:
   - .seeding-agent-instructions.md
   - .sync_memory.json
   
-  # Shell scripts and build files (infrastructure)
-  - "_*.sh"
-  - "*.sh"
-  - "pre-*.sh"
-  - "mk-*.sh"
-  - "release-*.sh"
-  - "__*.sh"
-  - "BUILDRELEASETAG.sh"
-  - "_*.txt"
-  - "_*.json"
-  - "_keys.txt"
-  - "_keys2.txt"
-  
   # Build and package artifacts
   - setup.py
   - pyproject.toml
@@ -62,24 +41,3 @@ exclude:
   - "*.whl"
   - dist/
   - build/
-  
-  # Temporary and test files
-  - "context*.json"
-  - "test_*.py"
-  - "test_*.sh"
-  - "*_test*.txt"
-  - "demo_*.py"
-  - "observation_*.py"
-  - "alligator_*.py"
-  - "m-*.py"
-  - "llm*.txt"
-  
-  # Workspace and IDE files
-  - "*.code-workspace"
-  
-  # Data and sample files
-  - sample_settings.json
-  - pto-package.csv
-  
-  # rispecs (specifications) - verbose and technical
-  - rispecs/
