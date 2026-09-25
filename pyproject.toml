@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "jgtml"
-version = "0.0.352"
+version = "0.0.353"
 authors = [
   { name="Guillaume Isabelle", email="jgi@jgwill.com" },
 ]
@@ -17,7 +17,7 @@ dependencies = [
   'pandas>=0.25.1',
   'python-dateutil>=2.8.0',
   'python-dotenv>=0.19.2',
-  'jgtpy>=0.6.27',
+  'jgtpy>=0.6.30',
   'matplotlib>=3.3.1',
   'plotly>=5.18.0',
   'mplfinance>=0.12.10b0',
@@ -31,9 +31,9 @@ dependencies = [
   'scikit-learn',
   'aiohttp',
   'tlid',
-  'jgtutils',
-  'jgtcore>=0.2.0',
-  'jgtfxcon',
+  'jgtutils>=1.0.30',
+  'jgtcore>=0.2.6',
+  'jgtfxcon>=0.7.0',
   'pyarrow',
 ]	
 

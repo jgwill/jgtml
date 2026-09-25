@@ -633,9 +633,10 @@ def mlf(instrument, timeframe, pn="ttf", total_lagging_periods=5, use_fresh=Fals
 
   
 
-def mx(instrument, timeframe, use_fresh=False):
+def mx(instrument, timeframe, use_fresh=False, pn="ttf"):
   old_or_fresh = '-old' if not use_fresh else '--fresh'
-  subprocess.run([MXCLI_PROG_NAME, '-i', instrument, '-t', timeframe, old_or_fresh], check=True)
+  # mxcli requires -pn
+  subprocess.run([MXCLI_PROG_NAME, '-i', instrument, '-t', timeframe, old_or_fresh, '-pn', pn], check=True)
 
 def ttfmxwf(instrument, use_fresh=False):
   for t in ["M1", "W1", "D1", "H4"]:
@@ -834,6 +835,7 @@ def main():
   parser_post_mx_15 = subparsers.add_parser('mx', help='Refresh the MX (using the TTF) for an instrument and timeframe')
   parser_post_mx_15.add_argument('-i','--instrument', help='Instrument symbol')
   parser_post_mx_15.add_argument('-t','--timeframe', help='Timeframe')
+  parser_post_mx_15.add_argument('-pn','--patternname', help='Pattern Name (default: ttf)')
 
   parser_wf_ttf_prep_19 = subparsers.add_parser('ttfwf', help='Refresh TTF preparation for an instrument')
   parser_wf_ttf_prep_19.add_argument('-i','--instrument', help='Instrument symbol')
@@ -912,15 +914,15 @@ def main():
   elif args.command == 'ocds':
     ocds(args.instrument, args.timeframe)
   elif args.command == 'ttf':
-    ttf(args.instrument, args.timeframe,args.patternname,args.columns_list_from_higher_tf,args.fresh,args.full)
+    ttf(args.instrument, args.timeframe, args.patternname or "ttf", args.fresh, args.full)
   elif args.command == 'mlf':
-    mlf(args.instrument, args.timeframe,args.patternname,args.total_lagging_periods,args.fresh,args.full)
+    mlf(args.instrument, args.timeframe, args.patternname or "ttf", args.total_lagging_periods or 5, args.fresh, args.full)
   elif args.command == 'ttfmxwf':
     ttfmxwf(args.instrument, args.fresh)
   elif args.command == 'mx':
-    mx(args.instrument, args.timeframe)
+    mx(args.instrument, args.timeframe, pn=args.patternname or "ttf")
   elif args.command == 'ttfwf':
-    ttfwf(args.instrument, args.fresh,args.full)
+    ttfwf(args.instrument, args.fresh)
 
 def add_get_bash_autocomplete_argument(parser):
     parser.add_argument('--get-bash-autocomplete','--get-autocomplete','--autocomplete',help=argparse.SUPPRESS,nargs='?',const=True,action='store',dest='get_bash_autocomplete')
