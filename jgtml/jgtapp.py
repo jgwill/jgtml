@@ -652,15 +652,23 @@ def ttfmxwf(instrument, use_fresh=False):
       print("  MX....")
       mx(instrument, t)
       
+def _ttf2run_from_settings(_settings:dict)->list:
+  """Pattern names `ttfwf` runs: the settings' `ttf2run`, else TTF2RUN_DEFAULT.
+
+  `jgtcommon.get_settings()` returns a dict. This used to test
+  `hasattr(_settings, 'ttf2run')`, which is False for every dict key, so the
+  configured list was never read and only TTF2RUN_DEFAULT (["mfi"]) ran.
+  """
+  ttf2run = _settings.get('ttf2run') if _settings else None
+  if not ttf2run:
+    from mlconstants import TTF2RUN_DEFAULT
+    ttf2run = TTF2RUN_DEFAULT
+  return ttf2run
+
 def ttfwf(instrument, use_fresh=False):
-  
+
   _settings = jgtcommon.get_settings()
-  #ttf2run
-  if hasattr(_settings, 'ttf2run'):
-    ttf2run=_settings.ttf2run
-  else:
-    from jgtml.mlconstants import TTF2RUN_DEFAULT
-    ttf2run=TTF2RUN_DEFAULT
+  ttf2run = _ttf2run_from_settings(_settings)
   for pn in ttf2run:
       
     for t in ["M1", "W1", "D1", "H4"]:
