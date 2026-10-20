@@ -47,6 +47,12 @@ TTF_NOT_NEEDED_COLUMNS_LIST=[ 'mfi_str','zcol','price_peak_above', 'price_peak_b
 
 TTF2RUN_DEFAULT=["mfi"]
 
+#: File-name suffix of a TTF (and of the MLF built on it) whose higher-timeframe
+#: columns come only from bars that had CLOSED by the base bar's close
+#: (`create_ttf_csv(htf_completed_only=True)`). The default TTF keeps its name and
+#: its forming-bar join, which the live HTF chart reads.
+HTF_COMPLETED_ONLY_SUFFIX="_htfc"
+
 
 
 #@STCGoal Sample Data for design of the columns

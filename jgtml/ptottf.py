@@ -5,7 +5,7 @@ from jgtpy import JGTCDSSvc as svc
 from jgtutils import jgtpov as jpov
 
 from mlutils import drop_columns_if_exists, dropna_volume_in_dataframe
-from mlconstants import TTF_NOT_NEEDED_COLUMNS_LIST, default_columns_to_get_from_higher_tf,TTF_DTYPE_DEFINITION
+from mlconstants import TTF_NOT_NEEDED_COLUMNS_LIST, default_columns_to_get_from_higher_tf,TTF_DTYPE_DEFINITION,HTF_COMPLETED_ONLY_SUFFIX
 
 import os
 from mlutils import get_basedir,get_outfile_fullpath
@@ -28,14 +28,17 @@ def make_htf_created_columns_array(workset,t,columns_list_from_higher_tf=None):
             created_columns.append(new_col_name)
     return created_columns
 
-def read_ttf_csv(i, t, use_full=False,force_refresh=False,pn="ttf")->pd.DataFrame:
+def _htf_completed_only_suffix(htf_completed_only:bool)->str:
+    return HTF_COMPLETED_ONLY_SUFFIX if htf_completed_only else ""
+
+def read_ttf_csv(i, t, use_full=False,force_refresh=False,pn="ttf",htf_completed_only=False)->pd.DataFrame:
     if force_refresh:
-        return create_ttf_csv(i, t, use_full, use_fresh=True, force_read=False, pn=pn)
-    output_filename=get_ttf_outfile_fullpath(i,t,use_full,pn=pn)
+        return create_ttf_csv(i, t, use_full, use_fresh=True, force_read=False, pn=pn, htf_completed_only=htf_completed_only)
+    output_filename=get_ttf_outfile_fullpath(i,t,use_full,suffix=_htf_completed_only_suffix(htf_completed_only),pn=pn)
     if not os.path.exists(output_filename):
         print("   Creating TTF: ", output_filename)
         # When working offline we avoid fetching fresh data and rely on existing datasets
-        return create_ttf_csv(i, t, use_full, use_fresh=False, force_read=True, pn=pn)
+        return create_ttf_csv(i, t, use_full, use_fresh=False, force_read=True, pn=pn, htf_completed_only=htf_completed_only)
     else:
         print("   Read TTF: ", output_filename)
         
@@ -56,7 +59,46 @@ def _upgrade_ttf_depending_data(i, t, use_full=False, use_fresh=True, quotescoun
     raise Exception("Error in _upgrade_ttf_depending_data")
 
 
-def create_ttf_csv(i, t, use_full=False, use_fresh=True, quotescount=-1,force_read=False,dropna=True,quiet=True,columns_list_from_higher_tf=None,not_needed_columns=None,dropna_volume=True,pn="ttf",also_output_sel_csv=False,args=None)->pd.DataFrame:
+#: Close time given to a bar that has not closed yet: the last bar of a frame.
+_FORMING_BAR_CLOSE_NS = np.iinfo(np.int64).max
+
+def _as_ns(index)->np.ndarray:
+  return np.asarray(index, dtype="datetime64[ns]").view("int64")
+
+def _close_times_ns(sorted_opens_ns:np.ndarray)->np.ndarray:
+  """Close of each bar = the next bar's open. The last bar is still forming."""
+  closes = np.empty_like(sorted_opens_ns)
+  closes[:-1] = sorted_opens_ns[1:]
+  if len(closes):
+    closes[-1] = _FORMING_BAR_CLOSE_NS
+  return closes
+
+def _last_completed_htf_positions(base_opens_all, base_opens, htf_opens_sorted)->np.ndarray:
+  """Position in `htf_opens_sorted` of the last higher-timeframe bar that had CLOSED
+  by each base bar's close, or -1 where none had.
+
+  `base_opens_all` is the base frame before any rows were dropped, so a base bar's
+  close is the open of the bar that really followed it, even when that bar is
+  later dropped (zero volume). The last higher-timeframe bar is forming: it has
+  no close and is never joined.
+  """
+  all_opens = np.unique(_as_ns(base_opens_all))
+  base_close = _close_times_ns(all_opens)[np.searchsorted(all_opens, _as_ns(base_opens), side="left")]
+  htf_close = _as_ns(htf_opens_sorted)[1:]  # bar k closes when bar k+1 opens
+  return np.searchsorted(htf_close, base_close, side="right") - 1
+
+def create_ttf_csv(i, t, use_full=False, use_fresh=True, quotescount=-1,force_read=False,dropna=True,quiet=True,columns_list_from_higher_tf=None,not_needed_columns=None,dropna_volume=True,pn="ttf",also_output_sel_csv=False,args=None,htf_completed_only:bool=False)->pd.DataFrame:
+  """Join higher-timeframe pattern columns onto each base bar and write the TTF.
+
+  htf_completed_only=False (default): each base bar gets the last higher-timeframe
+    bar that OPENED at or before it. In a historical file that bar may still have
+    been forming at the base bar's time, yet it carries its final values: a model
+    trained on it reads the future. The live HTF chart reads this output and wants
+    the forming bar, so this path stays byte-identical to the 2026-08-02 proof below.
+  htf_completed_only=True: each base bar gets the last higher-timeframe bar that had
+    CLOSED by the base bar's close (a bar closes when the next one opens; the last
+    bar is forming). Written beside the default as `<pn>_htfc`, never over it.
+  """
   if args is not None:
     _settings=load_settings(args=args)
   if not_needed_columns is None:
@@ -102,6 +144,7 @@ def create_ttf_csv(i, t, use_full=False, use_fresh=True, quotescount=-1,force_re
   
   write_patternname_columns_list(i,t,use_full,created_columns,pn=pn)
   
+  base_opens_before_drop = df.index
   if dropna_volume:
     df=dropna_volume_in_dataframe(df)
   
@@ -172,9 +215,12 @@ def create_ttf_csv(i, t, use_full=False, use_fresh=True, quotescount=-1,force_re
         raise KeyError(f"TTF {i} {t}: higher timeframe '{key_tf}' has no column(s) "
                        f"{missing_columns} required by pattern '{pn}'")
       v_sorted = v.sort_index()  # Ensure data is sorted for efficient access
-      # Position of the last higher-timeframe bar whose index is <= each base bar.
-      # side="right" minus one == the loop's `v_sorted[v_sorted.index <= date].iloc[-1]`.
-      latest_pos = v_sorted.index.searchsorted(df.index, side="right") - 1
+      if htf_completed_only:
+        latest_pos = _last_completed_htf_positions(base_opens_before_drop, df.index, v_sorted.index)
+      else:
+        # Position of the last higher-timeframe bar whose index is <= each base bar.
+        # side="right" minus one == the loop's `v_sorted[v_sorted.index <= date].iloc[-1]`.
+        latest_pos = v_sorted.index.searchsorted(df.index, side="right") - 1
       matched = latest_pos >= 0
       for col in columns_list_from_higher_tf:
         source_values = v_sorted[col].to_numpy()
@@ -192,9 +238,10 @@ def create_ttf_csv(i, t, use_full=False, use_fresh=True, quotescount=-1,force_re
   
   #save basedir is $JGTPY_DATA/ttf is not use_full, if use_full save basedir is $JGTPY_DATA_FULL/ttf
   
-  output_filename=get_ttf_outfile_fullpath(i,t,use_full,pn=pn)
+  mode_suffix=_htf_completed_only_suffix(htf_completed_only)
+  output_filename=get_ttf_outfile_fullpath(i,t,use_full,suffix=mode_suffix,pn=pn)
   if also_output_sel_csv:
-    output_filename_sel=get_ttf_outfile_fullpath(i,t,use_full,suffix="_sel",pn=pn)
+    output_filename_sel=get_ttf_outfile_fullpath(i,t,use_full,suffix=mode_suffix+"_sel",pn=pn)
   
   if dropna:
     df.dropna(inplace=True)

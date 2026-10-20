@@ -12,6 +12,7 @@ sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
 
 from mlcliconstants import MLFCLI_DESCRIPTION,MLFCLI_EPILOG,MLFCLI_PROG_NAME
 from mlclicommon import (add_patterns_arguments,
+                         add_htf_completed_only_argument,
                          check_arguments)
 import realityhelper
 
@@ -28,6 +29,7 @@ def create_app_arguments()->argparse.Namespace:
   parser:argparse.ArgumentParser=jgtcommon.new_parser(MLFCLI_DESCRIPTION,MLFCLI_EPILOG,MLFCLI_PROG_NAME,add_exiting_quietly_flag=True)
   #parser = argparse.ArgumentParser(description="Create mlf alpha CSV file")
   parser=jgtcommon.add_patterns_arguments(parser)
+  parser=add_htf_completed_only_argument(parser)
   
 
   
@@ -153,7 +155,8 @@ MLF_GENERATION_FAILED_EXIT_CODE = 74
 def _outfile_for(args):
   """Where this invocation is supposed to have written, per realityhelper's own rule."""
   return realityhelper.get_mlf_outfile_fullpath(
-      args.instrument, args.timeframe, args.full, args.patternname)
+      args.instrument, args.timeframe, args.full,
+      realityhelper.mlf_output_name(args.patternname, args.htf_completed_only))
 
 
 def _describe_output(path):
@@ -269,6 +272,7 @@ def main():
                         pn=args.patternname,
                         use_fresh=args.fresh,
                         use_full=args.full,
+                        htf_completed_only=args.htf_completed_only,
                     )
                     tracer.add_step("ttf_fallback_complete",
                                   output_data={"ttf_generated": True})
@@ -314,6 +318,7 @@ def main():
                     pn=args.patternname,
                     use_fresh=args.fresh,
                     use_full=args.full,
+                    htf_completed_only=args.htf_completed_only,
                 )
                 print("---Running MLF now that we should have the desired pattern.")
                 df = run_mlf_wrapper(args, force_refresh)
@@ -362,7 +367,8 @@ def run_mlf_wrapper_with_tracing(args, force_refresh, tracer):
         columns_to_drop=args.columns_to_drop,
         drop_bid_ask=args.rmbidask,
         pn=args.patternname,
-        args=args
+        args=args,
+        htf_completed_only=args.htf_completed_only,
     )
     
     if tracer:
@@ -389,7 +395,8 @@ def run_mlf_wrapper(args, force_refresh):
         columns_to_drop=args.columns_to_drop,
         drop_bid_ask=args.rmbidask,
         pn=args.patternname,
-        args=args
+        args=args,
+        htf_completed_only=args.htf_completed_only,
     )
     return df
 

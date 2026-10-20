@@ -101,10 +101,10 @@ def create_pattern_dataset__ttf_mfis_ao_2407a_pto_get_dataset_we_need_in_here__2
   return df
 
 
-def _read_adequate_pattern_dataset(i,t,use_full,pn,quiet=True,force_refresh=False):
+def _read_adequate_pattern_dataset(i,t,use_full,pn,quiet=True,force_refresh=False,htf_completed_only=False):
   #@STCGoal Read ttf pattern
   from ptottf import read_ttf_csv
-  df=read_ttf_csv(i, t, use_full=use_full,pn=pn,force_refresh=force_refresh)
+  df=read_ttf_csv(i, t, use_full=use_full,pn=pn,force_refresh=force_refresh,htf_completed_only=htf_completed_only)
   if not quiet:
     print(df.columns)
   return df
@@ -116,7 +116,13 @@ import anhelper
 
 from mldatahelper import _get_lagging_columns_list
 
-def generate_mlf_feature_pattern(i,t,lag_period=1, total_lagging_periods=5,dropna=True, use_full=True,columns_to_keep=None,columns_to_drop=None,drop_bid_ask=False,force_refresh=False,quiet=True,pn="ttf",out_lag_midfix_str='_lag_',just_keep_lagging_columns=False,save_to_csv=True,args=None):
+def mlf_output_name(pn:str,htf_completed_only:bool=False)->str:
+  """The MLF file name part for pattern `pn`: `<pn>`, or `<pn>_htfc` when its TTF
+  joined only completed higher-timeframe bars (ptottf, htf_completed_only)."""
+  from mlconstants import HTF_COMPLETED_ONLY_SUFFIX
+  return pn+HTF_COMPLETED_ONLY_SUFFIX if htf_completed_only else pn
+
+def generate_mlf_feature_pattern(i,t,lag_period=1, total_lagging_periods=5,dropna=True, use_full=True,columns_to_keep=None,columns_to_drop=None,drop_bid_ask=False,force_refresh=False,quiet=True,pn="ttf",out_lag_midfix_str='_lag_',just_keep_lagging_columns=False,save_to_csv=True,args=None,htf_completed_only=False):
   #@STCGoal Pattern Name -> We have the Columns list serialized
   columns_list_from_higher_tf = mldh.pndata__read_new_pattern_columns_list_with_htf(t,pn,args=args)
   if not quiet:
@@ -124,7 +130,7 @@ def generate_mlf_feature_pattern(i,t,lag_period=1, total_lagging_periods=5,dropn
   #print("-------------------------------------------------","Not Implemented Yet::",patternname)
   
   
-  df:pd.DataFrame=_read_adequate_pattern_dataset(i,t,use_full,pn,force_refresh=force_refresh)
+  df:pd.DataFrame=_read_adequate_pattern_dataset(i,t,use_full,pn,force_refresh=force_refresh,htf_completed_only=htf_completed_only)
   
   df=__clean_dataframe(df, columns_to_keep, columns_to_drop, drop_bid_ask,dropna)
   
@@ -141,7 +147,7 @@ def generate_mlf_feature_pattern(i,t,lag_period=1, total_lagging_periods=5,dropn
   if save_to_csv:      
     write_mlf_pattern_lagging_columns_list(i, t, use_full, pn, fixed_columns_to_keep)
     #save the mlf df to_csv
-    output_filename=get_mlf_outfile_fullpath(i,t,use_full,pn)
+    output_filename=get_mlf_outfile_fullpath(i,t,use_full,mlf_output_name(pn,htf_completed_only))
     df.to_csv(output_filename, index=True)
     print("INFO::MLF Saved to : ", output_filename) 
 

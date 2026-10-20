@@ -15,6 +15,7 @@ sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
 
 
 from mlclicommon import (add_patterns_arguments,
+                         add_htf_completed_only_argument,
                          check_arguments) # -pn "<pattern> <pattern> <pattern> ..."
 
 from mlcliconstants import TTFCLI_DESCRIPTION, TTFCLI_EPILOG, TTFCLI_PROG_NAME
@@ -34,7 +35,8 @@ def _parse_args():
     parser=jgtcommon.add_use_fresh_argument(parser)
     parser=jgtcommon.add_bars_amount_V2_arguments(parser)
     parser=jgtcommon.add_patterns_arguments(parser)
-    
+    parser=add_htf_completed_only_argument(parser)
+
     #DEPRECATED
     #parser.add_argument("-fr", "--force_read", action="store_true", help="Force to read CDS (should increase speed but relies on existing data)")
   
@@ -155,7 +157,8 @@ def main():
                     pseudo_force_read_flag, 
                     columns_list_from_higher_tf=columns_list_from_higher_tf, 
                     pn=args.patternname, 
-                    args=args
+                    args=args,
+                    htf_completed_only=args.htf_completed_only,
                 )
                 
                 tracer.add_step("ttf_processing_complete", 
@@ -183,7 +186,8 @@ def main():
             pseudo_force_read_flag, 
             columns_list_from_higher_tf=columns_list_from_higher_tf, 
             pn=args.patternname, 
-            args=args
+            args=args,
+            htf_completed_only=args.htf_completed_only,
         )
 
 if __name__ == "__main__":

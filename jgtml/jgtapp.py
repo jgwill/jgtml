@@ -583,7 +583,7 @@ def ocds(instrument, timeframe, use_full=True):
   ], check=True)
 
   
-def ttf(instrument, timeframe, pn="ttf", use_fresh=False, use_full=True):
+def ttf(instrument, timeframe, pn="ttf", use_fresh=False, use_full=True, htf_completed_only=False):
   """Run TTFCLI for the specified instrument and timeframe."""
   use_full_arg = '-uf' if use_full else '-nf'
   use_fresh_arg = '--fresh' if use_fresh else '-old'
@@ -596,6 +596,8 @@ def ttf(instrument, timeframe, pn="ttf", use_fresh=False, use_full=True):
       use_fresh_arg,
       '-pn', pn,
   ]
+  if htf_completed_only:
+      ttf_args.append('--htf_completed_only')
   print("TTF is being ran by jgtapp with args: ", ttf_args)
   try:
       subprocess.run(ttf_args, check=True)

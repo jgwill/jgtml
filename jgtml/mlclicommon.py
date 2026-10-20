@@ -60,8 +60,18 @@ def __deprecate_force_read(args:argparse.Namespace):
 #   parser=add_format_outputs_arguments(parser)
 #   return parser
 
+def add_htf_completed_only_argument(parser:argparse.ArgumentParser)->argparse.ArgumentParser:
+  """--htf_completed_only: join only higher-timeframe bars closed by the base bar's close."""
+  pn_group=_get_group_by_title(parser,"Patterns")
+  pn_group.add_argument("-hco", "--htf_completed_only", action="store_true", default=False,
+                        help="Join each base bar to the last higher-timeframe bar that had CLOSED "
+                             "by the base bar's close, never the forming one (no look-ahead, for "
+                             "training). Writes <pattern>_htfc files beside the default ones. "
+                             "Default: the last higher-timeframe bar opened at or before the base bar.")
+  return parser
+
 def check_arguments(args:argparse.Namespace)->argparse.Namespace:
-  
+
   __deprecate_force_read(args)
   
   #If we are listing patterns, then we do that, print results and exit
