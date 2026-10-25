@@ -1,7 +1,8 @@
 import os
 
 import pandas as pd
-pd.options.mode.copy_on_write = True
+if int(pd.__version__.split(".")[0]) < 3:
+    pd.options.mode.copy_on_write = True  # always on from pandas 3, where the option is deprecated; pandas 4 removes it
 from jgtutils.jgtconstants import VOLUME
 # import warnings
 # warnings.filterwarnings("ignore", category=FutureWarning)

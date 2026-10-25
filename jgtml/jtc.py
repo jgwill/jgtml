@@ -1,6 +1,7 @@
 # %% Imports
 import pandas as pd
-pd.options.mode.copy_on_write = True
+if int(pd.__version__.split(".")[0]) < 3:
+    pd.options.mode.copy_on_write = True  # always on from pandas 3, where the option is deprecated; pandas 4 removes it
 import numpy as np
 import os
 import sys
